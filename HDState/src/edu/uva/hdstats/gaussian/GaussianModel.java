@@ -2,6 +2,7 @@ package edu.uva.hdstats.gaussian;
 
 import edu.uva.hdstats.ProbabilisticModel;
 import edu.uva.libopt.numeric.Utils;
+import la.decomposition.LUDecomposition;
 import la.matrix.DenseMatrix;
 import la.matrix.Matrix;
 
@@ -14,7 +15,7 @@ public class GaussianModel implements ProbabilisticModel {
 	@Override
 	public void buildModel(double[][] covariance, double[] mean) {
 		// TODO Auto-generated method stub
-		this.icovariance=new DenseMatrix(Utils.invert(covariance));
+		this.icovariance=new LUDecomposition(new DenseMatrix(covariance)).inverse();
 		this.mean=new DenseMatrix(mean,mean.length);
 		for(double[] covs:covariance)
 			for(double cov:covs)
