@@ -17,6 +17,9 @@
 package edu.uva.hdstats.da;
 
 import java.util.Arrays;
+
+import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.PDLassoEstimator;
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
 
@@ -37,7 +40,7 @@ import smile.math.matrix.EigenValueDecomposition;
  * 
  * @author Haifeng Li
  */
-public class SparseRDA implements Classifier<double[]> {
+public class PDLassoRDA implements Classifier<double[]> {
 
     /**
      * The dimensionality of data.
@@ -126,8 +129,8 @@ public class SparseRDA implements Classifier<double[]> {
             this.tol = tol;
         }
         
-        public SparseRDA train(double[][] x, int[] y) {
-            return new SparseRDA(x, y, priori, alpha, tol);
+        public PDLassoRDA train(double[][] x, int[] y) {
+            return new PDLassoRDA(x, y, priori, alpha, tol);
         }
     }
     
@@ -138,7 +141,7 @@ public class SparseRDA implements Classifier<double[]> {
      * @param alpha regularization factor in [0, 1] allows a continuum of models
      * between LDA and QDA.
      */
-    public SparseRDA(double[][] x, int[] y, double alpha) {
+    public PDLassoRDA(double[][] x, int[] y, double alpha) {
         this(x, y, null, alpha);
     }
 
@@ -150,7 +153,7 @@ public class SparseRDA implements Classifier<double[]> {
      * between LDA and QDA.
      * @param priori the priori probability of each class.
      */
-    public SparseRDA(double[][] x, int[] y, double[] priori, double alpha) {
+    public PDLassoRDA(double[][] x, int[] y, double[] priori, double alpha) {
         this(x, y, priori, alpha, 1E-4);
     }
 
@@ -164,7 +167,7 @@ public class SparseRDA implements Classifier<double[]> {
      * @param tol tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public SparseRDA(double[][] x, int[] y, double[] priori, double alpha, double tol) {
+    public PDLassoRDA(double[][] x, int[] y, double[] priori, double alpha, double tol) {
         if (x.length != y.length) {
             throw new IllegalArgumentException(String.format("The sizes of X and Y don't match: %d != %d", x.length, y.length));
         }
@@ -284,6 +287,9 @@ public class SparseRDA implements Classifier<double[]> {
                 throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
             }
         }
+        
+        C= new PDLassoEstimator(Estimator.lambda).covarianceApprox(C);
+
 
         ev = new double[k][];
         for (int i = 0; i < k; i++) {
@@ -299,6 +305,8 @@ public class SparseRDA implements Classifier<double[]> {
                 }
             }
 
+            cov[i]= new PDLassoEstimator(Estimator.lambda).covarianceApprox(cov[i]);
+            
             EigenValueDecomposition eigen = EigenValueDecomposition.decompose(cov[i], true);
 
             for (double s : eigen.getEigenValues()) {

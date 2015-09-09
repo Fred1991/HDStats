@@ -17,6 +17,9 @@
 package edu.uva.hdstats.da;
 
 import java.util.Arrays;
+
+import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.PDLassoEstimator;
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
 
@@ -52,7 +55,7 @@ import smile.math.matrix.EigenValueDecomposition;
  * 
  * @author Haifeng Li
  */
-public class SparseFLD implements Classifier<double[]>, Projection<double[]> {
+public class PDLassoFLD implements Classifier<double[]>, Projection<double[]> {
     /**
      * The dimensionality of data.
      */
@@ -132,8 +135,8 @@ public class SparseFLD implements Classifier<double[]>, Projection<double[]> {
         }
         
 
-        public SparseFLD train(double[][] x, int[] y) {
-            return new SparseFLD(x, y, L, tol);
+        public PDLassoFLD train(double[][] x, int[] y) {
+            return new PDLassoFLD(x, y, L, tol);
         }
     }
     
@@ -142,7 +145,7 @@ public class SparseFLD implements Classifier<double[]>, Projection<double[]> {
      * @param x training instances.
      * @param y training labels in [0, k), where k is the number of classes.
      */
-    public SparseFLD(double[][] x, int[] y) {
+    public PDLassoFLD(double[][] x, int[] y) {
         this(x, y, -1);
     }
 
@@ -152,7 +155,7 @@ public class SparseFLD implements Classifier<double[]>, Projection<double[]> {
      * @param y training labels in [0, k), where k is the number of classes.
      * @param L the dimensionality of mapped space.
      */
-    public SparseFLD(double[][] x, int[] y, int L) {
+    public PDLassoFLD(double[][] x, int[] y, int L) {
         this(x, y, L, 1E-4);
     }
 
@@ -164,7 +167,7 @@ public class SparseFLD implements Classifier<double[]>, Projection<double[]> {
      * @param tol a tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public SparseFLD(double[][] x, int[] y, int L, double tol) {
+    public PDLassoFLD(double[][] x, int[] y, int L, double tol) {
         if (x.length != y.length) {
             throw new IllegalArgumentException(String.format("The sizes of X and Y don't match: %d != %d", x.length, y.length));
         }
@@ -261,6 +264,9 @@ public class SparseFLD implements Classifier<double[]>, Projection<double[]> {
                 B[l][j] = B[j][l];
             }
         }
+
+        T= new PDLassoEstimator(Estimator.lambda).covarianceApprox(T);
+        B= new PDLassoEstimator(Estimator.lambda).covarianceApprox(B);
 
         EigenValueDecomposition eigen = EigenValueDecomposition.decompose(T, true);
         
