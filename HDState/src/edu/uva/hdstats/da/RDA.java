@@ -73,7 +73,7 @@ public class RDA implements Classifier<double[]> {
     /**
      * Trainer for regularized discriminant analysis.
      */
-    public static class Trainer {
+    public static class Trainer extends ClassifierTrainer <double[]>{
         /**
          * Regularization factor in [0, 1] allows a continuum of models
          * between LDA and QDA.

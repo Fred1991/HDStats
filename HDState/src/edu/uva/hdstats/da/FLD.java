@@ -85,7 +85,7 @@ public class FLD implements Classifier<double[]>, Projection<double[]> {
     /**
      * Trainer for Fisher's linear discriminant.
      */
-    public static class Trainer {
+    public static class Trainer extends ClassifierTrainer <double[]>{
         /**
          * The dimensionality of mapped space.
          */

@@ -78,7 +78,7 @@ public class QDA implements Classifier<double[]> {
     /**
      * Trainer for quadratic discriminant analysis.
      */
-    public static class Trainer {
+    public static class Trainer extends ClassifierTrainer <double[]>{
         /**
          * A priori probabilities of each class.
          */
