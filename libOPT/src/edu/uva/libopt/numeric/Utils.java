@@ -23,6 +23,66 @@ public class Utils {
 		}
 		return g;
 	}
+	
+	public static double normalizedErrorL1(double[][] m1, double[][] m2, double threshold){
+		double base=0;
+		double err=0;
+		for(int i=0;i<m1.length;i++){
+			for(int j=0;j<m1[i].length;j++){
+				base+=Math.abs(m1[i][j]);
+				err+=Math.abs(m1[i][j]-(m2[i][j]<threshold?0:m2[i][j]));
+			}
+		}
+		return err/base;
+	}	
+	
+	public static double normalizedErrorL2(double[][] m1, double[][] m2, double threshold){
+		double base=0;
+		double err=0;
+		for(int i=0;i<m1.length;i++){
+			for(int j=0;j<m1[i].length;j++){
+				base+=m1[i][j]*m1[i][j];
+				err+=((m1[i][j]-(m2[i][j]<threshold?0:m2[i][j]))*(m1[i][j]-(m2[i][j]<threshold?0:m2[i][j])));
+			}
+		}
+		return Math.sqrt(err/base);
+
+	}
+
+	
+	public static double normalizedErrorL1Recovery(double[][] m1, double[][] m, double[][] m2, double threshold){
+		double base=0;
+		double err=0;
+		for(int i=0;i<m1.length;i++){
+			for(int j=0;j<m1[i].length;j++){
+				base+=Math.abs(m1[i][j]);
+				if(m2[i][j]>m[i][j])
+					if(m2[i][j]<threshold&&m[i][j]==0)
+						err+=Math.abs(m1[i][j]);
+					else
+						err+=Math.abs(m1[i][j]-m2[i][j]);
+			}
+		}
+		return err/base;
+	}	
+	
+	public static double normalizedErrorL2Recovery(double[][] m1, double[][] m, double[][] m2, double threshold){
+		double base=0;
+		double err=0;
+		for(int i=0;i<m1.length;i++){
+			for(int j=0;j<m1[i].length;j++){
+				base+=m1[i][j]*m1[i][j];
+				if(m2[i][j]>m[i][j])
+					if(m2[i][j]<threshold&&m[i][j]==0)
+						err+=Math.abs(m1[i][j])*Math.abs(m1[i][j]);
+					else
+						err+=Math.abs(m1[i][j]-m2[i][j])*Math.abs(m1[i][j]-m2[i][j]);
+
+			}
+		}
+		return Math.sqrt(err/base);
+
+	}
 
 	public static void vec2Matrix(double[] vec, double[][] mat) {
 		for (int i = 0; i < vec.length; i++) {
