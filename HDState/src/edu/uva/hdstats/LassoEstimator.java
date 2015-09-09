@@ -8,7 +8,6 @@ import edu.uva.libopt.numeric.optimizer.SparseGradientOptimizer;
 
 public class LassoEstimator extends LDEstimator{
 	private double lambda;
-	protected double[][] covar_inner;
 	
 	public LassoEstimator(double lambda){
 		this.lambda=lambda;
@@ -16,11 +15,11 @@ public class LassoEstimator extends LDEstimator{
 	
 	@Override
 	public double[][] covariance(double[][] samples) {
-		covar_inner=super.covariance(samples);
-		return lassoSparseApprox();
+		double[][] covar_inner=super.covariance(samples);
+		return covarianceApprox(covar_inner);
 	}
-
-	protected double[][] lassoSparseApprox() {
+	@Override
+	public double[][] covarianceApprox(double[][] covar_inner){
 		double[] covar_2=new double[covar_inner.length*covar_inner.length];
 		NumericOptimizer optimizer=new SparseGradientOptimizer(Utils.L1,lambda);
 		optimizer.getMinimum(covar_2, 0.01, 0.00001, new CovarianceDiffNorm1(covar_inner));

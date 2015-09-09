@@ -1,21 +1,26 @@
 package edu.uva.hdstats;
 
 
-public class PDLassoEstimator extends LassoEstimator{
+public class PDLassoEstimator extends LDEstimator{
 
-	public PDLassoEstimator(double lambda) {
-		super(lambda);
+	private double _lambda;
+	
+	public PDLassoEstimator(double lambda){
+		this._lambda=lambda;
 	}
 
 	@Override
 	public double[][] covariance(double[][] samples) {
-		covar_inner = super.covariance(samples);
-		return npdApprox();
+		double[][] covar_inner = super.covariance(samples);
+		return covarianceApprox(covar_inner);
 	}
 
-	public double[][] npdApprox() {
+	@Override
+	public double[][] covarianceApprox(double[][] covar_inner){
+		LassoEstimator le=new LassoEstimator(this._lambda);
+		covar_inner=le.covarianceApprox(covar_inner);
 		NearPD npd=new NearPD();
-		npd.calcNearPD(new Jama.Matrix(this.covar_inner));
+		npd.calcNearPD(new Jama.Matrix(covar_inner));
 		return npd.getX().getArrayCopy();
 	}
 }

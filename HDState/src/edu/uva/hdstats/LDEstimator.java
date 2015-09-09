@@ -31,4 +31,10 @@ public class LDEstimator implements Estimator{
 		return mean;
 	}
 
+	@Override
+	public double[][] covarianceApprox(double[][] samples) {
+		// TODO Auto-generated method stub
+		return samples;
+	}
+
 }
