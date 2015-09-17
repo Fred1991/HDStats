@@ -265,8 +265,8 @@ public class PDLassoFLD implements Classifier<double[]>, Projection<double[]> {
             }
         }
 
-        T= new PDLassoEstimator(Estimator.lambda).covarianceApprox(T);
-        B= new PDLassoEstimator(Estimator.lambda).covarianceApprox(B);
+        new PDLassoEstimator(Estimator.lambda).covarianceApprox(T);
+        new PDLassoEstimator(Estimator.lambda).covarianceApprox(B);
 
         EigenValueDecomposition eigen = EigenValueDecomposition.decompose(T, true);
         

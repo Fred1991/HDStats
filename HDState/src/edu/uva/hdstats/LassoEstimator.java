@@ -16,17 +16,19 @@ public class LassoEstimator extends LDEstimator{
 	@Override
 	public double[][] covariance(double[][] samples) {
 		double[][] covar_inner=super.covariance(samples);
-		return covarianceApprox(covar_inner);
+		covarianceApprox(covar_inner);
+		return covar_inner;
 	}
 	@Override
-	public double[][] covarianceApprox(double[][] covar_inner){
+	public void covarianceApprox(double[][] covar_inner){
 		double[] covar_2=new double[covar_inner.length*covar_inner.length];
 		NumericOptimizer optimizer=new SparseGradientOptimizer(Utils.L1,lambda);
 		optimizer.getMinimum(covar_2, 0.01, 0.00001, new CovarianceDiffNorm1(covar_inner));
 		Utils.vec2Matrix(covar_2, covar_inner);
-		return covar_inner;
+
 	}
 	
+
 	public static class CovarianceDiffNorm1 implements NumericFunction{
 		private double[] _org;
 		public CovarianceDiffNorm1(double[][] original){

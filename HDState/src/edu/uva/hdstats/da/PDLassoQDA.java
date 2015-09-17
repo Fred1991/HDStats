@@ -279,7 +279,7 @@ public class PDLassoQDA implements Classifier<double[]> {
                 }
             }
 
-            cov[i]= new PDLassoEstimator(Estimator.lambda).covarianceApprox(cov[i]);
+            new PDLassoEstimator(Estimator.lambda).covarianceApprox(cov[i]);
 
             
             EigenValueDecomposition eigen = EigenValueDecomposition.decompose(cov[i], true);

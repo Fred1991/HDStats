@@ -32,9 +32,9 @@ public class LDEstimator implements Estimator{
 	}
 
 	@Override
-	public double[][] covarianceApprox(double[][] samples) {
+	public void covarianceApprox(double[][] samples) {
 		// TODO Auto-generated method stub
-		return samples;
+		//return samples;
 	}
 
 }

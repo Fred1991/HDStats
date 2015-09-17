@@ -290,7 +290,7 @@ public class PDLassoLDA implements Classifier<double[]> {
             }
         }
         
-        C= new PDLassoEstimator(Estimator.lambda).covarianceApprox(C);
+        new PDLassoEstimator(Estimator.lambda).covarianceApprox(C);
       //  B= new PDLassoEstimator(Estimator.lambda).covarianceApprox(B);
 
 

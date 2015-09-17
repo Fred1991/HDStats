@@ -5,7 +5,7 @@ public interface Estimator {
 	public static final int iter = 5;
 	
 	public double[][] covariance(double[][] samples);
-	public double[][] covarianceApprox(double[][] samples);
+	public void covarianceApprox(double[][] samples);
 	public double[] getMean(double[][] samples);
 
 }

@@ -288,7 +288,7 @@ public class PDLassoRDA implements Classifier<double[]> {
             }
         }
         
-        C= new PDLassoEstimator(Estimator.lambda).covarianceApprox(C);
+       new PDLassoEstimator(Estimator.lambda).covarianceApprox(C);
 
 
         ev = new double[k][];
@@ -305,7 +305,7 @@ public class PDLassoRDA implements Classifier<double[]> {
                 }
             }
 
-            cov[i]= new PDLassoEstimator(Estimator.lambda).covarianceApprox(cov[i]);
+            new PDLassoEstimator(Estimator.lambda).covarianceApprox(cov[i]);
             
             EigenValueDecomposition eigen = EigenValueDecomposition.decompose(cov[i], true);
 
