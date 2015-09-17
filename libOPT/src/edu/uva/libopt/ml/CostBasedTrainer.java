@@ -2,6 +2,7 @@ package edu.uva.libopt.ml;
 
 import edu.uva.libopt.numeric.NumericFunction;
 import edu.uva.libopt.numeric.NumericOptimizer;
+import edu.uva.libopt.numeric.Utils;
 import edu.uva.libopt.numeric.optimizer.GradientDescentOptimizer;
 import edu.uva.libopt.numeric.optimizer.SparseGradientOptimizer;
 
@@ -30,6 +31,12 @@ public class CostBasedTrainer implements NumericFunction {
 	public void trainDenseParams(double[] params_init) {
 		NumericOptimizer nopt = new GradientDescentOptimizer();
 		nopt.getMinimum(params_init, epsilon, delta, this);
+	}
+	
+	@Override
+	public double[] gradient(double[] X) {
+		// TODO Auto-generated method stub
+		return Utils.getGradient(this, X, 0.000001);
 	}
 
 }

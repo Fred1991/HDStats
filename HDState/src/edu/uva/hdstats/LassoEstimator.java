@@ -52,6 +52,16 @@ public class LassoEstimator extends LDEstimator{
 			
 		}
 		
+		@Override
+		public double[] gradient(double[] X) {
+			// TODO Auto-generated method stub
+			double[] g=new double[X.length];
+			for(int i=0;i<g.length;i++){
+				g[i]=2*(X[i]-_org[i]);
+			}
+			return g;
+		}
+		
 	}
 
 }

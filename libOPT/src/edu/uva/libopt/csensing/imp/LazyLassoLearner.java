@@ -48,7 +48,11 @@ public class LazyLassoLearner implements DictionaryLearner{
 			}
 			return error;
 		}
-		
+		@Override
+		public double[] gradient(double[] X) {
+			// TODO Auto-generated method stub
+			return Utils.getGradient(this, X, 0.000001);
+		}
 	}
 
 	@Override

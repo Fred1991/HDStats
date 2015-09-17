@@ -42,7 +42,7 @@ public class SparseGradientOptimizer implements NumericOptimizer {
 		else
 			AcceleratedProximalGradient.prox = new Prox();
 
-		Matrix G = new DenseMatrix(Utils.getGradient(f, X, delta), 2); // Gradient
+		Matrix G = new DenseMatrix(f.gradient(X), 2); // Gradient
 																		// at
 																		// the
 																		// initial
@@ -74,7 +74,7 @@ public class SparseGradientOptimizer implements NumericOptimizer {
 			if (flags[1]) // flags[1] indicates if gradient at the updated W is
 							// required
 				G = new DenseMatrix(
-						Utils.getGradient(f, W.getData()[0], delta), 2); // Compute
+						f.gradient(W.getData()[0]), 2); // Compute
 																			// the
 																			// gradient
 																			// at

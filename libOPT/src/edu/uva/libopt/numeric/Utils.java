@@ -33,7 +33,7 @@ public class Utils {
 				err+=Math.abs(m1[i][j]-(m2[i][j]<threshold?0:m2[i][j]));
 			}
 		}
-		return err/base;
+		return err;//err/base;
 	}	
 	
 	public static double normalizedErrorL2(double[][] m1, double[][] m2, double threshold){
@@ -45,7 +45,7 @@ public class Utils {
 				err+=((m1[i][j]-(m2[i][j]<threshold?0:m2[i][j]))*(m1[i][j]-(m2[i][j]<threshold?0:m2[i][j])));
 			}
 		}
-		return Math.sqrt(err/base);
+		return err;//Math.sqrt(err/base);
 
 	}
 
@@ -63,7 +63,7 @@ public class Utils {
 						err+=Math.abs(m1[i][j]-m2[i][j]);
 			}
 		}
-		return err/base;
+		return err; //err/base;
 	}	
 	
 	public static double normalizedErrorL2Recovery(double[][] m1, double[][] m, double[][] m2, double threshold){
@@ -80,7 +80,7 @@ public class Utils {
 
 			}
 		}
-		return Math.sqrt(err/base);
+		return err; //Math.sqrt(err/base);
 
 	}
 
