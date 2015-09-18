@@ -101,7 +101,7 @@ public class PDLassoLDA implements Classifier<double[]> {
          * A tolerance to decide if a covariance matrix is singular. The trainer
          * will reject variables whose variance is less than tol<sup>2</sup>.
          */
-        private double tol = 1E-4;
+        private double tol = 0;
 
         /**
          * Constructor. The default tolerance to covariance matrix singularity
@@ -230,7 +230,7 @@ public class PDLassoLDA implements Classifier<double[]> {
         final int n = x.length;
 
         if (n <= k) {
-            throw new IllegalArgumentException(String.format("Sample size is too small: %d <= %d", n, k));
+      //      throw new IllegalArgumentException(String.format("Sample size is too small: %d <= %d", n, k));
         }
 
         p = x[0].length;
@@ -286,7 +286,7 @@ public class PDLassoLDA implements Classifier<double[]> {
             }
 
             if (C[j][j] < tol) {
-                throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
+           //     throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
             }
         }
         
@@ -298,7 +298,7 @@ public class PDLassoLDA implements Classifier<double[]> {
 
         for (double s : evd.getEigenValues()) {
             if (s < tol) {
-                throw new IllegalArgumentException("The covariance matrix is close to singular.");
+     //           throw new IllegalArgumentException("The covariance matrix is close to singular.");
             }
         }
 

@@ -66,15 +66,14 @@ public class SparseGradientOptimizer implements NumericOptimizer {
 				break;
 
 			fval = f.func(W.getData()[0]);
-			hval = ((double)Utils.getLxNorm(X, norm));
+			hval = ((double)Utils.getLxNorm(W.getData()[0], norm));
 			
 			
 		//	System.out.println(hval);
 			
 			if (flags[1]) // flags[1] indicates if gradient at the updated W is
 							// required
-				G = new DenseMatrix(
-						f.gradient(W.getData()[0]), 2); // Compute
+				G = new DenseMatrix(f.gradient(X), 2); // Compute
 																			// the
 																			// gradient
 																			// at

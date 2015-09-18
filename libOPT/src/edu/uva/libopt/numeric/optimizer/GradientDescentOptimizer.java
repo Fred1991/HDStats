@@ -5,7 +5,6 @@ import la.matrix.Matrix;
 import ml.optimization.AcceleratedGradientDescent;
 import edu.uva.libopt.numeric.NumericFunction;
 import edu.uva.libopt.numeric.NumericOptimizer;
-import edu.uva.libopt.numeric.Utils;
 
 public class GradientDescentOptimizer implements NumericOptimizer {
 
@@ -51,7 +50,7 @@ public class GradientDescentOptimizer implements NumericOptimizer {
 
 		System.out.println("weights:" + W.getData()[0][0] + "\t"
 				+ W.getData()[0][1]);
-		return f.func(X);
+		return f.func(W.getData()[0]);
 	}
 
 }
