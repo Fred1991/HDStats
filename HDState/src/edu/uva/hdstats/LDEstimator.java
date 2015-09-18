@@ -1,6 +1,6 @@
 package edu.uva.hdstats;
 
-public class LDEstimator implements Estimator{
+public class LDEstimator extends Estimator{
 
 	@Override
 	public double[][] covariance(double[][] samples) {

@@ -23,7 +23,7 @@ public class LassoEstimator extends LDEstimator{
 	public void covarianceApprox(double[][] covar_inner){
 		double[] covar_2=new double[covar_inner.length*covar_inner.length];
 		NumericOptimizer optimizer=new SparseGradientOptimizer(Utils.L1,lambda);
-		optimizer.getMinimum(covar_2, 0.04, 0.00001, new CovarianceDiffNorm1(covar_inner));
+		optimizer.getMinimum(covar_2, stop, 0.00001, new CovarianceDiffNorm1(covar_inner));
 		Utils.vec2Matrix(covar_2, covar_inner);
 
 	}

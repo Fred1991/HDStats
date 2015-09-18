@@ -1,11 +1,12 @@
 package edu.uva.hdstats;
 
-public interface Estimator {
-	public static final double lambda = 0.02;
-	public static final int iter = 5;
+public abstract class Estimator {
+	public static double lambda = 0.00001;
+	public static int iter = 5;
+	public static double stop=0.001;
 	
-	public double[][] covariance(double[][] samples);
-	public void covarianceApprox(double[][] samples);
-	public double[] getMean(double[][] samples);
+	public abstract double[][] covariance(double[][] samples);
+	public abstract void covarianceApprox(double[][] samples);
+	public abstract double[] getMean(double[][] samples);
 
 }
