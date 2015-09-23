@@ -57,7 +57,8 @@ public class SparseGradientOptimizer implements NumericOptimizer {
 		double hval = ((double)Utils.getLxNorm(X, norm));
 
 		boolean flags[] = null;
-		while (true) {
+		int round =0;
+		while ((round++)<=500) {
 			flags = AcceleratedProximalGradient.run(G, fval, hval, epsilon, W); // Update
 																			// W
 																			// in

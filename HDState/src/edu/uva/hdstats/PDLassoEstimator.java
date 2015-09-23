@@ -33,11 +33,14 @@ public class PDLassoEstimator extends LDEstimator{
 	}
 	
 	public void covarianceApprox(double[][] covar_inner){
+		System.out.println("starting PDLassoEstimation");
 		LassoEstimator le = new LassoEstimator(this._lambda);
 		for (int i = 0; i < _iter; i++) {
 			le.covarianceApprox(covar_inner);
 			NearPD npd = new NearPD();
+			System.out.println("starting PD Calculation");
 			npd.calcNearPD(new Jama.Matrix(covar_inner));
+			System.out.println("finishing PD Calculation");
 			double[][] covarx = npd.getX().getArrayCopy();
 			for(int k=0;k<covarx.length;k++){
 				for(int j=0;j<covarx[k].length;j++){
@@ -45,5 +48,6 @@ public class PDLassoEstimator extends LDEstimator{
 				}
 			}
 		}
+		System.out.println("finishing PDLassoEstimation");
 	}
 }

@@ -268,7 +268,7 @@ public class FLD implements Classifier<double[]>, Projection<double[]> {
         double[] s = eigen.getEigenValues();
         for (int i = 0; i < s.length; i++) {
             if (s[i] < tol) {
-                throw new IllegalArgumentException("The covariance matrix is close to singular.");
+          //      throw new IllegalArgumentException("The covariance matrix is close to singular.");
             }
 
             s[i] = 1.0 / s[i];

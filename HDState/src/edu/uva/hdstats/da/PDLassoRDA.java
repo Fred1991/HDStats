@@ -138,12 +138,11 @@ public class PDLassoRDA implements Classifier<double[]> {
      * Constructor. Learn regularized discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
-     * @param alpha regularization factor in [0, 1] allows a continuum of models
-     * between LDA and QDA.
      */
     public PDLassoRDA(double[][] x, int[] y, double alpha) {
-        this(x, y, null, alpha);
+        this(x, y, null, alpha, 1E-4);
     }
+
 
     /**
      * Constructor. Learn regularized discriminant analysis.
@@ -284,7 +283,7 @@ public class PDLassoRDA implements Classifier<double[]> {
             }
 
             if (C[j][j] < tol) {
-                throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
+             //   throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
             }
         }
         
@@ -301,7 +300,7 @@ public class PDLassoRDA implements Classifier<double[]> {
                 }
 
                 if (cov[i][j][j] < tol) {
-                    throw new IllegalArgumentException(String.format("Class %d covariance matrix (variable %d) is close to singular.", i, j));
+              //      throw new IllegalArgumentException(String.format("Class %d covariance matrix (variable %d) is close to singular.", i, j));
                 }
             }
 
@@ -311,7 +310,7 @@ public class PDLassoRDA implements Classifier<double[]> {
 
             for (double s : eigen.getEigenValues()) {
                 if (s < tol) {
-                    throw new IllegalArgumentException(String.format("Class %d covariance matrix is close to singular.", i));
+            //        throw new IllegalArgumentException(String.format("Class %d covariance matrix is close to singular.", i));
                 }
             }
 

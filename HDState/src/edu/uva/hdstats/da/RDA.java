@@ -281,7 +281,7 @@ public class RDA implements Classifier<double[]> {
             }
 
             if (C[j][j] < tol) {
-                throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
+          //      throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
             }
         }
 
@@ -295,7 +295,7 @@ public class RDA implements Classifier<double[]> {
                 }
 
                 if (cov[i][j][j] < tol) {
-                    throw new IllegalArgumentException(String.format("Class %d covariance matrix (variable %d) is close to singular.", i, j));
+                 //   throw new IllegalArgumentException(String.format("Class %d covariance matrix (variable %d) is close to singular.", i, j));
                 }
             }
 
@@ -303,7 +303,7 @@ public class RDA implements Classifier<double[]> {
 
             for (double s : eigen.getEigenValues()) {
                 if (s < tol) {
-                    throw new IllegalArgumentException(String.format("Class %d covariance matrix is close to singular.", i));
+               //     throw new IllegalArgumentException(String.format("Class %d covariance matrix is close to singular.", i));
                 }
             }
 

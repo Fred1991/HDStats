@@ -6,11 +6,11 @@ import edu.uva.libopt.numeric.Utils;
 public class HDStatsTest {
 	
 	public static void main(String[] args){
-		double[][] samples=Utils.getSparseRandomMatrix(20000, 600,0.02);
+		double[][] samples=Utils.getSparseRandomMatrix(200, 600,0.02);
 		System.out.println("************Samples Generated*************");
 		Estimator est=new PDLassoEstimator(0.01);
 		double[][] hdcovar=est.covariance(samples);
-		double[][] ihdcovar=new IterPDLassoEstimator(0.01,5).covariance(samples);
+		double[][] ihdcovar=new IterPDLassoEstimator(0.001,5).covariance(samples);
 		double[][] ldcovar=new LDEstimator().covariance(samples);
 		double error1=0;
 		double error2=0;

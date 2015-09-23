@@ -28,7 +28,8 @@ public class GradientDescentOptimizer implements NumericOptimizer {
 		double fval = f.func(X);
 
 		boolean flags[] = null;
-		while (true) {
+		int round =0;
+		while ((round++)<=500) {
 			flags = AcceleratedGradientDescent.run(G, fval, epsilon, W); // Update
 																			// W
 																			// in
