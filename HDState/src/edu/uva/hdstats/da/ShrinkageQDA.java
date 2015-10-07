@@ -17,6 +17,8 @@
 package edu.uva.hdstats.da;
 
 import java.util.Arrays;
+
+import edu.uva.hdstats.ShrinkageEstimator;
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
 
@@ -42,7 +44,9 @@ import smile.math.matrix.EigenValueDecomposition;
  * 
  * @author Haifeng Li
  */
-public class QDA implements Classifier<double[]> {
+public class ShrinkageQDA implements Classifier<double[]> {
+
+	public static double slambda=0.1;
 
     /**
      * The dimensionality of data.
@@ -119,8 +123,8 @@ public class QDA implements Classifier<double[]> {
         }
         
 
-        public QDA train(double[][] x, int[] y) {
-            return new QDA(x, y, priori, tol);
+        public ShrinkageQDA train(double[][] x, int[] y) {
+            return new ShrinkageQDA(x, y, priori, tol);
         }
     }
     
@@ -129,7 +133,7 @@ public class QDA implements Classifier<double[]> {
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
      */
-    public QDA(double[][] x, int[] y) {
+    public ShrinkageQDA(double[][] x, int[] y) {
         this(x, y, null);
     }
 
@@ -139,7 +143,7 @@ public class QDA implements Classifier<double[]> {
      * @param y training labels in [0, k), where k is the number of classes.
      * @param priori the priori probability of each class.
      */
-    public QDA(double[][] x, int[] y, double[] priori) {
+    public ShrinkageQDA(double[][] x, int[] y, double[] priori) {
         this(x, y, priori, 1E-4);
     }
 
@@ -150,7 +154,7 @@ public class QDA implements Classifier<double[]> {
      * @param tol a tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public QDA(double[][] x, int[] y, double tol) {
+    public ShrinkageQDA(double[][] x, int[] y, double tol) {
         this(x, y, null, tol);
     }
     
@@ -163,7 +167,7 @@ public class QDA implements Classifier<double[]> {
      * @param tol a tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public QDA(double[][] x, int[] y, double[] priori, double tol) {
+    public ShrinkageQDA(double[][] x, int[] y, double[] priori, double tol) {
         if (x.length != y.length) {
             throw new IllegalArgumentException(String.format("The sizes of X and Y don't match: %d != %d", x.length, y.length));
         }
@@ -272,15 +276,18 @@ public class QDA implements Classifier<double[]> {
                 }
 
                 if (cov[i][j][j] < tol) {
-              //      throw new IllegalArgumentException(String.format("Class %d covariance matrix (variable %d) is close to singular.", i, j));
+             //       throw new IllegalArgumentException(String.format("Class %d covariance matrix (variable %d) is close to singular.", i, j));
                 }
             }
 
+            new ShrinkageEstimator(slambda).covarianceApprox(cov[i]);
+
+            
             EigenValueDecomposition eigen = EigenValueDecomposition.decompose(cov[i], true);
 
             for (double s : eigen.getEigenValues()) {
                 if (s < tol) {
-            //        throw new IllegalArgumentException(String.format("Class %d covariance matrix is close to singular.", i));
+             //       throw new IllegalArgumentException(String.format("Class %d covariance matrix is close to singular.", i));
                 }
             }
 

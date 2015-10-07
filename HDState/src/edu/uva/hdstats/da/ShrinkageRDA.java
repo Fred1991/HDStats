@@ -17,41 +17,42 @@
 package edu.uva.hdstats.da;
 
 import java.util.Arrays;
+
+import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.PDLassoEstimator;
+import edu.uva.hdstats.ShrinkageEstimator;
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
 
 /**
- * Quadratic discriminant analysis. QDA is closely related to linear discriminant
- * analysis (LDA). Like LDA, QDA models the conditional probability density
- * functions as a Gaussian distribution, then uses the posterior distributions
- * to estimate the class for a given test data. Unlike LDA, however,
- * in QDA there is no assumption that the covariance of each of the classes
- * is identical. Therefore, the resulting separating surface between
- * the classes is quadratic.
- * <p>
- * The Gaussian parameters for each class can be estimated from training data
- * with maximum likelihood (ML) estimation. However, when the number of
- * training instances is small compared to the dimension of input space,
- * the ML covariance estimation can be ill-posed. One approach to resolve
- * the ill-posed estimation is to regularize the covariance estimation.
- * One of these regularization methods is {@link RDA regularized discriminant analysis}.
+ * Regularized discriminant analysis. RDA is a compromise between LDA and QDA,
+ * which allows one to shrink the separate covariances of QDA toward a common
+ * variance as in LDA. This method is very similar in flavor to ridge regression.
+ * The regularized covariance matrices of each class is
+ * &Sigma;<sub>k</sub>(&alpha;) = &alpha; &Sigma;<sub>k</sub> + (1 - &alpha;) &Sigma;.
+ * The quadratic discriminant function is defined using the shrunken covariance
+ * matrices &Sigma;<sub>k</sub>(&alpha;). The parameter &alpha; in [0, 1]
+ * controls the complexity of the model. When &alpha; is one, RDA becomes QDA.
+ * While &alpha; is zero, RDA is equivalent to LDA. Therefore, the
+ * regularization factor &alpha; allows a continuum of models between LDA and QDA.
  * 
  * @see LDA
- * @see RDA
- * @see NaiveBayes
+ * @see QDA
  * 
  * @author Haifeng Li
  */
-public class QDA implements Classifier<double[]> {
+public class ShrinkageRDA implements Classifier<double[]> {
 
+	public static double slambda=0.1;
+	
     /**
      * The dimensionality of data.
      */
-    private final int p;
+    private int p;
     /**
      * The number of classes.
      */
-    private final int k;
+    private int k;
     /**
      * Constant term of discriminant function of each class.
      */
@@ -59,26 +60,31 @@ public class QDA implements Classifier<double[]> {
     /**
      * A priori probabilities of each class.
      */
-    private final double[] priori;
+    private double[] priori;
     /**
      * Mean vectors of each class.
      */
-    private final double[][] mu;
+    private double[][] mu;
     /**
      * Eigen vectors of each covariance matrix, which transforms observations
      * to discriminant functions, normalized so that within groups covariance
      * matrix is spherical.
      */
-    private final double[][][] scaling;
+    private double[][][] scaling;
     /**
      * Eigen values of each covariance matrix.
      */
-    private final double[][] ev;
+    private double[][] ev;
 
     /**
-     * Trainer for quadratic discriminant analysis.
+     * Trainer for regularized discriminant analysis.
      */
     public static class Trainer extends ClassifierTrainer <double[]>{
+        /**
+         * Regularization factor in [0, 1] allows a continuum of models
+         * between LDA and QDA.
+         */
+        private double alpha;
         /**
          * A priori probabilities of each class.
          */
@@ -92,8 +98,16 @@ public class QDA implements Classifier<double[]> {
         /**
          * Constructor. The default tolerance to covariance matrix singularity
          * is 1E-4.
+         * 
+         * @param alpha regularization factor in [0, 1] allows a continuum of
+         * models between LDA and QDA.
          */
-        public Trainer() {
+        public Trainer(double alpha) {
+            if (alpha < 0.0 || alpha > 1.0) {
+                throw new IllegalArgumentException("Invalid regularization factor: " + alpha);
+            }
+
+            this.alpha = alpha;
         }
         
         /**
@@ -105,7 +119,7 @@ public class QDA implements Classifier<double[]> {
         }
         
         /**
-         * Sets covariance matrix singularity tolerance.
+         * Sets covariance matrix singular tolerance.
          * 
          * @param tol a tolerance to decide if a covariance matrix is singular.
          * The trainer will reject variables whose variance is less than tol<sup>2</sup>.
@@ -118,54 +132,50 @@ public class QDA implements Classifier<double[]> {
             this.tol = tol;
         }
         
-
-        public QDA train(double[][] x, int[] y) {
-            return new QDA(x, y, priori, tol);
+        public ShrinkageRDA train(double[][] x, int[] y) {
+            return new ShrinkageRDA(x, y, priori, alpha, tol);
         }
     }
     
     /**
-     * Learn quadratic discriminant analysis.
+     * Constructor. Learn regularized discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
      */
-    public QDA(double[][] x, int[] y) {
-        this(x, y, null);
+    public ShrinkageRDA(double[][] x, int[] y, double alpha) {
+        this(x, y, null, alpha, 1E-4);
     }
 
+
     /**
-     * Learn quadratic discriminant analysis.
+     * Constructor. Learn regularized discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
+     * @param alpha regularization factor in [0, 1] allows a continuum of models
+     * between LDA and QDA.
      * @param priori the priori probability of each class.
      */
-    public QDA(double[][] x, int[] y, double[] priori) {
-        this(x, y, priori, 1E-4);
+    public ShrinkageRDA(double[][] x, int[] y, double[] priori, double alpha) {
+        this(x, y, priori, alpha, 1E-4);
     }
 
     /**
-     * Learn quadratic discriminant analysis.
+     * Constructor. Learn regularized discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
-     * @param tol a tolerance to decide if a covariance matrix is singular; it
+     * @param alpha regularization factor in [0, 1] allows a continuum of models
+     * between LDA and QDA.
+     * @param priori the priori probability of each class.
+     * @param tol tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public QDA(double[][] x, int[] y, double tol) {
-        this(x, y, null, tol);
-    }
-    
-    /**
-     * Learn quadratic discriminant analysis.
-     * @param x training samples.
-     * @param y training labels in [0, k), where k is the number of classes.
-     * @param priori the priori probability of each class. If null, it will be
-     * estimated from the training data.
-     * @param tol a tolerance to decide if a covariance matrix is singular; it
-     * will reject variables whose variance is less than tol<sup>2</sup>.
-     */
-    public QDA(double[][] x, int[] y, double[] priori, double tol) {
+    public ShrinkageRDA(double[][] x, int[] y, double[] priori, double alpha, double tol) {
         if (x.length != y.length) {
             throw new IllegalArgumentException(String.format("The sizes of X and Y don't match: %d != %d", x.length, y.length));
+        }
+
+        if (alpha < 0.0 || alpha > 1.0) {
+            throw new IllegalArgumentException("Invalid regularization factor: " + alpha);
         }
 
         if (priori != null) {
@@ -220,8 +230,13 @@ public class QDA implements Classifier<double[]> {
         }
 
         p = x[0].length;
+
         // The number of instances in each class.
         int[] ni = new int[k];
+        // Common mean vector.
+        double[] mean = Math.colMean(x);
+        // Common covariance.
+        double[][] C = new double[p][p];
         // Class mean vectors.
         mu = new double[k][p];
         // Class covarainces.
@@ -258,16 +273,32 @@ public class QDA implements Classifier<double[]> {
             for (int j = 0; j < p; j++) {
                 for (int l = 0; l <= j; l++) {
                     cov[c][j][l] += (x[i][j] - mu[c][j]) * (x[i][l] - mu[c][l]);
+                    C[j][l] += (x[i][j] - mean[j]) * (x[i][l] - mean[l]);
                 }
             }
         }
 
         tol = tol * tol;
+        for (int j = 0; j < p; j++) {
+            for (int l = 0; l <= j; l++) {
+                C[j][l] /= (n - k);
+                C[l][j] = C[j][l];
+            }
+
+            if (C[j][j] < tol) {
+             //   throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
+            }
+        }
+        
+       new ShrinkageEstimator(slambda).covarianceApprox(C);
+
+
         ev = new double[k][];
         for (int i = 0; i < k; i++) {
             for (int j = 0; j < p; j++) {
                 for (int l = 0; l <= j; l++) {
                     cov[i][j][l] /= (ni[i] - 1);
+                    cov[i][j][l] = alpha * cov[i][j][l] + (1 - alpha) * C[j][l];
                     cov[i][l][j] = cov[i][j][l];
                 }
 
@@ -276,6 +307,8 @@ public class QDA implements Classifier<double[]> {
                 }
             }
 
+            new PDLassoEstimator(Estimator.lambda).covarianceApprox(cov[i]);
+            
             EigenValueDecomposition eigen = EigenValueDecomposition.decompose(cov[i], true);
 
             for (double s : eigen.getEigenValues()) {
@@ -337,12 +370,7 @@ public class QDA implements Classifier<double[]> {
 
             double f = 0.0;
             for (int j = 0; j < p; j++) {
-            	double dx=(ux[j] * ux[j] / ev[i][j]);
-            	if(dx!=dx||dx==Double.POSITIVE_INFINITY||dx==Double.NEGATIVE_INFINITY)
-            		f += 0.0;
-            	else
-            		f+=ux[j] * ux[j] / ev[i][j];
-
+                f += ux[j] * ux[j] / ev[i][j];
             }
 
             f = ct[i] - 0.5 * f;

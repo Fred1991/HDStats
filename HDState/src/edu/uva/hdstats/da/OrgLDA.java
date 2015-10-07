@@ -17,32 +17,46 @@
 package edu.uva.hdstats.da;
 
 import java.util.Arrays;
+
+import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.PDLassoEstimator;
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
 
 /**
- * Quadratic discriminant analysis. QDA is closely related to linear discriminant
- * analysis (LDA). Like LDA, QDA models the conditional probability density
- * functions as a Gaussian distribution, then uses the posterior distributions
- * to estimate the class for a given test data. Unlike LDA, however,
- * in QDA there is no assumption that the covariance of each of the classes
- * is identical. Therefore, the resulting separating surface between
- * the classes is quadratic.
+ * Linear discriminant analysis. LDA is based on the Bayes decision theory
+ * and assumes that the conditional probability density functions are normally
+ * distributed. LDA also makes the simplifying homoscedastic assumption (i.e.
+ * that the class covariances are identical) and that the covariances have full
+ * rank. With these assumptions, the discriminant function of an input being
+ * in a class is purely a function of this linear combination of independent
+ * variables.
  * <p>
- * The Gaussian parameters for each class can be estimated from training data
- * with maximum likelihood (ML) estimation. However, when the number of
- * training instances is small compared to the dimension of input space,
- * the ML covariance estimation can be ill-posed. One approach to resolve
- * the ill-posed estimation is to regularize the covariance estimation.
- * One of these regularization methods is {@link RDA regularized discriminant analysis}.
+ * LDA is closely related to ANOVA (analysis of variance) and linear regression
+ * analysis, which also attempt to express one dependent variable as a
+ * linear combination of other features or measurements. In the other two
+ * methods, however, the dependent variable is a numerical quantity, while
+ * for LDA it is a categorical variable (i.e. the class label). Logistic
+ * regression and probit regression are more similar to LDA, as they also
+ * explain a categorical variable. These other methods are preferable in
+ * applications where it is not reasonable to assume that the independent 
+ * variables are normally distributed, which is a fundamental assumption
+ * of the LDA method.
+ * <p>
+ * One complication in applying LDA (and Fisher's discriminant) to real data
+ * occurs when the number of variables/features does not exceed
+ * the number of samples. In this case, the covariance estimates do not have
+ * full rank, and so cannot be inverted. This is known as small sample size
+ * problem.
  * 
- * @see LDA
+ * @see FLD
+ * @see QDA
  * @see RDA
  * @see NaiveBayes
  * 
  * @author Haifeng Li
  */
-public class QDA implements Classifier<double[]> {
+public class OrgLDA implements Classifier<double[]> {
 
     /**
      * The dimensionality of data.
@@ -65,20 +79,20 @@ public class QDA implements Classifier<double[]> {
      */
     private final double[][] mu;
     /**
-     * Eigen vectors of each covariance matrix, which transforms observations
-     * to discriminant functions, normalized so that within groups covariance
+     * Eigen vectors of common covariance matrix, which transforms observations
+     * to discriminant functions, normalized so that common covariance
      * matrix is spherical.
      */
-    private final double[][][] scaling;
+    private final double[][] scaling;
     /**
-     * Eigen values of each covariance matrix.
+     * Eigen values of common variance matrix.
      */
-    private final double[][] ev;
+    private final double[] eigen;
 
     /**
-     * Trainer for quadratic discriminant analysis.
+     * Trainer for linear discriminant analysis.
      */
-    public static class Trainer extends ClassifierTrainer <double[]>{
+    public static class Trainer  extends ClassifierTrainer <double[]>{
         /**
          * A priori probabilities of each class.
          */
@@ -87,7 +101,7 @@ public class QDA implements Classifier<double[]> {
          * A tolerance to decide if a covariance matrix is singular. The trainer
          * will reject variables whose variance is less than tol<sup>2</sup>.
          */
-        private double tol = 1E-4;
+        private double tol = 0;
 
         /**
          * Constructor. The default tolerance to covariance matrix singularity
@@ -118,44 +132,44 @@ public class QDA implements Classifier<double[]> {
             this.tol = tol;
         }
         
-
-        public QDA train(double[][] x, int[] y) {
-            return new QDA(x, y, priori, tol);
+       
+        public OrgLDA train(double[][] x, int[] y) {
+            return new OrgLDA(x, y, priori, tol);
         }
     }
     
     /**
-     * Learn quadratic discriminant analysis.
+     * Constructor. Learn linear discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
      */
-    public QDA(double[][] x, int[] y) {
+    public OrgLDA(double[][] x, int[] y) {
         this(x, y, null);
     }
 
     /**
-     * Learn quadratic discriminant analysis.
+     * Constructor. Learn linear discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
      * @param priori the priori probability of each class.
      */
-    public QDA(double[][] x, int[] y, double[] priori) {
+    public OrgLDA(double[][] x, int[] y, double[] priori) {
         this(x, y, priori, 1E-4);
     }
 
     /**
-     * Learn quadratic discriminant analysis.
+     * Constructor. Learn linear discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
      * @param tol a tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public QDA(double[][] x, int[] y, double tol) {
+    public OrgLDA(double[][] x, int[] y, double tol) {
         this(x, y, null, tol);
     }
     
     /**
-     * Learn quadratic discriminant analysis.
+     * Constructor. Learn linear discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
      * @param priori the priori probability of each class. If null, it will be
@@ -163,11 +177,11 @@ public class QDA implements Classifier<double[]> {
      * @param tol a tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public QDA(double[][] x, int[] y, double[] priori, double tol) {
+    public OrgLDA(double[][] x, int[] y, double[] priori, double tol) {
         if (x.length != y.length) {
             throw new IllegalArgumentException(String.format("The sizes of X and Y don't match: %d != %d", x.length, y.length));
         }
-
+        
         if (priori != null) {
             if (priori.length < 2) {
                 throw new IllegalArgumentException("Invalid number of priori probabilities: " + priori.length);
@@ -216,16 +230,18 @@ public class QDA implements Classifier<double[]> {
         final int n = x.length;
 
         if (n <= k) {
-            throw new IllegalArgumentException(String.format("Sample size is too small: %d <= %d", n, k));
+      //      throw new IllegalArgumentException(String.format("Sample size is too small: %d <= %d", n, k));
         }
 
         p = x[0].length;
         // The number of instances in each class.
         int[] ni = new int[k];
+        // Common mean vector.
+        double[] mean = Math.colMean(x);
+        // Common covariance.
+        double[][] C = new double[p][p];
         // Class mean vectors.
         mu = new double[k][p];
-        // Class covarainces.
-        double[][][] cov = new double[k][p][p];
 
         for (int i = 0; i < n; i++) {
             int c = y[i];
@@ -236,10 +252,6 @@ public class QDA implements Classifier<double[]> {
         }
 
         for (int i = 0; i < k; i++) {
-            if (ni[i] <= 1) {
-                throw new IllegalArgumentException(String.format("Class %d has only one sample.", i));
-            }
-
             for (int j = 0; j < p; j++) {
                 mu[i][j] /= ni[i];
             }
@@ -251,53 +263,47 @@ public class QDA implements Classifier<double[]> {
                 priori[i] = (double) ni[i] / n;
             }
         }
+        
         this.priori = priori;
-
+        ct = new double[k];
+        for (int i = 0; i < k; i++) {
+            ct[i] = Math.log(priori[i]);
+        }
+        
         for (int i = 0; i < n; i++) {
-            int c = y[i];
             for (int j = 0; j < p; j++) {
                 for (int l = 0; l <= j; l++) {
-                    cov[c][j][l] += (x[i][j] - mu[c][j]) * (x[i][l] - mu[c][l]);
+                    C[j][l] += (x[i][j] - mean[j]) * (x[i][l] - mean[l]);
                 }
             }
         }
 
         tol = tol * tol;
-        ev = new double[k][];
-        for (int i = 0; i < k; i++) {
-            for (int j = 0; j < p; j++) {
-                for (int l = 0; l <= j; l++) {
-                    cov[i][j][l] /= (ni[i] - 1);
-                    cov[i][l][j] = cov[i][j][l];
-                }
-
-                if (cov[i][j][j] < tol) {
-              //      throw new IllegalArgumentException(String.format("Class %d covariance matrix (variable %d) is close to singular.", i, j));
-                }
+        for (int j = 0; j < p; j++) {
+            for (int l = 0; l <= j; l++) {
+                C[j][l] /= (n - k);
+                C[l][j] = C[j][l];
             }
 
-            EigenValueDecomposition eigen = EigenValueDecomposition.decompose(cov[i], true);
-
-            for (double s : eigen.getEigenValues()) {
-                if (s < tol) {
-            //        throw new IllegalArgumentException(String.format("Class %d covariance matrix is close to singular.", i));
-                }
+            if (C[j][j] < tol) {
+           //     throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
             }
+        }
+        
+      //  new PDLassoEstimator(Estimator.lambda).covarianceApprox(C);
+      //  B= new PDLassoEstimator(Estimator.lambda).covarianceApprox(B);
 
-            ev[i] = eigen.getEigenValues();
-            cov[i] = eigen.getEigenVectors();
+
+        EigenValueDecomposition evd = EigenValueDecomposition.decompose(C, true);
+
+        for (double s : evd.getEigenValues()) {
+            if (s < tol) {
+     //           throw new IllegalArgumentException("The covariance matrix is close to singular.");
+            }
         }
 
-        scaling = cov;
-        ct = new double[k];
-        for (int i = 0; i < k; i++) {
-            double logev = 0.0;
-            for (int j = 0; j < p; j++) {
-                logev += Math.log(ev[i][j]);
-            }
-
-            ct[i] = Math.log(priori[i]) - 0.5 * logev;
-        }
+        eigen = evd.getEigenValues();
+        scaling = evd.getEigenVectors();
     }
 
     /**
@@ -333,16 +339,11 @@ public class QDA implements Classifier<double[]> {
                 d[j] = x[j] - mu[i][j];
             }
 
-            Math.atx(scaling[i], d, ux);
+            Math.atx(scaling, d, ux);
 
             double f = 0.0;
             for (int j = 0; j < p; j++) {
-            	double dx=(ux[j] * ux[j] / ev[i][j]);
-            	if(dx!=dx||dx==Double.POSITIVE_INFINITY||dx==Double.NEGATIVE_INFINITY)
-            		f += 0.0;
-            	else
-            		f+=ux[j] * ux[j] / ev[i][j];
-
+                f += ux[j] * ux[j] / eigen[j];
             }
 
             f = ct[i] - 0.5 * f;
@@ -367,7 +368,7 @@ public class QDA implements Classifier<double[]> {
                 posteriori[i] /= sum;
             }
         }
-
+        
         return y;
     }
 }

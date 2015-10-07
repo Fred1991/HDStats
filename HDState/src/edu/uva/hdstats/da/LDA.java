@@ -336,10 +336,19 @@ public class LDA implements Classifier<double[]> {
 
             double f = 0.0;
             for (int j = 0; j < p; j++) {
-                f += ux[j] * ux[j] / eigen[j];
+				double dx = (ux[j] * ux[j] / eigen[j]);
+				if (dx != dx)
+					f += 0.0;
+				else
+					f += ux[j] * ux[j] / eigen[j];
+	            //	System.err.println("ux value\t"+ux[j]+" eigen value:\t"+ eigen[j]);
+            //	f+=Math.exp(2*Math.log(ux[j])-Math.log(Math.max(eigen[j],0.0000000001)));
+
             }
 
             f = ct[i] - 0.5 * f;
+            
+           System.err.println("ct value\t"+ct[i]+" f:\t"+ f);
             if (max < f) {
                 max = f;
                 y = i;
@@ -362,6 +371,8 @@ public class LDA implements Classifier<double[]> {
             }
         }
         
+        System.err.println(max);
+
         return y;
     }
 }
