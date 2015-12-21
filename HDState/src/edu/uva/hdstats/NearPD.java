@@ -81,7 +81,7 @@ public class NearPD {
 		double conv = Double.POSITIVE_INFINITY;
 		//Loop
 		while ((iter<maxit)&!converged) {
-			System.out.println("PD Loop\t"+iter+"\t coverage:"+conv);
+			System.out.println("PD Loop\t"+iter+"\t converge:"+conv);
 			Y = X.copy();
 			
 			//Dykstra correction
@@ -193,9 +193,9 @@ public class NearPD {
 	private void setDefaults() {
 		keepDiag = false;
 		doDykstra = true;
-		eigTol = 1.e-6;
-		convTol = 1.e-7;
-		maxit = 100;
+		eigTol = 1.e-2;
+		convTol = 1.e-3;
+		maxit = 50;
 	}
 	
 	/**

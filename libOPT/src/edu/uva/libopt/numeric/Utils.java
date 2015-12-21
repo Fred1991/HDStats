@@ -25,27 +25,53 @@ public class Utils {
 	}
 	
 	public static double normalizedErrorL1(double[][] m1, double[][] m2, double threshold){
-		double base=0;
+	//	double base=0;
 		double err=0;
+
 		for(int i=0;i<m1.length;i++){
 			for(int j=0;j<m1[i].length;j++){
-				base+=Math.abs(m1[i][j]);
-				err+=Math.abs(m1[i][j]-(m2[i][j]<threshold?0:m2[i][j]));
+	//			base+=Math.abs(m1[i][j]);
+	//			m1[i][i]=Math.max(m1[i][i], 1);
+	//			m1[i][i]=Math.max(m2[i][i], 1);
+	//			m1[i][i]=Math.max(m1[j][j], 1);
+	//			m1[i][i]=Math.max(m2[j][j], 1);
+				if(m1[i][i]!=0&&m1[j][j]!=0&&m2[i][i]!=0&&m2[j][j]!=0){
+					err+=Math.abs(m1[i][j]/Math.sqrt(m1[i][i]*m1[j][j])-m2[i][j]/Math.sqrt(m2[i][i]*m2[j][j]));
+				}else{
+	//				err+=
+				//	err+=Math.abs(m1[i][j]-m2[i][j]);
+					err+=2;
+				}
 			}
 		}
-		return err;//err/base;
+		return err;
 	}	
 	
 	public static double normalizedErrorL2(double[][] m1, double[][] m2, double threshold){
-		double base=0;
+	//	double base=0;
 		double err=0;
+
 		for(int i=0;i<m1.length;i++){
 			for(int j=0;j<m1[i].length;j++){
-				base+=m1[i][j]*m1[i][j];
-				err+=((m1[i][j]-(m2[i][j]<threshold?0:m2[i][j]))*(m1[i][j]-(m2[i][j]<threshold?0:m2[i][j])));
+//				m1[i][i]=Math.max(m1[i][i], 1);
+//				m1[i][i]=Math.max(m2[i][i], 1);
+//				m1[i][i]=Math.max(m1[j][j], 1);
+//				m1[i][i]=Math.max(m2[j][j], 1);
+
+	//			base+=m1[i][j]*m1[i][j];
+				if(m1[i][i]!=0&&m1[j][j]!=0&&m2[i][i]!=0&&m2[j][j]!=0)
+					err+=Math.abs(m1[i][j]/Math.sqrt(m1[i][i]*m1[j][j])-m2[i][j]/Math.sqrt(m2[i][i]*m2[j][j]))*
+							Math.abs(m1[i][j]/Math.sqrt(m1[i][i]*m1[j][j])-m2[i][j]/Math.sqrt(m2[i][i]*m2[j][j]));
+				else{
+					err+=4;
+				}
+			//		err+=	
+				
+				
+				//	err+=Math.abs(m1[i][j]-m2[i][j])*Math.abs(m1[i][j]-m2[i][j]);
 			}
 		}
-		return err;//Math.sqrt(err/base);
+		return err;
 
 	}
 

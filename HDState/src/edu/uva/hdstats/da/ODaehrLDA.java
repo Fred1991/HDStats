@@ -34,8 +34,10 @@ package edu.uva.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
+import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.PDLassoEstimator;
 
-public class OLDA implements Classifier<double[]>{
+public class ODaehrLDA implements Classifier<double[]>{
 	private double[][] groupMean;
 	public double[][] pooledInverseCovariance;
 	private double[] probability;
@@ -55,7 +57,7 @@ public class OLDA implements Classifier<double[]>{
 	 *            should be equal
 	 */
 	@SuppressWarnings("unchecked")
-	public OLDA(double[][] d, int[] g, boolean p) {
+	public ODaehrLDA(double[][] d, int[] g, boolean p) {
 		// check if data and group array have the same size
 		if (d.length != g.length)
 			return;
@@ -132,6 +134,10 @@ public class OLDA implements Classifier<double[]>{
 				}
 			}
 		}
+		
+		for(int i=0;i<subset.length;i++){
+			 new PDLassoEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
+		}
 
 		// calculate pooled within group covariance matrix and invert it
 		pooledInverseCovariance = new double[globalMean.length][globalMean.length];
@@ -144,17 +150,9 @@ public class OLDA implements Classifier<double[]>{
 			}
 		}
 
-		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
-				
-	//	double[][] im=new double[pooledInverseCovariance.length][pooledInverseCovariance.length];
-	//	for(int i=0;i<im.length;i++)
-	//		im[i][i]=1.0;
-	//	Matrix imm=new Matrix(im);
-	//	pooledInverseCovariance=new Matrix(pooledInverseCovariance).solve(imm).getArray();
-
+	//	pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
 		
-			//	new Matrix(pooledInverseCovariance).inverse()
-			//	.getArray();
+		pooledInverseCovariance=new Matrix(pooledInverseCovariance).inverse().getArray();
 
 		// calculate probability for different groups
 		this.probability = new double[subset.length];
@@ -440,7 +438,7 @@ public class OLDA implements Classifier<double[]>{
 		double[][] data = { { 2.95, 6.63 }, { 2.53, 7.79 }, { 3.57, 5.65 },
 				{ 3.16, 5.47 }, { 2.58, 4.46 }, { 2.16, 6.22 }, { 3.27, 3.52 } };
 
-		OLDA test = new OLDA(data, group, true);
+		ODaehrLDA test = new ODaehrLDA(data, group, true);
 		double[] testData = { 2.81, 5.46 };
 		
 		//test

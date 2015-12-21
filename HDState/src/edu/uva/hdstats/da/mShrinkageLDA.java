@@ -34,13 +34,17 @@ package edu.uva.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
+import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.PDLassoEstimator;
+import edu.uva.hdstats.ShrinkageEstimator;
 
-public class OLDA implements Classifier<double[]>{
+public class mShrinkageLDA implements Classifier<double[]>{
 	private double[][] groupMean;
 	public double[][] pooledInverseCovariance;
 	private double[] probability;
 	private ArrayList<Integer> groupList = new ArrayList<Integer>();
-
+	public  double[][][] covariance;
+	public double slambda;
 	/**
 	 * Calculates a linear discriminant analysis (LDA) with all necessary
 	 * 
@@ -55,7 +59,7 @@ public class OLDA implements Classifier<double[]>{
 	 *            should be equal
 	 */
 	@SuppressWarnings("unchecked")
-	public OLDA(double[][] d, int[] g, boolean p) {
+	public mShrinkageLDA(double[][] d, int[] g, boolean p) {
 		// check if data and group array have the same size
 		if (d.length != g.length)
 			return;
@@ -72,7 +76,6 @@ public class OLDA implements Classifier<double[]>{
 		}
 
 		double[] globalMean;
-		double[][][] covariance;
 
 		// determine number and label of groups
 		for (int i = 0; i < group.length; i++) {
@@ -132,43 +135,19 @@ public class OLDA implements Classifier<double[]>{
 				}
 			}
 		}
-
 		// calculate pooled within group covariance matrix and invert it
-		pooledInverseCovariance = new double[globalMean.length][globalMean.length];
-		for (int j = 0; j < pooledInverseCovariance.length; j++) {
-			for (int k = 0; k < pooledInverseCovariance[j].length; k++) {
-				for (int l = 0; l < subset.length; l++) {
-					pooledInverseCovariance[j][k] += ((double) subset[l].size() / (double) data.length)
-							* covariance[l][j][k];
-				}
-			}
+	}
+	
+	
+	public double[][][] getSampleCovarianceMatrix(){
+		return this.covariance;
+	}
+	
+	public double[][][] getSparseCovarianceMatrx(){
+		for(int i=0;i<covariance.length;i++){
+			 new ShrinkageEstimator(slambda).covarianceApprox(covariance[i]);
 		}
-
-		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
-				
-	//	double[][] im=new double[pooledInverseCovariance.length][pooledInverseCovariance.length];
-	//	for(int i=0;i<im.length;i++)
-	//		im[i][i]=1.0;
-	//	Matrix imm=new Matrix(im);
-	//	pooledInverseCovariance=new Matrix(pooledInverseCovariance).solve(imm).getArray();
-
-		
-			//	new Matrix(pooledInverseCovariance).inverse()
-			//	.getArray();
-
-		// calculate probability for different groups
-		this.probability = new double[subset.length];
-		if (!p) {
-			double prob = 1.0d / groupList.size();
-			for (int i = 0; i < groupList.size(); i++) {
-				this.probability[i] = prob;
-			}
-		} else {
-			for (int i = 0; i < subset.length; i++) {
-				this.probability[i] = (double) subset[i].size()
-						/ (double) data.length;
-			}
-		}
+		return this.covariance;
 	}
 
 	private double getGroupMean(int column, ArrayList<double[]> data) {
@@ -440,7 +419,7 @@ public class OLDA implements Classifier<double[]>{
 		double[][] data = { { 2.95, 6.63 }, { 2.53, 7.79 }, { 3.57, 5.65 },
 				{ 3.16, 5.47 }, { 2.58, 4.46 }, { 2.16, 6.22 }, { 3.27, 3.52 } };
 
-		OLDA test = new OLDA(data, group, true);
+		mShrinkageLDA test = new mShrinkageLDA(data, group, true);
 		double[] testData = { 2.81, 5.46 };
 		
 		//test
