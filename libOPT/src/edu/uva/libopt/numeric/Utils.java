@@ -11,8 +11,6 @@ public class Utils {
 	public static final int LINF = 4;
 	public static final int LNULL = 5;
 
-
-
 	public static double[] getGradient(NumericFunction f, double[] X, double delta) {
 		double[] g = new double[X.length];
 		for (int index = 0; index < g.length; index++) {
@@ -23,90 +21,80 @@ public class Utils {
 		}
 		return g;
 	}
-	
-	public static double normalizedErrorL1(double[][] m1, double[][] m2, double threshold){
-	//	double base=0;
-		double err=0;
 
-		for(int i=0;i<m1.length;i++){
-			for(int j=0;j<m1[i].length;j++){
-	//			base+=Math.abs(m1[i][j]);
-	//			m1[i][i]=Math.max(m1[i][i], 1);
-	//			m1[i][i]=Math.max(m2[i][i], 1);
-	//			m1[i][i]=Math.max(m1[j][j], 1);
-	//			m1[i][i]=Math.max(m2[j][j], 1);
-				if(m1[i][i]!=0&&m1[j][j]!=0&&m2[i][i]!=0&&m2[j][j]!=0){
-					err+=Math.abs(m1[i][j]/Math.sqrt(m1[i][i]*m1[j][j])-m2[i][j]/Math.sqrt(m2[i][i]*m2[j][j]));
+	public static double[][] getCorrelationMatrix(double[][] m) {
+		double[][] r = new double[m.length][m[0].length];
+		for (int i = 0; i < m.length; i++) {
+			for (int j = 0; j < m[i].length; j++) {
+				if (m[i][i] != 0 && m[j][j] != 0) {
+					r[i][j] = m[i][j] / Math.sqrt(m[i][i] * m[j][j]);
+				} else if(m[i][i] == 0 && m[j][j] == 0){
+					r[i][j]=1;
 				}else{
-	//				err+=
-				//	err+=Math.abs(m1[i][j]-m2[i][j]);
-					err+=2;
+					r[i][j] = 0;
 				}
+			}
+		}
+		return r;
+	}
+
+	public static double normalizedErrorL1(double[][] m1, double[][] m2, double threshold) {
+		// double base=0;
+		double err = 0;
+
+		for (int i = 0; i < m1.length; i++) {
+			for (int j = 0; j < m1[i].length; j++) {
+				err += Math.abs(m1[i][j] - m2[i][j]);
 			}
 		}
 		return err;
-	}	
-	
-	public static double normalizedErrorL2(double[][] m1, double[][] m2, double threshold){
-	//	double base=0;
-		double err=0;
+	}
 
-		for(int i=0;i<m1.length;i++){
-			for(int j=0;j<m1[i].length;j++){
-//				m1[i][i]=Math.max(m1[i][i], 1);
-//				m1[i][i]=Math.max(m2[i][i], 1);
-//				m1[i][i]=Math.max(m1[j][j], 1);
-//				m1[i][i]=Math.max(m2[j][j], 1);
+	public static double normalizedErrorL2(double[][] m1, double[][] m2, double threshold) {
+		// double base=0;
+		double err = 0;
 
-	//			base+=m1[i][j]*m1[i][j];
-				if(m1[i][i]!=0&&m1[j][j]!=0&&m2[i][i]!=0&&m2[j][j]!=0)
-					err+=Math.abs(m1[i][j]/Math.sqrt(m1[i][i]*m1[j][j])-m2[i][j]/Math.sqrt(m2[i][i]*m2[j][j]))*
-							Math.abs(m1[i][j]/Math.sqrt(m1[i][i]*m1[j][j])-m2[i][j]/Math.sqrt(m2[i][i]*m2[j][j]));
-				else{
-					err+=4;
-				}
-			//		err+=	
-				
-				
-				//	err+=Math.abs(m1[i][j]-m2[i][j])*Math.abs(m1[i][j]-m2[i][j]);
+		for (int i = 0; i < m1.length; i++) {
+			for (int j = 0; j < m1[i].length; j++) {
+				err += Math.abs(m1[i][j] - m2[i][i])* Math.abs(m1[i][j] - m2[i][j]);
 			}
 		}
+		
 		return err;
 
 	}
 
-	
-	public static double normalizedErrorL1Recovery(double[][] m1, double[][] m, double[][] m2, double threshold){
-		double base=0;
-		double err=0;
-		for(int i=0;i<m1.length;i++){
-			for(int j=0;j<m1[i].length;j++){
-				base+=Math.abs(m1[i][j]);
-				if(m2[i][j]>m[i][j])
-					if(m2[i][j]<threshold&&m[i][j]==0)
-						err+=Math.abs(m1[i][j]);
+	public static double normalizedErrorL1Recovery(double[][] m1, double[][] m, double[][] m2, double threshold) {
+		double base = 0;
+		double err = 0;
+		for (int i = 0; i < m1.length; i++) {
+			for (int j = 0; j < m1[i].length; j++) {
+				base += Math.abs(m1[i][j]);
+				if (m2[i][j] > m[i][j])
+					if (m2[i][j] < threshold && m[i][j] == 0)
+						err += Math.abs(m1[i][j]);
 					else
-						err+=Math.abs(m1[i][j]-m2[i][j]);
+						err += Math.abs(m1[i][j] - m2[i][j]);
 			}
 		}
-		return err; //err/base;
-	}	
-	
-	public static double normalizedErrorL2Recovery(double[][] m1, double[][] m, double[][] m2, double threshold){
-		double base=0;
-		double err=0;
-		for(int i=0;i<m1.length;i++){
-			for(int j=0;j<m1[i].length;j++){
-				base+=m1[i][j]*m1[i][j];
-				if(m2[i][j]>m[i][j])
-					if(m2[i][j]<threshold&&m[i][j]==0)
-						err+=Math.abs(m1[i][j])*Math.abs(m1[i][j]);
+		return err; // err/base;
+	}
+
+	public static double normalizedErrorL2Recovery(double[][] m1, double[][] m, double[][] m2, double threshold) {
+		double base = 0;
+		double err = 0;
+		for (int i = 0; i < m1.length; i++) {
+			for (int j = 0; j < m1[i].length; j++) {
+				base += m1[i][j] * m1[i][j];
+				if (m2[i][j] > m[i][j])
+					if (m2[i][j] < threshold && m[i][j] == 0)
+						err += Math.abs(m1[i][j]) * Math.abs(m1[i][j]);
 					else
-						err+=Math.abs(m1[i][j]-m2[i][j])*Math.abs(m1[i][j]-m2[i][j]);
+						err += Math.abs(m1[i][j] - m2[i][j]) * Math.abs(m1[i][j] - m2[i][j]);
 
 			}
 		}
-		return err; //Math.sqrt(err/base);
+		return err; // Math.sqrt(err/base);
 
 	}
 

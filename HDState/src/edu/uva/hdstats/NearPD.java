@@ -194,7 +194,7 @@ public class NearPD {
 		keepDiag = false;
 		doDykstra = true;
 		eigTol = 1.e-2;
-		convTol = 1.e-3;
+		convTol = 0.05;
 		maxit = 50;
 	}
 	
