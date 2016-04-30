@@ -76,7 +76,7 @@ public class IterPDLassoEstimator extends LDEstimator {
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("res <- nearPD(R_covarianceMatrix, corr=FALSE, do2eigen=TRUE)");
+			writer.println("res <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=TRUE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
 		  //   writer.println("res$mat");
 			writer.println("write(t(as.matrix(res$mat)), file=\"R_glasso_wi_tmp"+id+".txt\", "
 					+ "ncolumns=dim(res$mat)[[2]], sep=\",\")");
