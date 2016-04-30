@@ -6,13 +6,13 @@ import edu.uva.libopt.numeric.Utils;
 public class HDStatsTest {
 	
 	public static void main(String[] args){
-		double[][] samples=Utils.getSparseRandomMatrix(20, 30,0.02);
+		double[][] samples=Utils.getSparseRandomMatrix(60, 30,0.1);
 		System.out.println("************Samples Generated*************");
 	//	Estimator est=new PDLassoEstimator(0.01);
 		double[][] hdcovar=new LDEstimator().covariance(samples);
-		double[][] ihdcovar=new IterPDLassoEstimator(0.001,5).covariance(samples);
+		double[][] ihdcovar=new DiagKeptSparseCovEstimator(0.2,5).covariance(samples);
 		double[][] ldcovar=new LDEstimator().covariance(samples);
-		double[][] glcovar=new GLassoEstimator().covariance(samples);
+		double[][] glcovar=new NonSparseEstimator(0.2).covariance(samples);
 
 		double error1=0;
 		double error2=0;
@@ -20,6 +20,20 @@ public class HDStatsTest {
 		double error4=0;
 
 		double basis=0;
+		
+		System.out.println("sample estimation");
+
+		for(int i=0;i<hdcovar.length;i++){
+			for(int j=0;j<hdcovar[i].length;j++){
+				System.out.print(hdcovar[i][j]+"\t");
+			//	basis+=Math.abs(ldcovar[i][j]);
+			}
+			System.out.println();
+		}
+		
+		System.out.println("glasso estimation");
+
+		
 		for(int i=0;i<hdcovar.length;i++){
 			for(int j=0;j<hdcovar[i].length;j++){
 				error1+=Math.abs(hdcovar[i][j]-ldcovar[i][j]);
