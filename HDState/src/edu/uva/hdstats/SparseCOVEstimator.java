@@ -8,45 +8,29 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.UUID;
 
-public class IterPDLassoEstimator extends LDEstimator {
+import Jama.Matrix;
 
-	public int _iter;
-	public double _lambda;
+public class SparseCOVEstimator extends LDEstimator {
+	private double _lambda = 0.01;
 
-	public IterPDLassoEstimator(double lambda, int iter) {
+	public SparseCOVEstimator() {
+	}
+
+	public SparseCOVEstimator(double lambda) {
 		this._lambda = lambda;
-		this._iter = iter;
 	}
 
 	@Override
 	public double[][] covariance(double[][] samples) {
-		double[][] covar_inner = super.covariance(samples);
-		covarianceApprox(covar_inner);
-		return covar_inner;
+		double[][] precision_matrix = _glassoGetInverseCovarianceMatrix(super.covariance(samples));
+		// covarianceApprox(covar_inner);
+		Matrix m = new Matrix(precision_matrix);
+		return m.inverse().getArray();
 	}
 
-	
-	@Override
-	public void covarianceApprox(double[][] covar_inner){
-		LassoEstimator le = new LassoEstimator(this._lambda);
-		for (int i = 0; i < _iter; i++) {
-			le.covarianceApprox(covar_inner);
-		//	NearPD npd = new NearPD();
-		//	npd.calcNearPD(new Jama.Matrix(covar_inner));
-		//	double[][] covarx = npd.getX().getArrayCopy();
-			double[][] covarx=nearestPSD(covar_inner);
-			for(int k=0;k<covarx.length;k++){
-				for(int j=0;j<covarx[k].length;j++){
-					covar_inner[k][j]=covarx[k][j];
-				}
-			}
-		}
-	}
-	
-	
-	private double[][] nearestPSD(double[][] covx){
+	private double[][] _glassoGetInverseCovarianceMatrix(double[][] covx) {
 		String id=UUID.randomUUID().toString();
-		double[][] psdMatrix = new double[covx.length][covx.length];
+		double[][] inverseCovarianceMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);
 		try {
 			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".data"));
@@ -71,15 +55,18 @@ public class IterPDLassoEstimator extends LDEstimator {
 
 		try {
 			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".R"));
-			writer.println("library(Matrix)");
+			writer.println("library(spcov)");
 			writer.println("R_dataset = read.csv(\"R_tmp"+id+".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("res <- nearPD(R_covarianceMatrix, corr=FALSE, do2eigen=TRUE)");
-		  //   writer.println("res$mat");
-			writer.println("write(t(as.matrix(res$mat)), file=\"R_glasso_wi_tmp"+id+".txt\", "
-					+ "ncolumns=dim(res$mat)[[2]], sep=\",\")");
+			writer.println("mm <- spcov(Sigma=R_covarianceMatrix, S=R_covarianceMatrix, lambda="+this._lambda+
+					",step.size=50, n.inner.steps=50,thr.inner=0, tol.outer=1e-3, trace=1)");
+			
+			//writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+")");
+			// writer.println("R_glasso$wi");
+			writer.println("write(t(mm), file=\"R_glasso_wi_tmp"+id+".txt\", "
+					+ "ncolumns=dim(mm)[[2]], sep=\",\")");
 
 			writer.close();
 		} catch (IOException e) {
@@ -121,14 +108,14 @@ public class IterPDLassoEstimator extends LDEstimator {
 
 		try {
 			BufferedReader inputReader = new BufferedReader(new FileReader("R_glasso_wi_tmp"+id+".txt"));
-			for (int i = 0; i < psdMatrix.length; i++) {
+			for (int i = 0; i < inverseCovarianceMatrix.length; i++) {
 				String line = inputReader.readLine();
 				String[] lns = line.split(",");
 				// System.out.println("r size:"+lns.length);
 				// System.out.println("r output:"+line);
 				// StringTokenizer t = new StringTokenizer(line, "\t");
-				for (int j = 0; j < psdMatrix[i].length; j++) {
-					psdMatrix[i][j] = Double.parseDouble(lns[j]);
+				for (int j = 0; j < inverseCovarianceMatrix[i].length; j++) {
+					inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
 				}
 			}
 			inputReader.close();
@@ -136,8 +123,7 @@ public class IterPDLassoEstimator extends LDEstimator {
 			e.printStackTrace();
 		}
 
-		return psdMatrix;
+		return inverseCovarianceMatrix;
 	}
-	
 
 }
