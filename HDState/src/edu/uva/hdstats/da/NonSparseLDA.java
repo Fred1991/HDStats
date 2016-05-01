@@ -151,9 +151,9 @@ public class NonSparseLDA implements Classifier<double[]>{
 			}
 		}
 
-	//	pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
+		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
 		
-		pooledInverseCovariance=new Matrix(pooledInverseCovariance).inverse().getArray();
+//		pooledInverseCovariance=new Matrix(pooledInverseCovariance).inverse().getArray();
 
 		// calculate probability for different groups
 		this.probability = new double[subset.length];
