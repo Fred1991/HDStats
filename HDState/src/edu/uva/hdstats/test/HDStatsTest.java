@@ -6,13 +6,13 @@ import edu.uva.libopt.numeric.Utils;
 public class HDStatsTest {
 	
 	public static void main(String[] args){
-		double[][] samples=Utils.getSparseRandomMatrix(20, 30,0.1);
+		double[][] samples=Utils.getSparseRandomMatrix(200, 300,0.1);
 		System.out.println("************Samples Generated*************");
 	//	Estimator est=new PDLassoEstimator(0.01);
 		double[][] spl_cov=new LDEstimator().covariance(samples);
-		double[][] l1p_cov=new DiagKeptSparseCovEstimator(0.01,5).covariance(samples);
-		double[][] gls_cov=new GLassoEstimator(0.01).covariance(samples);
-		double[][] ngl_cov=new NonSparseEstimator(0.01).covariance(samples);
+		double[][] l1p_cov=new DiagKeptSparseCovEstimator(0.001,5).covariance(samples);
+		double[][] gls_cov=new GLassoEstimator(0.001).covariance(samples);
+		double[][] ngl_cov=new NonSparseEstimator(0.001).covariance(samples);
 
 		double error1=0;
 		double error2=0;
