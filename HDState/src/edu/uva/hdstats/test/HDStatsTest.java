@@ -10,8 +10,8 @@ public class HDStatsTest {
 		System.out.println("************Samples Generated*************");
 	//	Estimator est=new PDLassoEstimator(0.01);
 		double[][] spl_cov=new LDEstimator().covariance(samples);
-		double[][] l1p_cov=new DiagKeptSparseCovEstimator(0.01,5).covariance(samples);
-		double[][] gls_cov=new GLassoEstimator().covariance(samples);
+		double[][] l1p_cov=new SparseCovEstimator(0.01,5).covariance(samples);
+		double[][] gls_cov=new GLassoEstimator(0.01).covariance(samples);
 		double[][] ngl_cov=new NonSparseEstimator(0.01).covariance(samples);
 
 		double error1=0;
@@ -21,6 +21,7 @@ public class HDStatsTest {
 
 		double basis=0;
 		
+		System.out.println();		
 		System.out.println("sample estimation");
 
 		for(int i=0;i<spl_cov.length;i++){
@@ -31,6 +32,7 @@ public class HDStatsTest {
 			System.out.println();
 		}
 		
+		System.out.println();
 		System.out.println("glasso estimation");
 
 		
@@ -46,6 +48,7 @@ public class HDStatsTest {
 			System.out.println();
 		}
 		
+		System.out.println();
 		System.out.println("de-sparsified glasso estimation");
 
 		for(int i=0;i<spl_cov.length;i++){
@@ -57,6 +60,7 @@ public class HDStatsTest {
 		}
 		
 		
+		System.out.println();
 		System.out.println("daehr estimation");
 
 		for(int i=0;i<spl_cov.length;i++){
