@@ -64,7 +64,7 @@ public class NonSparseEstimator extends LDEstimator {
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+")");
+			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=FALSE)");
 			writer.println("R_glasso<-as.matrix(R_glasso$wi)");
 			writer.println("Zettahat<-(R_glasso + R_glasso)-(R_glasso %*% R_covarianceMatrix %*% R_glasso)");
 			

@@ -6,7 +6,7 @@ import edu.uva.libopt.numeric.Utils;
 public class HDStatsTest {
 	
 	public static void main(String[] args){
-		double[][] samples=Utils.getSparseRandomMatrix(600, 300,0.1);
+		double[][] samples=Utils.getSparseRandomMatrix(60, 30,0.1);
 		System.out.println("************Samples Generated*************");
 	//	Estimator est=new PDLassoEstimator(0.01);
 		double[][] spl_cov=new LDEstimator().covariance(samples);
