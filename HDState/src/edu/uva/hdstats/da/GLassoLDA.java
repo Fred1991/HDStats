@@ -36,9 +36,10 @@ import java.util.ArrayList;
 import Jama.Matrix;
 import edu.uva.hdstats.DiagKeptSparseCovEstimator;
 import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.GLassoEstimator;
 import edu.uva.hdstats.PDLassoEstimator;
 
-public class DaehrLDA implements Classifier<double[]>{
+public class GLassoLDA implements Classifier<double[]>{
 	private double[][] groupMean;
 	private double[][] pooledInverseCovariance;
 	private double[] probability;
@@ -58,7 +59,7 @@ public class DaehrLDA implements Classifier<double[]>{
 	 *            should be equal
 	 */
 	@SuppressWarnings("unchecked")
-	public DaehrLDA(double[][] d, int[] g, boolean p) {
+	public GLassoLDA(double[][] d, int[] g, boolean p) {
 		// check if data and group array have the same size
 		if (d.length != g.length)
 			return;
@@ -137,7 +138,7 @@ public class DaehrLDA implements Classifier<double[]>{
 		}
 		
 		for(int i=0;i<subset.length;i++){
-			 new DiagKeptSparseCovEstimator(Estimator.lambda,10).covarianceApprox(covariance[i]);
+			 new GLassoEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
 		}
 
 		// calculate pooled within group covariance matrix and invert it
@@ -437,7 +438,7 @@ public class DaehrLDA implements Classifier<double[]>{
 		double[][] data = { { 2.95, 6.63 }, { 2.53, 7.79 }, { 3.57, 5.65 },
 				{ 3.16, 5.47 }, { 2.58, 4.46 }, { 2.16, 6.22 }, { 3.27, 3.52 } };
 
-		DaehrLDA test = new DaehrLDA(data, group, true);
+		GLassoLDA test = new GLassoLDA(data, group, true);
 		double[] testData = { 2.81, 5.46 };
 		
 		//test
