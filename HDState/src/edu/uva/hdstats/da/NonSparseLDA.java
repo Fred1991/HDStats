@@ -34,15 +34,13 @@ package edu.uva.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import edu.uva.hdstats.DiagKeptSparseCovEstimator;
 import edu.uva.hdstats.Estimator;
-import edu.uva.hdstats.GLassoEstimator;
 import edu.uva.hdstats.NonSparseEstimator;
 import edu.uva.hdstats.PDLassoEstimator;
 
 public class NonSparseLDA implements Classifier<double[]>{
 	private double[][] groupMean;
-	private double[][] pooledInverseCovariance;
+	public double[][] pooledInverseCovariance;
 	private double[] probability;
 	private ArrayList<Integer> groupList = new ArrayList<Integer>();
 
@@ -153,7 +151,9 @@ public class NonSparseLDA implements Classifier<double[]>{
 			}
 		}
 
-		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
+	//	pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
+		
+		pooledInverseCovariance=new Matrix(pooledInverseCovariance).inverse().getArray();
 
 		// calculate probability for different groups
 		this.probability = new double[subset.length];

@@ -34,6 +34,7 @@ package edu.uva.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
+import edu.uva.hdstats.DiagKeptSparseCovEstimator;
 import edu.uva.hdstats.Estimator;
 import edu.uva.hdstats.PDLassoEstimator;
 
@@ -136,7 +137,7 @@ public class ODaehrLDA implements Classifier<double[]>{
 		}
 		
 		for(int i=0;i<subset.length;i++){
-			 new PDLassoEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
+			 new DiagKeptSparseCovEstimator(Estimator.lambda,10).covarianceApprox(covariance[i]);
 		}
 
 		// calculate pooled within group covariance matrix and invert it
