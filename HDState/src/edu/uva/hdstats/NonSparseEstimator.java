@@ -22,13 +22,14 @@ public class NonSparseEstimator extends LDEstimator {
 
 	@Override
 	public double[][] covariance(double[][] samples) {
-		double[][] precision_matrix = _glassoGetInverseCovarianceMatrix(super.covariance(samples));
+		return _glassoGetCovarianceMatrix(super.covariance(samples));
 		// covarianceApprox(covar_inner);
-		Matrix m = new Matrix(precision_matrix);
-		return m.inverse().getArray();
+	//	Matrix m = new Matrix(precision_matrix);
+		//return m.inverse().getArray();
+	//	return m.getArray();
 	}
 
-	private double[][] _glassoGetInverseCovarianceMatrix(double[][] covx) {
+	private double[][] _glassoGetCovarianceMatrix(double[][] covx) {
 		String id=UUID.randomUUID().toString();
 		double[][] inverseCovarianceMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);
@@ -58,20 +59,24 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println("library(glasso)");
 			writer.println("library(Matrix)");
 			writer.println("library(MASS)");
-
+			writer.println("library(matrixcalc)");
 			writer.println("R_dataset = read.csv(\"R_tmp"+id+".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
 			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+")");
-			// writer.println("R_glasso$wi");
-			writer.println("write(t(R_glasso$wi), file=\"R_glasso_wi_tmp"+id+".txt\", "
-					+ "ncolumns=dim(R_glasso$wi)[[2]], sep=\",\")");
-			writer.println("if(is.singular.matrix(R_covarianceMatrix)){");
-			writer.println("Zeta<-solve(R_covarianceMatrix)");
+			writer.println("R_glasso<-as.matrix(R_glasso$wi)");
+			writer.println("Zettahat<-(R_glasso + R_glasso)-(R_glasso %*% R_covarianceMatrix %*% R_glasso)");
+			
+			writer.println("if(is.singular.matrix(Zettahat)==FALSE){");
+			writer.println("Sigmahat<-solve(Zettahat)");
 			writer.println("}else{");
-			writer.println("Zeta<-ginv(R_covarianceMatrix)");
+			writer.println("Sigmahat<-ginv(Zettahat)");
 			writer.println("}");
+
+			
+			writer.println("write(t(Sigmahat), file=\"R_glasso_wi_tmp"+id+".txt\", "
+					+ "ncolumns=dim(Sigmahat)[[2]], sep=\",\")");
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();

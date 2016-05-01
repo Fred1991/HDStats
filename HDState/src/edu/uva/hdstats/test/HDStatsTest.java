@@ -6,13 +6,13 @@ import edu.uva.libopt.numeric.Utils;
 public class HDStatsTest {
 	
 	public static void main(String[] args){
-		double[][] samples=Utils.getSparseRandomMatrix(60, 30,0.1);
+		double[][] samples=Utils.getSparseRandomMatrix(600, 300,0.1);
 		System.out.println("************Samples Generated*************");
 	//	Estimator est=new PDLassoEstimator(0.01);
-		double[][] hdcovar=new LDEstimator().covariance(samples);
-		double[][] ihdcovar=new DiagKeptSparseCovEstimator(0.2,5).covariance(samples);
-		double[][] ldcovar=new LDEstimator().covariance(samples);
-		double[][] glcovar=new NonSparseEstimator(0.2).covariance(samples);
+		double[][] spl_cov=new LDEstimator().covariance(samples);
+		double[][] l1p_cov=new DiagKeptSparseCovEstimator(0.01,5).covariance(samples);
+		double[][] gls_cov=new GLassoEstimator().covariance(samples);
+		double[][] ngl_cov=new NonSparseEstimator(0.01).covariance(samples);
 
 		double error1=0;
 		double error2=0;
@@ -23,9 +23,9 @@ public class HDStatsTest {
 		
 		System.out.println("sample estimation");
 
-		for(int i=0;i<hdcovar.length;i++){
-			for(int j=0;j<hdcovar[i].length;j++){
-				System.out.print(hdcovar[i][j]+"\t");
+		for(int i=0;i<spl_cov.length;i++){
+			for(int j=0;j<spl_cov[i].length;j++){
+				System.out.print(spl_cov[i][j]+"\t");
 			//	basis+=Math.abs(ldcovar[i][j]);
 			}
 			System.out.println();
@@ -34,23 +34,35 @@ public class HDStatsTest {
 		System.out.println("glasso estimation");
 
 		
-		for(int i=0;i<hdcovar.length;i++){
-			for(int j=0;j<hdcovar[i].length;j++){
-				error1+=Math.abs(hdcovar[i][j]-ldcovar[i][j]);
-//				error2+=Math.abs(ihdcovar[i][j]-ldcovar[i][j]);
-				error3+=Math.abs(glcovar[i][j]-ldcovar[i][j]);
-//				error4+=Math.abs(ihdcovar[i][j]-glcovar[i][j]);
-				System.out.print(glcovar[i][j]+"\t");
-				basis+=Math.abs(ldcovar[i][j]);
+		for(int i=0;i<spl_cov.length;i++){
+			for(int j=0;j<spl_cov[i].length;j++){
+				error1+=Math.abs(spl_cov[i][j]-l1p_cov[i][j]);
+				error2+=Math.abs(spl_cov[i][j]-gls_cov[i][j]);
+				error3+=Math.abs(spl_cov[i][j]-ngl_cov[i][j]);
+				error4+=Math.abs(ngl_cov[i][j]-gls_cov[i][j]);
+				System.out.print(gls_cov[i][j]+"\t");
+				basis=1;
 			}
 			System.out.println();
 		}
+		
+		System.out.println("de-sparsified glasso estimation");
+
+		for(int i=0;i<spl_cov.length;i++){
+			for(int j=0;j<spl_cov[i].length;j++){
+				System.out.print(ngl_cov[i][j]+"\t");
+			//	basis+=Math.abs(ldcovar[i][j]);
+			}
+			System.out.println();
+		}
+		
+		
 		System.out.println("daehr estimation");
 
-		for(int i=0;i<hdcovar.length;i++){
-			for(int j=0;j<hdcovar[i].length;j++){
-				System.out.print(ihdcovar[i][j]+"\t");
-				basis+=Math.abs(ldcovar[i][j]);
+		for(int i=0;i<spl_cov.length;i++){
+			for(int j=0;j<spl_cov[i].length;j++){
+				System.out.print(l1p_cov[i][j]+"\t");
+			//	basis+=Math.abs(gls_cov[i][j]);
 			}
 			System.out.println();
 		}
