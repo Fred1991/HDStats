@@ -22,14 +22,14 @@ public class NonSparseEstimator extends LDEstimator {
 
 	@Override
 	public double[][] covariance(double[][] samples) {
-		return _glassoGetCovarianceMatrix(super.covariance(samples));
+		return _deSparsifiedGlassoGetCovarianceMatrix(super.covariance(samples));
 		// covarianceApprox(covar_inner);
 	//	Matrix m = new Matrix(precision_matrix);
 		//return m.inverse().getArray();
 	//	return m.getArray();
 	}
 
-	private double[][] _glassoGetCovarianceMatrix(double[][] covx) {
+	private double[][] _deSparsifiedGlassoGetCovarianceMatrix(double[][] covx) {
 		String id=UUID.randomUUID().toString();
 		double[][] inverseCovarianceMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);

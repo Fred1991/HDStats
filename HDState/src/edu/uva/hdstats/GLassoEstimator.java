@@ -22,13 +22,13 @@ public class GLassoEstimator extends LDEstimator {
 
 	@Override
 	public double[][] covariance(double[][] samples) {
-		double[][] precision_matrix = _glassoGetInverseCovarianceMatrix(super.covariance(samples));
+		return _glassoCovarianceMatrix(super.covariance(samples));
 		// covarianceApprox(covar_inner);
-		Matrix m = new Matrix(precision_matrix);
-		return m.inverse().getArray();
+	//	Matrix m = new Matrix(precision_matrix);
+	//	return m.inverse().getArray();
 	}
 
-	private double[][] _glassoGetInverseCovarianceMatrix(double[][] covx) {
+	private double[][] _glassoCovarianceMatrix(double[][] covx) {
 		String id=UUID.randomUUID().toString();
 		double[][] inverseCovarianceMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);
@@ -62,8 +62,8 @@ public class GLassoEstimator extends LDEstimator {
 			// writer.println("R_covarianceMatrix[300,600]");
 			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=FALSE)");
 			// writer.println("R_glasso$wi");
-			writer.println("write(t(R_glasso$wi), file=\"R_glasso_wi_tmp"+id+".txt\", "
-					+ "ncolumns=dim(R_glasso$wi)[[2]], sep=\",\")");
+			writer.println("write(t(R_glasso$w), file=\"R_glasso_wi_tmp"+id+".txt\", "
+					+ "ncolumns=dim(R_glasso$w)[[2]], sep=\",\")");
 
 			writer.close();
 		} catch (IOException e) {
