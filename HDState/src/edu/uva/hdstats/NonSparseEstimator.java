@@ -34,7 +34,7 @@ public class NonSparseEstimator extends LDEstimator {
 		double[][] inverseCovarianceMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".data"));
+			PrintWriter writer = new PrintWriter(new FileWriter("R_non_sparse_tmp"+id+".data"));
 			// writer.print("variable_0");
 			// for(int i = 1; i < covx[0].length; i++)
 			// writer.print(",variable_"+i);
@@ -55,18 +55,18 @@ public class NonSparseEstimator extends LDEstimator {
 		}
 
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".R"));
+			PrintWriter writer = new PrintWriter(new FileWriter("R_non_sparse_tmp"+id+".R"));
 			writer.println("library(glasso)");
 			writer.println("library(Matrix)");
 			writer.println("library(MASS)");
 			writer.println("library(matrixcalc)");
-			writer.println("R_dataset = read.csv(\"R_tmp"+id+".data\", header=FALSE)");
+			writer.println("R_dataset = read.csv(\"R_non_sparse_tmp"+id+".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=FALSE)");
-			writer.println("R_glasso<-as.matrix(R_glasso$wi)");
-			writer.println("Zettahat<-(R_glasso + R_glasso)-(R_glasso %*% R_covarianceMatrix %*% R_glasso)");
+			writer.println("r_non_sparse = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=FALSE)");
+			writer.println("r_non_sparse<-as.matrix(r_non_sparse$wi)");
+			writer.println("Zettahat<-(r_non_sparse + r_non_sparse)-(r_non_sparse %*% R_covarianceMatrix %*% r_non_sparse)");
 			
 			writer.println("if(is.singular.matrix(Zettahat)==FALSE){");
 			writer.println("Sigmahat<-solve(Zettahat)");
@@ -75,16 +75,16 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println("}");
 
 			
-			writer.println("write(t(Sigmahat), file=\"R_glasso_wi_tmp"+id+".txt\", "
+			writer.println("write(t(Sigmahat), file=\"r_non_sparse_wi_tmp"+id+".txt\", "
 					+ "ncolumns=dim(Sigmahat)[[2]], sep=\",\")");
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		// execute "Rscript R_tmp.R"
+		// execute "Rscript R_non_sparse_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript R_tmp"+id+".R");
+			Process p = Runtime.getRuntime().exec("Rscript R_non_sparse_tmp"+id+".R");
 
 			String s;
 
@@ -116,7 +116,7 @@ public class NonSparseEstimator extends LDEstimator {
 		}
 
 		try {
-			BufferedReader inputReader = new BufferedReader(new FileReader("R_glasso_wi_tmp"+id+".txt"));
+			BufferedReader inputReader = new BufferedReader(new FileReader("r_non_sparse_wi_tmp"+id+".txt"));
 			for (int i = 0; i < inverseCovarianceMatrix.length; i++) {
 				String line = inputReader.readLine();
 				String[] lns = line.split(",");
@@ -140,7 +140,7 @@ public class NonSparseEstimator extends LDEstimator {
 		double[][] inverseCovarianceMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".data"));
+			PrintWriter writer = new PrintWriter(new FileWriter("R_non_sparse_tmp"+id+".data"));
 			// writer.print("variable_0");
 			// for(int i = 1; i < covx[0].length; i++)
 			// writer.print(",variable_"+i);
@@ -161,29 +161,29 @@ public class NonSparseEstimator extends LDEstimator {
 		}
 
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".R"));
+			PrintWriter writer = new PrintWriter(new FileWriter("R_non_sparse_tmp"+id+".R"));
 			writer.println("library(glasso)");
 			writer.println("library(Matrix)");
 			writer.println("library(MASS)");
 			writer.println("library(matrixcalc)");
-			writer.println("R_dataset = read.csv(\"R_tmp"+id+".data\", header=FALSE)");
+			writer.println("R_dataset = read.csv(\"R_non_sparse_tmp"+id+".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=TRUE)");
-			writer.println("R_glasso<-as.matrix(R_glasso$wi)");
-			writer.println("Zettahat<-(R_glasso + R_glasso)-(R_glasso %*% R_covarianceMatrix %*% R_glasso)");
+			writer.println("r_non_sparse = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=FALSE)");
+			writer.println("r_non_sparse<-as.matrix(r_non_sparse$wi)");
+			writer.println("Zettahat<-(r_non_sparse + r_non_sparse)-(r_non_sparse %*% R_covarianceMatrix %*% r_non_sparse)");
 			
-			writer.println("write(t(Zettahat), file=\"R_glasso_wi_tmp"+id+".txt\", "
+			writer.println("write(t(Zettahat), file=\"r_non_sparse_wi_tmp"+id+".txt\", "
 					+ "ncolumns=dim(Zettahat)[[2]], sep=\",\")");
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		// execute "Rscript R_tmp.R"
+		// execute "Rscript R_non_sparse_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript R_tmp"+id+".R");
+			Process p = Runtime.getRuntime().exec("Rscript R_non_sparse_tmp"+id+".R");
 
 			String s;
 
@@ -215,7 +215,7 @@ public class NonSparseEstimator extends LDEstimator {
 		}
 
 		try {
-			BufferedReader inputReader = new BufferedReader(new FileReader("R_glasso_wi_tmp"+id+".txt"));
+			BufferedReader inputReader = new BufferedReader(new FileReader("r_non_sparse_wi_tmp"+id+".txt"));
 			for (int i = 0; i < inverseCovarianceMatrix.length; i++) {
 				String line = inputReader.readLine();
 				String[] lns = line.split(",");

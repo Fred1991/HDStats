@@ -155,7 +155,7 @@ public class GLassoEstimator extends LDEstimator {
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=TRUE)");
+			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=FALSE)");
 			// writer.println("R_glasso$wi");
 			writer.println("write(t(R_glasso$wi), file=\"R_glasso_wi_tmp"+id+".txt\", "
 					+ "ncolumns=dim(R_glasso$wi)[[2]], sep=\",\")");

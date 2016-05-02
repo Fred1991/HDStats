@@ -34,7 +34,10 @@ package edu.uva.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
+import edu.uva.hdstats.DiagKeptSparseCovEstimator;
 import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.GLassoEstimator;
+import edu.uva.hdstats.NonSparseEstimator;
 import edu.uva.hdstats.PDLassoEstimator;
 import edu.uva.hdstats.ShrinkageEstimator;
 
@@ -146,7 +149,21 @@ public class mDaehrLDA implements Classifier<double[]>{
 	
 	public double[][][] getSparseCovarianceMatrx(){
 		for(int i=0;i<covariance.length;i++){
-			 new PDLassoEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
+			 new DiagKeptSparseCovEstimator(Estimator.lambda,5).covarianceApprox(covariance[i]);
+		}
+		return this.covariance;
+	}
+	
+	public double[][][] getGLassoCovarianceMatrx(){
+		for(int i=0;i<covariance.length;i++){
+			 new GLassoEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
+		}
+		return this.covariance;
+	}
+	
+	public double[][][] getNonSparseCovarianceMatrx(){
+		for(int i=0;i<covariance.length;i++){
+			 new NonSparseEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
 		}
 		return this.covariance;
 	}
