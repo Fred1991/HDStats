@@ -136,9 +136,9 @@ public class GLassoLDA implements Classifier<double[]>{
 			}
 		}
 		
-		for(int i=0;i<subset.length;i++){
-			 new GLassoEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
-		}
+	//	for(int i=0;i<subset.length;i++){
+	//		 new GLassoEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
+	//	}
 
 		// calculate pooled within group covariance matrix and invert it
 		pooledInverseCovariance = new double[globalMean.length][globalMean.length];
@@ -151,7 +151,9 @@ public class GLassoLDA implements Classifier<double[]>{
 			}
 		}
 
-		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
+		new GLassoEstimator(Estimator.lambda)._glassoPrecisionMatrix(pooledInverseCovariance);
+		
+	//	pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
 		
 	//	pooledInverseCovariance=new Matrix(pooledInverseCovariance).inverse().getArray();
 

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 
 import Jama.Matrix;
 import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.GLassoEstimator;
 import edu.uva.hdstats.NonSparseEstimator;
 import edu.uva.hdstats.PDLassoEstimator;
 
@@ -136,9 +137,9 @@ public class NonSparseLDA implements Classifier<double[]>{
 			}
 		}
 		
-		for(int i=0;i<subset.length;i++){
-			 new NonSparseEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
-		}
+	//	for(int i=0;i<subset.length;i++){
+	//		 new NonSparseEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
+	//	}
 
 		// calculate pooled within group covariance matrix and invert it
 		pooledInverseCovariance = new double[globalMean.length][globalMean.length];
@@ -150,8 +151,11 @@ public class NonSparseLDA implements Classifier<double[]>{
 				}
 			}
 		}
+		
+		new NonSparseEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(pooledInverseCovariance);
 
-		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
+
+//		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
 		
 //		pooledInverseCovariance=new Matrix(pooledInverseCovariance).inverse().getArray();
 
