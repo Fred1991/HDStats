@@ -24,16 +24,16 @@ public class GLassoEstimator extends LDEstimator {
 	public double[][] covariance(double[][] samples) {
 		return _glassoCovarianceMatrix(super.covariance(samples));
 		// covarianceApprox(covar_inner);
-	//	Matrix m = new Matrix(precision_matrix);
-	//	return m.inverse().getArray();
+		// Matrix m = new Matrix(precision_matrix);
+		// return m.inverse().getArray();
 	}
 
 	public double[][] _glassoCovarianceMatrix(double[][] covx) {
-		String id=UUID.randomUUID().toString();
+		String id = UUID.randomUUID().toString();
 		double[][] inverseCovarianceMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".data"));
+			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp" + id + ".data"));
 			// writer.print("variable_0");
 			// for(int i = 1; i < covx[0].length; i++)
 			// writer.print(",variable_"+i);
@@ -54,15 +54,15 @@ public class GLassoEstimator extends LDEstimator {
 		}
 
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".R"));
+			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp" + id + ".R"));
 			writer.println("library(glasso)");
-			writer.println("R_dataset = read.csv(\"R_tmp"+id+".data\", header=FALSE)");
+			writer.println("R_dataset = read.csv(\"R_tmp" + id + ".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=FALSE)");
+			writer.println("R_glasso = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=FALSE)");
 			// writer.println("R_glasso$wi");
-			writer.println("write(t(R_glasso$w), file=\"R_glasso_wi_tmp"+id+".txt\", "
+			writer.println("write(t(R_glasso$w), file=\"R_glasso_wi_tmp" + id + ".txt\", "
 					+ "ncolumns=dim(R_glasso$w)[[2]], sep=\",\")");
 
 			writer.close();
@@ -72,7 +72,7 @@ public class GLassoEstimator extends LDEstimator {
 
 		// execute "Rscript R_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript R_tmp"+id+".R");
+			Process p = Runtime.getRuntime().exec("Rscript R_tmp" + id + ".R");
 
 			String s;
 
@@ -104,7 +104,7 @@ public class GLassoEstimator extends LDEstimator {
 		}
 
 		try {
-			BufferedReader inputReader = new BufferedReader(new FileReader("R_glasso_wi_tmp"+id+".txt"));
+			BufferedReader inputReader = new BufferedReader(new FileReader("R_glasso_wi_tmp" + id + ".txt"));
 			for (int i = 0; i < inverseCovarianceMatrix.length; i++) {
 				String line = inputReader.readLine();
 				String[] lns = line.split(",");
@@ -112,7 +112,17 @@ public class GLassoEstimator extends LDEstimator {
 				// System.out.println("r output:"+line);
 				// StringTokenizer t = new StringTokenizer(line, "\t");
 				for (int j = 0; j < inverseCovarianceMatrix[i].length; j++) {
-					inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
+					try {
+						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
+					} catch (Exception e) {
+						if (lns[j].toLowerCase().startsWith("inf")) {
+							inverseCovarianceMatrix[i][j] = Double.POSITIVE_INFINITY;
+						} else if (lns[j].toLowerCase().startsWith("-inf")) {
+							inverseCovarianceMatrix[i][j] = Double.NEGATIVE_INFINITY;
+						} else {
+							inverseCovarianceMatrix[i][j] = 0;
+						}
+					}
 				}
 			}
 			inputReader.close();
@@ -122,13 +132,13 @@ public class GLassoEstimator extends LDEstimator {
 
 		return inverseCovarianceMatrix;
 	}
-	
+
 	public double[][] _glassoPrecisionMatrix(double[][] covx) {
-		String id=UUID.randomUUID().toString();
+		String id = UUID.randomUUID().toString();
 		double[][] inverseCovarianceMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".data"));
+			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp" + id + ".data"));
 			// writer.print("variable_0");
 			// for(int i = 1; i < covx[0].length; i++)
 			// writer.print(",variable_"+i);
@@ -149,15 +159,15 @@ public class GLassoEstimator extends LDEstimator {
 		}
 
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp"+id+".R"));
+			PrintWriter writer = new PrintWriter(new FileWriter("R_tmp" + id + ".R"));
 			writer.println("library(glasso)");
-			writer.println("R_dataset = read.csv(\"R_tmp"+id+".data\", header=FALSE)");
+			writer.println("R_dataset = read.csv(\"R_tmp" + id + ".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("R_glasso = glasso(R_covarianceMatrix, rho="+this._lambda+", penalize.diagonal=FALSE)");
+			writer.println("R_glasso = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=FALSE)");
 			// writer.println("R_glasso$wi");
-			writer.println("write(t(R_glasso$wi), file=\"R_glasso_wi_tmp"+id+".txt\", "
+			writer.println("write(t(R_glasso$wi), file=\"R_glasso_wi_tmp" + id + ".txt\", "
 					+ "ncolumns=dim(R_glasso$wi)[[2]], sep=\",\")");
 
 			writer.close();
@@ -167,7 +177,7 @@ public class GLassoEstimator extends LDEstimator {
 
 		// execute "Rscript R_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript R_tmp"+id+".R");
+			Process p = Runtime.getRuntime().exec("Rscript R_tmp" + id + ".R");
 
 			String s;
 
@@ -199,7 +209,7 @@ public class GLassoEstimator extends LDEstimator {
 		}
 
 		try {
-			BufferedReader inputReader = new BufferedReader(new FileReader("R_glasso_wi_tmp"+id+".txt"));
+			BufferedReader inputReader = new BufferedReader(new FileReader("R_glasso_wi_tmp" + id + ".txt"));
 			for (int i = 0; i < inverseCovarianceMatrix.length; i++) {
 				String line = inputReader.readLine();
 				String[] lns = line.split(",");
@@ -207,7 +217,17 @@ public class GLassoEstimator extends LDEstimator {
 				// System.out.println("r output:"+line);
 				// StringTokenizer t = new StringTokenizer(line, "\t");
 				for (int j = 0; j < inverseCovarianceMatrix[i].length; j++) {
-					inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
+					try {
+						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
+					} catch (Exception e) {
+						if (lns[j].toLowerCase().startsWith("inf")) {
+							inverseCovarianceMatrix[i][j] = Double.POSITIVE_INFINITY;
+						} else if (lns[j].toLowerCase().startsWith("-inf")) {
+							inverseCovarianceMatrix[i][j] = Double.NEGATIVE_INFINITY;
+						} else {
+							inverseCovarianceMatrix[i][j] = 0;
+						}
+					}
 				}
 			}
 			inputReader.close();
@@ -217,6 +237,5 @@ public class GLassoEstimator extends LDEstimator {
 
 		return inverseCovarianceMatrix;
 	}
-
 
 }
