@@ -152,7 +152,7 @@ public class NonSparseLDA implements Classifier<double[]>{
 			}
 		}
 		
-		new NonSparseEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(pooledInverseCovariance);
+		pooledInverseCovariance=new NonSparseEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(pooledInverseCovariance);
 
 
 //		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();

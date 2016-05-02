@@ -151,7 +151,7 @@ public class GLassoLDA implements Classifier<double[]>{
 			}
 		}
 
-		new GLassoEstimator(Estimator.lambda)._glassoPrecisionMatrix(pooledInverseCovariance);
+		pooledInverseCovariance=new GLassoEstimator(Estimator.lambda)._glassoPrecisionMatrix(pooledInverseCovariance);
 		
 	//	pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
 		

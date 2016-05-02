@@ -28,6 +28,16 @@ public class NonSparseEstimator extends LDEstimator {
 		// return m.inverse().getArray();
 		// return m.getArray();
 	}
+	
+	@Override
+	public void covarianceApprox(double[][] covar_inner){
+		double[][] sparsifiedGlassoCov=_deSparsifiedGlassoGetCovarianceMatrix(covar_inner);
+		for(int i=0;i<covar_inner.length;i++){
+			for(int j=0;j<covar_inner[i].length;j++){
+				covar_inner[i][j]=sparsifiedGlassoCov[i][j];
+			}
+		}
+	}
 
 	public double[][] _deSparsifiedGlassoGetCovarianceMatrix(double[][] covx) {
 		String id = UUID.randomUUID().toString();
@@ -63,6 +73,9 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println("R_dataset = read.csv(\"R_non_sparse_tmp" + id + ".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
+//			writer.println("R_covarianceMatrix <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=TRUE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
+//			writer.println("R_covarianceMatrix<-as.matrix(R_covarianceMatrix$mat)");
+
 			// writer.println("R_covarianceMatrix[300,600]");
 			writer.println(
 					"r_non_sparse = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=FALSE)");
@@ -70,11 +83,11 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println(
 					"Zettahat<-(r_non_sparse + r_non_sparse)-(r_non_sparse %*% R_covarianceMatrix %*% r_non_sparse)");
 
-			writer.println("if(is.singular.matrix(Zettahat)==FALSE){");
-			writer.println("Sigmahat<-solve(Zettahat)");
-			writer.println("}else{");
+		//	writer.println("if(is.singular.matrix(Zettahat)){");
 			writer.println("Sigmahat<-ginv(Zettahat)");
-			writer.println("}");
+		//	writer.println("}else{");
+		//	writer.println("Sigmahat<-solve(Zettahat)");
+		//	writer.println("}");
 
 			writer.println("write(t(Sigmahat), file=\"r_non_sparse_wi_tmp" + id + ".txt\", "
 					+ "ncolumns=dim(Sigmahat)[[2]], sep=\",\")");
@@ -129,9 +142,9 @@ public class NonSparseEstimator extends LDEstimator {
 						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
 					} catch (Exception e) {
 						if (lns[j].toLowerCase().startsWith("inf")) {
-							inverseCovarianceMatrix[i][j] = Double.POSITIVE_INFINITY;
+							inverseCovarianceMatrix[i][j] = 1000;
 						} else if (lns[j].toLowerCase().startsWith("-inf")) {
-							inverseCovarianceMatrix[i][j] = Double.NEGATIVE_INFINITY;
+							inverseCovarianceMatrix[i][j] = -1000;
 						} else {
 							inverseCovarianceMatrix[i][j] = 0;
 						}
@@ -180,8 +193,10 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println("R_dataset = read.csv(\"R_non_sparse_tmp" + id + ".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
+			writer.println("R_covarianceMatrix <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=FALSE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
+			writer.println("R_covarianceMatrix<-as.matrix(R_covarianceMatrix$mat)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("r_glasso = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=FALSE)");
+			writer.println("r_glasso = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=TRUE)");
 			writer.println("r_glasso<-as.matrix(r_glasso$wi)");
 			writer.println("Zettahat<-(r_glasso + r_glasso)-(r_glasso %*% R_covarianceMatrix %*% r_glasso)");
 
@@ -222,6 +237,7 @@ public class NonSparseEstimator extends LDEstimator {
 			// System.out.println();
 			stdError.close();
 		} catch (IOException e) {
+			System.exit(-1);
 			e.printStackTrace();
 		}
 
@@ -238,9 +254,9 @@ public class NonSparseEstimator extends LDEstimator {
 						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
 					} catch (Exception e) {
 						if (lns[j].toLowerCase().startsWith("inf")) {
-							inverseCovarianceMatrix[i][j] = Double.POSITIVE_INFINITY;
+							inverseCovarianceMatrix[i][j] = 1000;
 						} else if (lns[j].toLowerCase().startsWith("-inf")) {
-							inverseCovarianceMatrix[i][j] = Double.NEGATIVE_INFINITY;
+							inverseCovarianceMatrix[i][j] = -1000;
 						} else {
 							inverseCovarianceMatrix[i][j] = 0;
 						}
