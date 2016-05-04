@@ -196,7 +196,7 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println("R_covarianceMatrix <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=FALSE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
 			writer.println("R_covarianceMatrix<-as.matrix(R_covarianceMatrix$mat)");
 			// writer.println("R_covarianceMatrix[300,600]");
-			writer.println("r_glasso = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=TRUE)");
+			writer.println("r_glasso = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=FALSE)");
 			writer.println("r_glasso<-as.matrix(r_glasso$wi)");
 			writer.println("Zettahat<-(r_glasso + r_glasso)-(r_glasso %*% R_covarianceMatrix %*% r_glasso)");
 
