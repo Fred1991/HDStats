@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.util.UUID;
 
 import Jama.Matrix;
+import edu.uva.hdstats.da.PseudoInverse;
 
 public class NonSparseEstimator extends LDEstimator {
 	private double _lambda = 0.01;
@@ -28,13 +29,13 @@ public class NonSparseEstimator extends LDEstimator {
 		// return m.inverse().getArray();
 		// return m.getArray();
 	}
-	
+
 	@Override
-	public void covarianceApprox(double[][] covar_inner){
-		double[][] sparsifiedGlassoCov=_deSparsifiedGlassoGetCovarianceMatrix(covar_inner);
-		for(int i=0;i<covar_inner.length;i++){
-			for(int j=0;j<covar_inner[i].length;j++){
-				covar_inner[i][j]=sparsifiedGlassoCov[i][j];
+	public void covarianceApprox(double[][] covar_inner) {
+		double[][] sparsifiedGlassoCov = _deSparsifiedGlassoGetCovarianceMatrix(covar_inner);
+		for (int i = 0; i < covar_inner.length; i++) {
+			for (int j = 0; j < covar_inner[i].length; j++) {
+				covar_inner[i][j] = sparsifiedGlassoCov[i][j];
 			}
 		}
 	}
@@ -73,8 +74,10 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println("R_dataset = read.csv(\"R_non_sparse_tmp" + id + ".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
-//			writer.println("R_covarianceMatrix <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=TRUE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
-//			writer.println("R_covarianceMatrix<-as.matrix(R_covarianceMatrix$mat)");
+			// writer.println("R_covarianceMatrix <- nearPD(R_covarianceMatrix,
+			// corr=FALSE, keepDiag=TRUE, do2eigen=TRUE, doSym=TRUE,
+			// doDykstra=TRUE)");
+			// writer.println("R_covarianceMatrix<-as.matrix(R_covarianceMatrix$mat)");
 
 			// writer.println("R_covarianceMatrix[300,600]");
 			writer.println(
@@ -83,14 +86,14 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println(
 					"Zettahat<-(r_non_sparse + r_non_sparse)-(r_non_sparse %*% R_covarianceMatrix %*% r_non_sparse)");
 
-		//	writer.println("if(is.singular.matrix(Zettahat)){");
-			writer.println("Sigmahat<-ginv(Zettahat)");
-		//	writer.println("}else{");
-		//	writer.println("Sigmahat<-solve(Zettahat)");
-		//	writer.println("}");
+			// writer.println("if(is.singular.matrix(Zettahat)){");
+			// writer.println("Sigmahat<-ginv(Zettahat)");
+			// writer.println("}else{");
+			// writer.println("Sigmahat<-solve(Zettahat)");
+			// writer.println("}");
 
-			writer.println("write(t(Sigmahat), file=\"r_non_sparse_wi_tmp" + id + ".txt\", "
-					+ "ncolumns=dim(Sigmahat)[[2]], sep=\",\")");
+			writer.println("write(t(Zettahat), file=\"r_non_sparse_wi_tmp" + id + ".txt\", "
+					+ "ncolumns=dim(Zettahat)[[2]], sep=\",\")");
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -142,9 +145,9 @@ public class NonSparseEstimator extends LDEstimator {
 						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
 					} catch (Exception e) {
 						if (lns[j].toLowerCase().startsWith("inf")) {
-							inverseCovarianceMatrix[i][j] = 1000;
+							inverseCovarianceMatrix[i][j] = 99999999;
 						} else if (lns[j].toLowerCase().startsWith("-inf")) {
-							inverseCovarianceMatrix[i][j] = -1000;
+							inverseCovarianceMatrix[i][j] = -99999999;
 						} else {
 							inverseCovarianceMatrix[i][j] = 0;
 						}
@@ -156,7 +159,12 @@ public class NonSparseEstimator extends LDEstimator {
 			e.printStackTrace();
 		}
 
-		return inverseCovarianceMatrix;
+		try {
+			return new Matrix(inverseCovarianceMatrix).inverse().getArray();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return PseudoInverse.inverse(new Matrix(inverseCovarianceMatrix)).getArray();
+		}
 	}
 
 	public double[][] _deSparsifiedGlassoPrecisionMatrix(double[][] covx) {
@@ -193,7 +201,8 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println("R_dataset = read.csv(\"R_non_sparse_tmp" + id + ".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
-			writer.println("R_covarianceMatrix <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=FALSE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
+			writer.println(
+					"R_covarianceMatrix <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=FALSE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
 			writer.println("R_covarianceMatrix<-as.matrix(R_covarianceMatrix$mat)");
 			// writer.println("R_covarianceMatrix[300,600]");
 			writer.println("r_glasso = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=FALSE)");
