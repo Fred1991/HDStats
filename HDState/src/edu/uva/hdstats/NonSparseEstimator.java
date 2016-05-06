@@ -87,9 +87,9 @@ public class NonSparseEstimator extends LDEstimator {
 					"Zettahat<-(r_non_sparse + r_non_sparse)-(r_non_sparse %*% R_covarianceMatrix %*% r_non_sparse)");
 
 			// writer.println("if(is.singular.matrix(Zettahat)){");
-			 writer.println("Sigmahat<-ginv(Zettahat)");
+			// writer.println("Sigmahat<-ginv(Zettahat)");
 			// writer.println("}else{");
-			// writer.println("Sigmahat<-solve(Zettahat)");
+			writer.println("Sigmahat<-solve(Zettahat)");
 			// writer.println("}");
 
 			writer.println("write(t(Sigmahat), file=\"r_non_sparse_wi_tmp" + id + ".txt\", "
@@ -145,9 +145,9 @@ public class NonSparseEstimator extends LDEstimator {
 						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
 					} catch (Exception e) {
 						if (lns[j].toLowerCase().startsWith("inf")) {
-							inverseCovarianceMatrix[i][j] = 1000;
+							inverseCovarianceMatrix[i][j] = Double.POSITIVE_INFINITY;
 						} else if (lns[j].toLowerCase().startsWith("-inf")) {
-							inverseCovarianceMatrix[i][j] = -1000;
+							inverseCovarianceMatrix[i][j] = Double.NEGATIVE_INFINITY;
 						} else {
 							inverseCovarianceMatrix[i][j] = 0;
 						}
@@ -159,12 +159,13 @@ public class NonSparseEstimator extends LDEstimator {
 			e.printStackTrace();
 		}
 		return inverseCovarianceMatrix;
-	//	try {
-	//		return new Matrix(inverseCovarianceMatrix).inverse().getArray();
-	//	} catch (Exception e) {
-	//		e.printStackTrace();
-	//		return PseudoInverse.inverse(new Matrix(inverseCovarianceMatrix)).getArray();
-	//	}
+		// try {
+		// return new Matrix(inverseCovarianceMatrix).inverse().getArray();
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// return PseudoInverse.inverse(new
+		// Matrix(inverseCovarianceMatrix)).getArray();
+		// }
 	}
 
 	public double[][] _deSparsifiedGlassoPrecisionMatrix(double[][] covx) {
@@ -263,11 +264,11 @@ public class NonSparseEstimator extends LDEstimator {
 						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
 					} catch (Exception e) {
 						if (lns[j].toLowerCase().startsWith("inf")) {
-							inverseCovarianceMatrix[i][j] = 1000;
+							inverseCovarianceMatrix[i][j] = Double.POSITIVE_INFINITY;
 						} else if (lns[j].toLowerCase().startsWith("-inf")) {
-							inverseCovarianceMatrix[i][j] = -1000;
+							inverseCovarianceMatrix[i][j] = Double.NEGATIVE_INFINITY;
 						} else {
-							inverseCovarianceMatrix[i][j] = 0;
+							inverseCovarianceMatrix[i][j] = Double.NaN;
 						}
 					}
 				}

@@ -140,7 +140,7 @@ public class mDaehrLDA implements Classifier<double[]> {
 		// calculate pooled within group covariance matrix and invert it
 	}
 
-	public double[][] getSampleCovarianceMatrix() {
+	public double[][] getSamplePrecisionMatrix() {
 		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
 		for (double[][] cov : this.covariance) {
 			for (int i = 0; i < cov.length; i++) {
@@ -149,10 +149,15 @@ public class mDaehrLDA implements Classifier<double[]> {
 				}
 			}
 		}
-		return _covar;
+		try {
+			return new Matrix(_covar).inverse().getArray();
+		} catch (Exception e) {
+			return PseudoInverse.inverse(new Matrix(_covar)).getArray();
+		}
+
 	}
 
-	public double[][] getSparseCovarianceMatrx() {
+	public double[][] getSparseCovPrecisionMatrx() {
 		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
 		for (double[][] cov : this.covariance) {
 			for (int i = 0; i < cov.length; i++) {
@@ -163,10 +168,14 @@ public class mDaehrLDA implements Classifier<double[]> {
 		}
 		new DiagKeptSparseCovEstimator(Estimator.lambda, 5).covarianceApprox(_covar);
 
-		return _covar;
+		try {
+			return new Matrix(_covar).inverse().getArray();
+		} catch (Exception e) {
+			return PseudoInverse.inverse(new Matrix(_covar)).getArray();
+		}
 	}
 
-	public double[][] getGLassoCovarianceMatrx() {
+	public double[][] getGLassoPrecisionMatrx() {
 
 		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
 		for (double[][] cov : this.covariance) {
@@ -176,12 +185,10 @@ public class mDaehrLDA implements Classifier<double[]> {
 				}
 			}
 		}
-		new GLassoEstimator(Estimator.lambda).covarianceApprox(_covar);
-
-		return _covar;
+		return new GLassoEstimator(Estimator.lambda)._glassoPrecisionMatrix(_covar);
 	}
 
-	public double[][] getNonSparseCovarianceMatrx() {
+	public double[][] getNonSparsePrecisionMatrx() {
 		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
 		for (double[][] cov : this.covariance) {
 			for (int i = 0; i < cov.length; i++) {
@@ -190,12 +197,10 @@ public class mDaehrLDA implements Classifier<double[]> {
 				}
 			}
 		}
-		new NonSparseEstimator(Estimator.lambda).covarianceApprox(_covar);
-
-		return _covar;
+		return new NonSparseEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(_covar);
 	}
 
-	public double[][] getShrinkagedCovarianceMatrx() {
+	public double[][] getShrinkagedCovPrecisionMatrx() {
 		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
 		for (double[][] cov : this.covariance) {
 			for (int i = 0; i < cov.length; i++) {
@@ -206,7 +211,11 @@ public class mDaehrLDA implements Classifier<double[]> {
 		}
 		new ShrinkageEstimator(slambda).covarianceApprox(_covar);
 
-		return _covar;
+		try {
+			return new Matrix(_covar).inverse().getArray();
+		} catch (Exception e) {
+			return PseudoInverse.inverse(new Matrix(_covar)).getArray();
+		}
 	}
 
 	private double getGroupMean(int column, ArrayList<double[]> data) {

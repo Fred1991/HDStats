@@ -132,9 +132,9 @@ public class GLassoEstimator extends LDEstimator {
 						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
 					} catch (Exception e) {
 						if (lns[j].toLowerCase().startsWith("inf")) {
-							inverseCovarianceMatrix[i][j] = 1000;
+							inverseCovarianceMatrix[i][j] = Double.POSITIVE_INFINITY;
 						} else if (lns[j].toLowerCase().startsWith("-inf")) {
-							inverseCovarianceMatrix[i][j] = -1000;
+							inverseCovarianceMatrix[i][j] = Double.NEGATIVE_INFINITY;
 						} else {
 							inverseCovarianceMatrix[i][j] = 0;
 						}
@@ -242,11 +242,11 @@ public class GLassoEstimator extends LDEstimator {
 						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
 					} catch (Exception e) {
 						if (lns[j].toLowerCase().startsWith("inf")) {
-							inverseCovarianceMatrix[i][j] = 1000;
+							inverseCovarianceMatrix[i][j] = Double.POSITIVE_INFINITY;
 						} else if (lns[j].toLowerCase().startsWith("-inf")) {
-							inverseCovarianceMatrix[i][j] = -1000;
+							inverseCovarianceMatrix[i][j] = Double.NEGATIVE_INFINITY;
 						} else {
-							inverseCovarianceMatrix[i][j] = 0;
+							inverseCovarianceMatrix[i][j] = Double.NaN;
 						}
 					}
 				}
