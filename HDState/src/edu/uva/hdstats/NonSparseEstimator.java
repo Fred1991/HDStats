@@ -81,19 +81,19 @@ public class NonSparseEstimator extends LDEstimator {
 
 			// writer.println("R_covarianceMatrix[300,600]");
 			writer.println(
-					"r_non_sparse = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=FALSE)");
+					"r_non_sparse = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=TRUE)");
 			writer.println("r_non_sparse<-as.matrix(r_non_sparse$wi)");
 			writer.println(
 					"Zettahat<-(r_non_sparse + r_non_sparse)-(r_non_sparse %*% R_covarianceMatrix %*% r_non_sparse)");
 
 			// writer.println("if(is.singular.matrix(Zettahat)){");
-			// writer.println("Sigmahat<-ginv(Zettahat)");
+			 writer.println("Sigmahat<-ginv(Zettahat)");
 			// writer.println("}else{");
 			// writer.println("Sigmahat<-solve(Zettahat)");
 			// writer.println("}");
 
-			writer.println("write(t(Zettahat), file=\"r_non_sparse_wi_tmp" + id + ".txt\", "
-					+ "ncolumns=dim(Zettahat)[[2]], sep=\",\")");
+			writer.println("write(t(Sigmahat), file=\"r_non_sparse_wi_tmp" + id + ".txt\", "
+					+ "ncolumns=dim(Sigmahat)[[2]], sep=\",\")");
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -145,9 +145,9 @@ public class NonSparseEstimator extends LDEstimator {
 						inverseCovarianceMatrix[i][j] = Double.parseDouble(lns[j]);
 					} catch (Exception e) {
 						if (lns[j].toLowerCase().startsWith("inf")) {
-							inverseCovarianceMatrix[i][j] = 99999999;
+							inverseCovarianceMatrix[i][j] = 1000;
 						} else if (lns[j].toLowerCase().startsWith("-inf")) {
-							inverseCovarianceMatrix[i][j] = -99999999;
+							inverseCovarianceMatrix[i][j] = -1000;
 						} else {
 							inverseCovarianceMatrix[i][j] = 0;
 						}
@@ -158,13 +158,13 @@ public class NonSparseEstimator extends LDEstimator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		try {
-			return new Matrix(inverseCovarianceMatrix).inverse().getArray();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return PseudoInverse.inverse(new Matrix(inverseCovarianceMatrix)).getArray();
-		}
+		return inverseCovarianceMatrix;
+	//	try {
+	//		return new Matrix(inverseCovarianceMatrix).inverse().getArray();
+	//	} catch (Exception e) {
+	//		e.printStackTrace();
+	//		return PseudoInverse.inverse(new Matrix(inverseCovarianceMatrix)).getArray();
+	//	}
 	}
 
 	public double[][] _deSparsifiedGlassoPrecisionMatrix(double[][] covx) {

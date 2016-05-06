@@ -1,6 +1,5 @@
 package edu.uva.hdstats.da;
 
-
 /**
  * Copyright (c) 2014, Version, 0.2, Dr. Wolfgang Lenhard, Psychometrica.de
  * All rights reserved.
@@ -40,13 +39,14 @@ import edu.uva.hdstats.GLassoEstimator;
 import edu.uva.hdstats.NonSparseEstimator;
 import edu.uva.hdstats.PDLassoEstimator;
 import edu.uva.hdstats.ShrinkageEstimator;
+import edu.uva.hdstats.SparseCovEstimator;
 
-public class mDaehrLDA implements Classifier<double[]>{
+public class mDaehrLDA implements Classifier<double[]> {
 	private double[][] groupMean;
 	public double[][] pooledInverseCovariance;
 	private double[] probability;
 	private ArrayList<Integer> groupList = new ArrayList<Integer>();
-	public  double[][][] covariance;
+	public double[][][] covariance;
 	public static double slambda = 0.1;
 
 	/**
@@ -131,51 +131,83 @@ public class mDaehrLDA implements Classifier<double[]>{
 			for (int j = 0; j < covariance[i].length; j++) {
 				for (int k = 0; k < covariance[i][j].length; k++) {
 					for (int l = 0; l < subset[i].size(); l++)
-						covariance[i][j][k] += (subset[i].get(l)[j] * subset[i]
-								.get(l)[k]);
+						covariance[i][j][k] += (subset[i].get(l)[j] * subset[i].get(l)[k]);
 
-					covariance[i][j][k] = covariance[i][j][k]
-							/ subset[i].size();
+					covariance[i][j][k] = covariance[i][j][k] / subset[i].size();
 				}
 			}
 		}
 		// calculate pooled within group covariance matrix and invert it
 	}
-	
-	
-	public double[][][] getSampleCovarianceMatrix(){
-		return this.covariance;
-	}
-	
-	public double[][][] getSparseCovarianceMatrx(){
-		for(int i=0;i<covariance.length;i++){
-			 new DiagKeptSparseCovEstimator(Estimator.lambda,5).covarianceApprox(covariance[i]);
+
+	public double[][] getSampleCovarianceMatrix() {
+		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
+		for (double[][] cov : this.covariance) {
+			for (int i = 0; i < cov.length; i++) {
+				for (int j = 0; j < cov.length; j++) {
+					_covar[i][j] = cov[i][j] * 0.5;
+				}
+			}
 		}
-		return this.covariance;
-	}
-	
-	public double[][][] getGLassoCovarianceMatrx(){
-		for(int i=0;i<covariance.length;i++){
-			 new GLassoEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
-		}
-		return this.covariance;
-	}
-	
-	public double[][][] getNonSparseCovarianceMatrx(){
-		for(int i=0;i<covariance.length;i++){
-			 new NonSparseEstimator(Estimator.lambda).covarianceApprox(covariance[i]);
-		}
-		return this.covariance;
-	}
-	
-	public double[][][] getShrinkagedCovarianceMatrx(){
-		for(int i=0;i<covariance.length;i++){
-			new ShrinkageEstimator(slambda).covarianceApprox(covariance[i]);
-		// new PDLassoEstimator(Estimator.lambda).covarianceApprox();
-		}
-		return this.covariance;
+		return _covar;
 	}
 
+	public double[][] getSparseCovarianceMatrx() {
+		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
+		for (double[][] cov : this.covariance) {
+			for (int i = 0; i < cov.length; i++) {
+				for (int j = 0; j < cov.length; j++) {
+					_covar[i][j] = cov[i][j] * 0.5;
+				}
+			}
+		}
+		new DiagKeptSparseCovEstimator(Estimator.lambda, 5).covarianceApprox(_covar);
+
+		return _covar;
+	}
+
+	public double[][] getGLassoCovarianceMatrx() {
+
+		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
+		for (double[][] cov : this.covariance) {
+			for (int i = 0; i < cov.length; i++) {
+				for (int j = 0; j < cov.length; j++) {
+					_covar[i][j] = cov[i][j] * 0.5;
+				}
+			}
+		}
+		new GLassoEstimator(Estimator.lambda).covarianceApprox(_covar);
+
+		return _covar;
+	}
+
+	public double[][] getNonSparseCovarianceMatrx() {
+		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
+		for (double[][] cov : this.covariance) {
+			for (int i = 0; i < cov.length; i++) {
+				for (int j = 0; j < cov.length; j++) {
+					_covar[i][j] = cov[i][j] * 0.5;
+				}
+			}
+		}
+		new NonSparseEstimator(Estimator.lambda).covarianceApprox(_covar);
+
+		return _covar;
+	}
+
+	public double[][] getShrinkagedCovarianceMatrx() {
+		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
+		for (double[][] cov : this.covariance) {
+			for (int i = 0; i < cov.length; i++) {
+				for (int j = 0; j < cov.length; j++) {
+					_covar[i][j] = cov[i][j] * 0.5;
+				}
+			}
+		}
+		new ShrinkageEstimator(slambda).covarianceApprox(_covar);
+
+		return _covar;
+	}
 
 	private double getGroupMean(int column, ArrayList<double[]> data) {
 		double[] d = new double[data.size()];
@@ -204,10 +236,8 @@ public class mDaehrLDA implements Classifier<double[]>{
 	public double[] getDiscriminantFunctionValues(double[] values) {
 		double[] function = new double[groupList.size()];
 		for (int i = 0; i < groupList.size(); i++) {
-			double[] tmp = matrixMultiplication(groupMean[i],
-					pooledInverseCovariance);
-			function[i] = (matrixMultiplication(tmp, values))
-					- (.5d * matrixMultiplication(tmp, groupMean[i]))
+			double[] tmp = matrixMultiplication(groupMean[i], pooledInverseCovariance);
+			function[i] = (matrixMultiplication(tmp, values)) - (.5d * matrixMultiplication(tmp, groupMean[i]))
 					+ Math.log(probability[i]);
 		}
 
@@ -215,7 +245,8 @@ public class mDaehrLDA implements Classifier<double[]>{
 	}
 
 	/**
-	 * Calculates the discriminant function values for the different groups based on Mahalanobis distance
+	 * Calculates the discriminant function values for the different groups
+	 * based on Mahalanobis distance
 	 * 
 	 * @param values
 	 * @return
@@ -227,15 +258,15 @@ public class mDaehrLDA implements Classifier<double[]>{
 			double[] dist = new double[groupMean[i].length];
 			for (int j = 0; j < dist.length; j++)
 				dist[j] = values[j] - groupMean[i][j];
-			function[i] = matrixMultiplication(matrixMultiplication(dist,
-					this.pooledInverseCovariance), dist);
+			function[i] = matrixMultiplication(matrixMultiplication(dist, this.pooledInverseCovariance), dist);
 		}
 
 		return function;
 	}
 
 	/**
-	 * Predict the membership of an object to one of the different groups based on Mahalanobis distance
+	 * Predict the membership of an object to one of the different groups based
+	 * on Mahalanobis distance
 	 * 
 	 * @param values
 	 * @return the group
@@ -308,8 +339,7 @@ public class mDaehrLDA implements Classifier<double[]>{
 	 * @return the resulting matrix
 	 */
 	@SuppressWarnings("unused")
-	private double[][] matrixMultiplication(final double[][] matrixA,
-			final double[][] matrixB) {
+	private double[][] matrixMultiplication(final double[][] matrixA, final double[][] matrixB) {
 		int rowA = matrixA.length;
 		int colA = matrixA[0].length;
 		int colB = matrixB[0].length;
@@ -341,8 +371,7 @@ public class mDaehrLDA implements Classifier<double[]>{
 	public double[] matrixMultiplication(double[] A, double[][] B) {
 
 		if (A.length != B.length) {
-			throw new IllegalArgumentException("A:Rows: " + A.length
-					+ " did not match B:Columns " + B.length + ".");
+			throw new IllegalArgumentException("A:Rows: " + A.length + " did not match B:Columns " + B.length + ".");
 		}
 
 		double[] C = new double[A.length];
@@ -443,18 +472,18 @@ public class mDaehrLDA implements Classifier<double[]>{
 	 */
 	public static void main(String[] args) {
 		int[] group = { 1, 1, 1, 1, 2, 2, 2 };
-		double[][] data = { { 2.95, 6.63 }, { 2.53, 7.79 }, { 3.57, 5.65 },
-				{ 3.16, 5.47 }, { 2.58, 4.46 }, { 2.16, 6.22 }, { 3.27, 3.52 } };
+		double[][] data = { { 2.95, 6.63 }, { 2.53, 7.79 }, { 3.57, 5.65 }, { 3.16, 5.47 }, { 2.58, 4.46 },
+				{ 2.16, 6.22 }, { 3.27, 3.52 } };
 
 		mDaehrLDA test = new mDaehrLDA(data, group, true);
 		double[] testData = { 2.81, 5.46 };
-		
-		//test
+
+		// test
 		double[] values = test.getDiscriminantFunctionValues(testData);
-		for(int i = 0; i < values.length; i++){
-			System.out.println("Discriminant function " + (i+1) + ": " + values[i]);	
+		for (int i = 0; i < values.length; i++) {
+			System.out.println("Discriminant function " + (i + 1) + ": " + values[i]);
 		}
-		
+
 		System.out.println("Predicted group: " + test.predict(testData));
 	}
 

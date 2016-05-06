@@ -10,6 +10,7 @@ public class Utils {
 	public static final int L2 = 2;
 	public static final int LINF = 4;
 	public static final int LNULL = 5;
+	public static final int L0 = 0;
 
 	public static double[] getGradient(NumericFunction f, double[] X, double delta) {
 		double[] g = new double[X.length];
@@ -117,6 +118,10 @@ public class Utils {
 				lxnorm += x * x;
 			else if (l == LNULL)
 				lxnorm += 0;
+			else if(l==L0){
+				if(x!=0)
+					lxnorm++;
+			}
 		}
 		if (l == LINF)
 			return maxX;
@@ -139,6 +144,10 @@ public class Utils {
 					lxnorm += x * x;
 				else if (l == LNULL)
 					lxnorm += 0;
+				else if(l==L0){
+					if(x!=0)
+						lxnorm++;
+				}
 			}
 		}
 		if (l == LINF)
