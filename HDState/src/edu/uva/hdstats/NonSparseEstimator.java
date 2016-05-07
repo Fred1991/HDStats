@@ -202,9 +202,9 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println("R_dataset = read.csv(\"R_non_sparse_tmp" + id + ".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
-			writer.println(
-					"R_covarianceMatrix <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=FALSE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
-			writer.println("R_covarianceMatrix<-as.matrix(R_covarianceMatrix$mat)");
+		//	writer.println(
+		//			"R_covarianceMatrix <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=FALSE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
+		//	writer.println("R_covarianceMatrix<-as.matrix(R_covarianceMatrix$mat)");
 			// writer.println("R_covarianceMatrix[300,600]");
 			writer.println("r_glasso = glasso(R_covarianceMatrix, rho=" + this._lambda + ", penalize.diagonal=TRUE)");
 			writer.println("r_glasso<-as.matrix(r_glasso$wi)");
