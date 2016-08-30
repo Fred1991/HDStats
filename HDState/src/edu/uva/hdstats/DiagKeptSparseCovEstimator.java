@@ -1,6 +1,7 @@
 package edu.uva.hdstats;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class DiagKeptSparseCovEstimator extends LDEstimator {
 		double[][] psdMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_sparse_tmp"+id+".data"));
+			PrintWriter writer = new PrintWriter(new FileWriter(R_src_Path+"R_sparse_tmp"+id+".data"));
 			// writer.print("variable_0");
 			// for(int i = 1; i < covx[0].length; i++)
 			// writer.print(",variable_"+i);
@@ -70,15 +71,15 @@ public class DiagKeptSparseCovEstimator extends LDEstimator {
 		}
 
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter("R_sparse_tmp"+id+".R"));
+			PrintWriter writer = new PrintWriter(new FileWriter(R_src_Path+"R_sparse_tmp"+id+".R"));
 			writer.println("library(Matrix)");
-			writer.println("R_dataset = read.csv(\"R_sparse_tmp"+id+".data\", header=FALSE)");
+			writer.println("R_dataset = read.csv(\""+R_src_Path+"R_sparse_tmp"+id+".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 			// writer.println("R_covarianceMatrix[300,600]");
 			writer.println("res <- nearPD(R_covarianceMatrix, corr=FALSE, keepDiag=TRUE, do2eigen=TRUE, doSym=TRUE, doDykstra=TRUE)");
 		  //   writer.println("res$mat");
-			writer.println("write(t(as.matrix(res$mat)), file=\"R_sparse_wi_tmp"+id+".txt\", "
+			writer.println("write(t(as.matrix(res$mat)), file=\""+R_src_Path+"R_sparse_wi_tmp"+id+".txt\", "
 					+ "ncolumns=dim(res$mat)[[2]], sep=\",\")");
 
 			writer.close();
@@ -88,7 +89,7 @@ public class DiagKeptSparseCovEstimator extends LDEstimator {
 
 		// execute "Rscript R_sparse_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript R_sparse_tmp"+id+".R");
+			Process p = Runtime.getRuntime().exec("Rscript "+R_src_Path+"R_sparse_tmp"+id+".R");
 
 			String s;
 
@@ -120,7 +121,7 @@ public class DiagKeptSparseCovEstimator extends LDEstimator {
 		}
 
 		try {
-			BufferedReader inputReader = new BufferedReader(new FileReader("R_sparse_wi_tmp"+id+".txt"));
+			BufferedReader inputReader = new BufferedReader(new FileReader(R_src_Path+"R_sparse_wi_tmp"+id+".txt"));
 			for (int i = 0; i < psdMatrix.length; i++) {
 				String line = inputReader.readLine();
 				String[] lns = line.split(",");
@@ -132,6 +133,10 @@ public class DiagKeptSparseCovEstimator extends LDEstimator {
 				}
 			}
 			inputReader.close();
+			new File(R_src_Path+"R_sparse_tmp"+id+".txt").delete();
+			new File(R_src_Path+"R_sparse_tmp"+id+".data").delete();
+			new File(R_src_Path+"R_sparse_wi_tmp"+id+".txt").delete();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

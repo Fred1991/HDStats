@@ -1,7 +1,8 @@
 package edu.uva.hdstats;
 
 public class LDEstimator extends Estimator{
-
+	public static String R_src_Path="/Users/xiongha/R_src/";
+	
 	@Override
 	public double[][] covariance(double[][] samples) {
 		// TODO Auto-generated method stub
