@@ -89,7 +89,7 @@ public class GLassoEstimator extends LDEstimator {
 
 		// execute "Rscript R_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript "+R_src_Path+"R_tmp" + id + ".R");
+			Process p = Runtime.getRuntime().exec("/usr/local/bin/Rscript "+R_src_Path+"R_tmp" + id + ".R");
 
 			String s;
 
@@ -204,7 +204,7 @@ public class GLassoEstimator extends LDEstimator {
 
 		// execute "Rscript R_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript "+R_src_Path+"R_tmp" + id + ".R");
+			Process p = Runtime.getRuntime().exec("/usr/local/bin/Rscript "+R_src_Path+"R_tmp" + id + ".R");
 
 			String s;
 

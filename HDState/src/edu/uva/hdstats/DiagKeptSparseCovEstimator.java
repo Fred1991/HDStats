@@ -89,7 +89,8 @@ public class DiagKeptSparseCovEstimator extends LDEstimator {
 
 		// execute "Rscript R_sparse_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript "+R_src_Path+"R_sparse_tmp"+id+".R");
+			System.out.println("to execute Rscript "+R_src_Path+"R_sparse_tmp"+id+".R");
+			Process p = Runtime.getRuntime().exec("/usr/local/bin/Rscript "+R_src_Path+"R_sparse_tmp"+id+".R");
 
 			String s;
 

@@ -102,7 +102,7 @@ public class NonSparseEstimator extends LDEstimator {
 
 		// execute "Rscript R_non_sparse_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript "+R_src_Path+"R_non_sparse_tmp" + id + ".R");
+			Process p = Runtime.getRuntime().exec("/usr/local/bin/Rscript "+R_src_Path+"R_non_sparse_tmp" + id + ".R");
 
 			String s;
 
@@ -156,6 +156,7 @@ public class NonSparseEstimator extends LDEstimator {
 				}
 			}
 			inputReader.close();
+			
 			new File(R_src_Path+"R_non_sparse_tmp"+id+".txt").delete();
 			new File(R_src_Path+"R_non_sparse_tmp"+id+".data").delete();
 			new File(R_src_Path+"r_non_sparse_wi_tmp"+id+".txt").delete();
@@ -204,7 +205,7 @@ public class NonSparseEstimator extends LDEstimator {
 			writer.println("library(Matrix)");
 			writer.println("library(MASS)");
 			writer.println("library(matrixcalc)");
-			writer.println("R_dataset = read.csv(\"R_non_sparse_tmp" + id + ".data\", header=FALSE)");
+			writer.println("R_dataset = read.csv(\""+R_src_Path+"R_non_sparse_tmp" + id + ".data\", header=FALSE)");
 			// writer.println("R_dataset");
 			writer.println("R_covarianceMatrix = as.matrix(R_dataset)");
 		//	writer.println(
@@ -224,7 +225,7 @@ public class NonSparseEstimator extends LDEstimator {
 
 		// execute "Rscript R_non_sparse_tmp.R"
 		try {
-			Process p = Runtime.getRuntime().exec("Rscript "+R_src_Path+"R_non_sparse_tmp" + id + ".R");
+			Process p = Runtime.getRuntime().exec("/usr/local/bin/Rscript "+R_src_Path+"R_non_sparse_tmp" + id + ".R");
 
 			String s;
 
