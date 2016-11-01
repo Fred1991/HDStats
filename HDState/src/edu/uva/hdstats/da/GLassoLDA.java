@@ -39,10 +39,10 @@ import edu.uva.hdstats.GLassoEstimator;
 import edu.uva.hdstats.PDLassoEstimator;
 
 public class GLassoLDA implements Classifier<double[]>{
-	private double[][] groupMean;
+	public double[][] groupMean;
 	public double[][] pooledInverseCovariance;
-	private double[] probability;
-	private ArrayList<Integer> groupList = new ArrayList<Integer>();
+	public double[] probability;
+	public ArrayList<Integer> groupList = new ArrayList<Integer>();
 
 	/**
 	 * Calculates a linear discriminant analysis (LDA) with all necessary
