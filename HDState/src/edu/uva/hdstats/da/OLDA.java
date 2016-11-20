@@ -36,7 +36,8 @@ import java.util.ArrayList;
 import Jama.Matrix;
 
 public class OLDA implements Classifier<double[]>{
-	private double[][] groupMean;
+	public double[][] groupMean;
+	public 	double[] globalMean;
 	public double[][] pooledInverseCovariance;
 	private double[] probability;
 	private ArrayList<Integer> groupList = new ArrayList<Integer>();
@@ -71,7 +72,6 @@ public class OLDA implements Classifier<double[]>{
 			group[j] = g[j];
 		}
 
-		double[] globalMean;
 		double[][][] covariance;
 
 		// determine number and label of groups

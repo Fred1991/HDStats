@@ -3,10 +3,10 @@ package edu.uva.hdstats.da;
 import ml.classification.AdaBoost;
 import ml.classification.LogisticRegression;
 
-public class AdaboostClassifier implements Classifier<double[]>{
+public class AdaboostLRClassifier implements Classifier<double[]>{
 	AdaBoost classifier=null;
 	
-	public AdaboostClassifier(double[][] d, int[] g, int num) {
+	public AdaboostLRClassifier(double[][] d, int[] g, int num) {
 		LogisticRegression[] lrs=new LogisticRegression[num];
 		for(int i=0;i<num;i++)
 			lrs[i]=new LogisticRegression(1,0.1);

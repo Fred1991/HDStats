@@ -40,6 +40,7 @@ import edu.uva.hdstats.PDLassoEstimator;
 
 public class GLassoLDA implements Classifier<double[]>{
 	public double[][] groupMean;
+	public 	double[] globalMean;
 	public double[][] pooledInverseCovariance;
 	public double[] probability;
 	public ArrayList<Integer> groupList = new ArrayList<Integer>();
@@ -60,6 +61,7 @@ public class GLassoLDA implements Classifier<double[]>{
 	@SuppressWarnings("unchecked")
 	public GLassoLDA(double[][] d, int[] g, boolean p) {
 		// check if data and group array have the same size
+		//System.out.println("haha");
 		if (d.length != g.length)
 			return;
 
@@ -74,7 +76,6 @@ public class GLassoLDA implements Classifier<double[]>{
 			group[j] = g[j];
 		}
 
-		double[] globalMean;
 		double[][][] covariance;
 
 		// determine number and label of groups

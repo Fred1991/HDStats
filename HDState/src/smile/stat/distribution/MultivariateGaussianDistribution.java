@@ -16,6 +16,9 @@
 package smile.stat.distribution;
 
 import smile.math.matrix.CholeskyDecomposition;
+import Jama.Matrix;
+import edu.uva.hdstats.da.PseudoInverse;
+import gov.sandia.cognition.math.matrix.MatrixFactory;
 import smile.math.Math;
 
 /**
@@ -30,6 +33,8 @@ public class MultivariateGaussianDistribution extends AbstractMultivariateDistri
     private static final double LOG2PIE = Math.log(2 * Math.PI * Math.E);
     double[] mu;
     double[][] sigma;
+    double[][] theta;
+
     boolean diagonal;
     private int dim;
     private double[][] sigmaInv;
@@ -115,6 +120,31 @@ public class MultivariateGaussianDistribution extends AbstractMultivariateDistri
 
         init();
     }
+    
+    public MultivariateGaussianDistribution(double[] mean, double[][] precision, boolean inverse) {
+        if (mean.length != precision.length) {
+            throw new IllegalArgumentException("Mean vector and covariance matrix have different dimension");
+        }
+
+        mu = new double[mean.length];
+        sigma = new double[mean.length][mean.length];
+        double[][] cov;
+		try{
+			cov=new Matrix(precision).inverse().getArray();
+		}catch(Exception exp){
+			cov=PseudoInverse.inverse(new Matrix(precision)).getArray();
+		}
+
+        for (int i = 0; i < mu.length; i++) {
+            mu[i] = mean[i];
+            System.arraycopy(cov[i], 0, sigma[i], 0, mu.length);
+        }
+        this.theta=precision;
+        diagonal = false;
+        numParameters = mu.length + mu.length * (mu.length + 1) / 2;
+
+        init();
+    }
 
     /**
      * Constructor. Mean and covariance will be estimated from the data by MLE.
@@ -158,11 +188,12 @@ public class MultivariateGaussianDistribution extends AbstractMultivariateDistri
      */
     private void init() {
         dim = mu.length;
-        CholeskyDecomposition cholesky = new CholeskyDecomposition(sigma);
-        sigmaInv = cholesky.inverse();
-        sigmaDet = cholesky.det();
-        sigmaL = cholesky.getL();
-        pdfConstant = (dim * Math.log(2 * Math.PI) + Math.log(sigmaDet)) / 2.0;
+      //  CholeskyDecomposition cholesky = new CholeskyDecomposition(sigma);
+        sigmaInv = this.theta;
+       // sigmaDet = cholesky.det();
+       // sigmaL = cholesky.getL();
+		MatrixFactory mf = MatrixFactory.getDenseDefault();
+        pdfConstant = (dim * Math.log(2 * Math.PI) + mf.copyArray(sigma).logDeterminant().getRealPart()) / 2.0;
     }
 
     /**

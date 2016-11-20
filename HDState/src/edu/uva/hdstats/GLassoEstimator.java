@@ -151,6 +151,7 @@ public class GLassoEstimator extends LDEstimator {
 			e.printStackTrace();
 		}
 
+		System.out.println("R called");
 		return inverseCovarianceMatrix;
 	}
 

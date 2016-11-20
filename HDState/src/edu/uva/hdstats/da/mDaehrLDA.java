@@ -139,6 +139,18 @@ public class mDaehrLDA implements Classifier<double[]> {
 		}
 		// calculate pooled within group covariance matrix and invert it
 	}
+	
+	public double[][] getSampleCovarianceMatrix() {
+		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
+		for (double[][] cov : this.covariance) {
+			for (int i = 0; i < cov.length; i++) {
+				for (int j = 0; j < cov.length; j++) {
+					_covar[i][j] = cov[i][j] * 0.5;
+				}
+			}
+		}
+		return _covar;
+	}
 
 	public double[][] getSamplePrecisionMatrix() {
 		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
@@ -198,6 +210,19 @@ public class mDaehrLDA implements Classifier<double[]> {
 			}
 		}
 		return new NonSparseEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(_covar);
+	}
+	
+	public double[][] getShrinkagedCovCovarianceMatrx() {
+		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
+		for (double[][] cov : this.covariance) {
+			for (int i = 0; i < cov.length; i++) {
+				for (int j = 0; j < cov.length; j++) {
+					_covar[i][j] = cov[i][j] * 0.5;
+				}
+			}
+		}
+		 new ShrinkageEstimator(slambda).covarianceApprox(_covar);
+		 return _covar;
 	}
 
 	public double[][] getShrinkagedCovPrecisionMatrx() {

@@ -39,7 +39,8 @@ import edu.uva.hdstats.PDLassoEstimator;
 import edu.uva.hdstats.ShrinkageEstimator;
 
 public class mShrinkageLDA implements Classifier<double[]>{
-	private double[][] groupMean;
+	public double[][] groupMean;
+	public 	double[] globalMean;
 	public double[][] pooledInverseCovariance;
 	private double[] probability;
 	private ArrayList<Integer> groupList = new ArrayList<Integer>();
@@ -75,7 +76,6 @@ public class mShrinkageLDA implements Classifier<double[]>{
 			group[j] = g[j];
 		}
 
-		double[] globalMean;
 
 		// determine number and label of groups
 		for (int i = 0; i < group.length; i++) {
@@ -134,6 +134,23 @@ public class mShrinkageLDA implements Classifier<double[]>{
 							/ subset[i].size();
 				}
 			}
+		}
+		// calculate pooled within group covariance matrix and invert it
+		pooledInverseCovariance = new double[globalMean.length][globalMean.length];
+		for (int j = 0; j < pooledInverseCovariance.length; j++) {
+			for (int k = 0; k < pooledInverseCovariance[j].length; k++) {
+				for (int l = 0; l < subset.length; l++) {
+					pooledInverseCovariance[j][k] += ((double) subset[l].size() / (double) data.length)
+							* covariance[l][j][k];
+				}
+			}
+		}
+
+		new ShrinkageEstimator(slambda).covarianceApprox(pooledInverseCovariance);
+		try{
+			pooledInverseCovariance=new Matrix(pooledInverseCovariance).inverse().getArray();
+		}catch(Exception exp){
+			pooledInverseCovariance=PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
 		}
 		// calculate pooled within group covariance matrix and invert it
 	}

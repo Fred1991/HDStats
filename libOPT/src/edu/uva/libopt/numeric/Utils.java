@@ -29,9 +29,9 @@ public class Utils {
 			for (int j = 0; j < m[i].length; j++) {
 				if (m[i][i] != 0 && m[j][j] != 0) {
 					r[i][j] = m[i][j] / Math.sqrt(m[i][i] * m[j][j]);
-				} else if(m[i][i] == 0 && m[j][j] == 0){
-					r[i][j]=1;
-				}else{
+				} else if (m[i][i] == 0 && m[j][j] == 0) {
+					r[i][j] = 1;
+				} else {
 					r[i][j] = 0;
 				}
 			}
@@ -57,10 +57,10 @@ public class Utils {
 
 		for (int i = 0; i < m1.length; i++) {
 			for (int j = 0; j < m1[i].length; j++) {
-				err += Math.abs(m1[i][j] - m2[i][i])* Math.abs(m1[i][j] - m2[i][j]);
+				err += Math.abs(m1[i][j] - m2[i][i]) * Math.abs(m1[i][j] - m2[i][j]);
 			}
 		}
-		
+
 		return err;
 
 	}
@@ -118,8 +118,8 @@ public class Utils {
 				lxnorm += x * x;
 			else if (l == LNULL)
 				lxnorm += 0;
-			else if(l==L0){
-				if(x!=0)
+			else if (l == L0) {
+				if (x != 0)
 					lxnorm++;
 			}
 		}
@@ -144,8 +144,8 @@ public class Utils {
 					lxnorm += x * x;
 				else if (l == LNULL)
 					lxnorm += 0;
-				else if(l==L0){
-					if(x!=0)
+				else if (l == L0) {
+					if (x != 0)
 						lxnorm++;
 				}
 			}
@@ -271,4 +271,11 @@ public class Utils {
 		}
 	}
 
+	public	static double log1pexp(double x) {
+		return x < -709.089565713 ? 0. : Math.log1p(Math.exp(x));
+	}
+
+	public static double sum_log_prob(double a, double b) {
+		return a > b ? a + log1pexp(b - a) : b + log1pexp(a - b);
+	}
 }

@@ -5,5 +5,19 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/libOPT"/>
 	<classpathentry kind="lib" path="lib/LAML-1.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/Jama.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/arpack-combo-0.1.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/gov-sandia-cognition-common-core.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/gov-sandia-cognition-common-data.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/gov-sandia-cognition-framework-core.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/gov-sandia-cognition-framework-learning.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/gov-sandia-cognition-learning-core.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/gov-sandia-cognition-text-core.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/Jama.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/LAML-1.6.2.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/mtj-0.9.14.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/netlib-java-0.9.3.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/porter-stemmer-1.4.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/xpp3_min-1.1.4c.jar"/>
+	<classpathentry kind="lib" path="/Users/xiongha/git/HDStats/HDState/lib/xstream-1.4.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

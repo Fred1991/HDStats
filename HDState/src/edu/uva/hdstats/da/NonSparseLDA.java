@@ -40,7 +40,8 @@ import edu.uva.hdstats.NonSparseEstimator;
 import edu.uva.hdstats.PDLassoEstimator;
 
 public class NonSparseLDA implements Classifier<double[]>{
-	private double[][] groupMean;
+	public double[][] groupMean;
+	public double[] globalMean;
 	public double[][] pooledInverseCovariance;
 	private double[] probability;
 	private ArrayList<Integer> groupList = new ArrayList<Integer>();
@@ -75,7 +76,6 @@ public class NonSparseLDA implements Classifier<double[]>{
 			group[j] = g[j];
 		}
 
-		double[] globalMean;
 		double[][][] covariance;
 
 		// determine number and label of groups
