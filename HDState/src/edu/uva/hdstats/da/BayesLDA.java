@@ -67,7 +67,8 @@ public class BayesLDA extends OLDA {
 				.getR();
 		int fDOF = Math.min(Math.max(this.precision.length, g.length) * 10, 2000);
 		Random r = new Random(System.currentTimeMillis());
-		InverseWishartDistribution iwd=new InverseWishartDistribution(mf.copyArray(super.pooledInverseCovariance),Math.max(this.precision.length, g.length));
+		InverseWishartDistribution iwd=new InverseWishartDistribution(mf.copyArray(super.pooledInverseCovariance),
+																		Math.max(this.pooledInverseCovariance.length+1, g.length-1));
 		while (pooledClassifiers.size() < size) {
 			Matrix mtx = sample(r, meanV, covarianceSqrt, fDOF);
 			// NonSparseEstimator nse=new NonSparseEstimator();
