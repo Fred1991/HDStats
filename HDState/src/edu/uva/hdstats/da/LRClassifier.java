@@ -3,9 +3,10 @@ package edu.uva.hdstats.da;
 import ml.classification.LogisticRegression;
 
 public class LRClassifier implements Classifier<double[]>{
-	LogisticRegression classifier=new LogisticRegression(1,0.1);
+	LogisticRegression classifier;
 	
-	public LRClassifier(double[][] d, int[] g) {
+	public LRClassifier(double[][] d, int[] g, double l) {
+		this.classifier=new LogisticRegression(1,l);
 		classifier.feedData(d);
 		classifier.feedLabels(g);
 		classifier.train();
