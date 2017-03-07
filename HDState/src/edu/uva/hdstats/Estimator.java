@@ -9,7 +9,7 @@ public abstract class Estimator {
 	public static double stop = 0.0005;
 
 	public abstract double[][] covariance(double[][] samples);
-
+	
 	public abstract void covarianceApprox(double[][] samples);
 
 	public abstract double[] getMean(double[][] samples);
