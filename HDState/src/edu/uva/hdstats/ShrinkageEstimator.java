@@ -1,7 +1,7 @@
 package edu.uva.hdstats;
 
 
-public class ShrinkageEstimator extends LDEstimator{
+public class ShrinkageEstimator extends MLEstimator{
 
 	private double _lambda;
 	

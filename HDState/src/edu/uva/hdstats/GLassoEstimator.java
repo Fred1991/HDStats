@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import Jama.Matrix;
 
-public class GLassoEstimator extends LDEstimator {
+public class GLassoEstimator extends MLEstimator {
 	private double _lambda = 0.01;
 
 	public GLassoEstimator() {

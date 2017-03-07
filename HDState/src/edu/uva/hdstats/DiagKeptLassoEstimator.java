@@ -6,7 +6,7 @@ import edu.uva.libopt.numeric.Utils;
 import edu.uva.libopt.numeric.optimizer.SparseGradientOptimizer;
 
 
-public class DiagKeptLassoEstimator extends LDEstimator{
+public class DiagKeptLassoEstimator extends MLEstimator{
 	private double lambda;
 	
 	public DiagKeptLassoEstimator(double lambda){

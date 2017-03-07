@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.UUID;
 
-public class DiagKeptSparseCovEstimator extends LDEstimator {
+public class DiagKeptSparseCovEstimator extends MLEstimator {
 
 	public int _iter;
 	public double _lambda;

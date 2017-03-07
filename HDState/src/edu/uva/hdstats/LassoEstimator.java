@@ -6,7 +6,7 @@ import edu.uva.libopt.numeric.Utils;
 import edu.uva.libopt.numeric.optimizer.SparseGradientOptimizer;
 
 
-public class LassoEstimator extends LDEstimator{
+public class LassoEstimator extends MLEstimator{
 	private double lambda;
 	
 	public LassoEstimator(double lambda){

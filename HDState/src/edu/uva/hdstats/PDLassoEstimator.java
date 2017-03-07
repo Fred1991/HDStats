@@ -1,7 +1,7 @@
 package edu.uva.hdstats;
 
 
-public class PDLassoEstimator extends LDEstimator{
+public class PDLassoEstimator extends MLEstimator{
 
 	private double _lambda;
 	private int _iter=Estimator.iter;

@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.UUID;
 
-public class SparseCovEstimator extends LDEstimator {
+public class SparseCovEstimator extends MLEstimator {
 
 	public int _iter;
 	public double _lambda;

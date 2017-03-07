@@ -12,7 +12,7 @@ import java.util.UUID;
 import Jama.Matrix;
 import edu.uva.hdstats.da.PseudoInverse;
 
-public class NonSparseEstimator extends LDEstimator {
+public class NonSparseEstimator extends MLEstimator {
 	private double _lambda = 0.01;
 
 	public NonSparseEstimator() {
