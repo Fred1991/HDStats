@@ -13,6 +13,7 @@ import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionMTJ;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import smile.stat.distribution.MultivariateGaussianMixture;
+import smile.stat.distribution.MultivariateMixture.Component;
 import xiong.hdstats.MLEstimator;
 import xiong.hdstats.NearPD;
 import xiong.hdstats.graph.SampleGraph;
@@ -32,7 +33,10 @@ public class GMMGraph extends MLEstimator{
 		this.nData=data.length;
 		this.dimensions=data[0].length;
 		this.gmm=new MultivariateGaussianMixture(data,size);
-
+		for(Component comp:this.gmm.getComponents()){
+			weight.add(comp.priori);
+			sampledGraphs.add(new SampleGraph(inverse(comp.distribution.cov()),false));
+		}
 
 	}
 	
@@ -52,7 +56,7 @@ public class GMMGraph extends MLEstimator{
 	}
 
 	
-	public int[][] thresholdingDiff(double t, double e, SampleWishartGraph wg) {
+	public int[][] thresholdingDiff(double t, double e, GMMGraph wg) {
 		List<int[][]> tGraphs = new ArrayList<int[][]>();
 		for (int i = 0; i < this.size; i++)
 			tGraphs.add(sampledGraphs.get(i).thresholding(t));
@@ -60,10 +64,10 @@ public class GMMGraph extends MLEstimator{
 		for (int i = 0; i < this.size; i++)
 			wGraphs.add(wg.sampledGraphs.get(i).thresholding(t));
 		
-		return this.submodularSubmodularSearch(tGraphs, wGraphs, e);
+		return this.submodularSubmodularSearch(tGraphs, wGraphs, wg.weight, e);
 	}
 
-	public int[][] adaptiveThresholdingDiff(double t, double overlap, SampleWishartGraph wg) {
+	public int[][] adaptiveThresholdingDiff(double t, double overlap, GMMGraph wg) {
 		List<int[][]> tGraphs = new ArrayList<int[][]>();
 		for (int i = 0; i < this.size; i++)
 			tGraphs.add(sampledGraphs.get(i).adaptiveThresholding(t));
@@ -71,7 +75,7 @@ public class GMMGraph extends MLEstimator{
 		for (int i = 0; i < this.size; i++)
 			wGraphs.add(wg.sampledGraphs.get(i).adaptiveThresholding(t));
 
-		return this.submodularSubmodularSearch(tGraphs, wGraphs, overlap);
+		return this.submodularSubmodularSearch(tGraphs, wGraphs, wg.weight, overlap);
 	}
 
 	public static boolean graphCompare(int[][] graph1, int[][] graph2){
@@ -90,14 +94,16 @@ public class GMMGraph extends MLEstimator{
 		int[][] sGraph = new int[dimensions][dimensions];
 		int selected = 0;
 		while (selected < e) {
-			int i_index=-1, j_index=-1, maxV=-1;
+			int i_index=-1, j_index=-1;
+			double maxV=-1;
 			for (int i = 0; i < dimensions; i++) {
 				for (int j = 0; j < dimensions; j++) {
 					if (sGraph[i][j] == 0) {
 						int v=0;
-						for(int[][] graph:graphs){
+						for(int k=0;k<graphs.size();k++){
+							int[][] graph=graphs.get(k);
 							if(graph[i][j]!=0)
-								v++;
+								v+=this.weight.get(k);
 						}
 						if(v>maxV){
 							maxV=v;
@@ -136,11 +142,12 @@ public class GMMGraph extends MLEstimator{
 						double v = 0;
 						double u = 0;
 
-						for (int[][] graph : graphs) {
+						for(int k=0;k<graphs.size();k++){
+							int[][] graph=graphs.get(k);
 							if (graph[i][j] != 0)
-								v++;
+								v+=weight.get(k);
 							else
-								u++;
+								u+=weight.get(k);
 						}
 
 						if (u!=0&&v / u > maxV) {
@@ -167,7 +174,7 @@ public class GMMGraph extends MLEstimator{
 	}
 
 	
-	public int[][] submodularSubmodularSearch(List<int[][]> graphs, List<int[][]> wgraphs, double overlap) {
+	public int[][] submodularSubmodularSearch(List<int[][]> graphs, List<int[][]> wgraphs, List<Double> wweight, double overlap) {
 		int[][] sGraph = new int[this.dimensions][this.dimensions];
 		double error = 0;
 		while (error < overlap*size) {
@@ -178,14 +185,16 @@ public class GMMGraph extends MLEstimator{
 				for (int j = 0; j < this.dimensions; j++) {
 					if (sGraph[i][j] == 0) {
 						double v=0;
-						for(int[][] graph:graphs){
+						for(int k=0;k<graphs.size();k++){
+							int[][] graph=graphs.get(k);
 							if(graph[i][j]!=0)
-								v++;
+								v+=weight.get(k);
 						}
 						double u=0;
-						for(int[][] graph:wgraphs){
+						for(int k=0;k<wgraphs.size();k++){
+							int[][] graph=graphs.get(k);							
 							if(graph[i][j]!=0)
-								u++;
+								u+=wweight.get(k);
 						}
 						
 						if(v/u>maxV){

@@ -3,8 +3,8 @@ package xiong.hdstats.test;
 import edu.uva.libopt.numeric.Utils;
 import xiong.hdstats.*;
 import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.gaussian.NonSparseEstimator;
 import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
-import xiong.hdstats.graph.NonSparseEstimator;
 
 public class HDStatsTest {
 	

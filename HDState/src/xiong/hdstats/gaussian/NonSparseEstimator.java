@@ -1,4 +1,4 @@
-package xiong.hdstats.graph;
+package xiong.hdstats.gaussian;
 
 import java.io.BufferedReader;
 import java.io.File;

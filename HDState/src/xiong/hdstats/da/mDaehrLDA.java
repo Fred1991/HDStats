@@ -36,8 +36,8 @@ import Jama.Matrix;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.ShrinkageEstimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.gaussian.NonSparseEstimator;
 import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
-import xiong.hdstats.graph.NonSparseEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 import xiong.hdstats.graph.SparseCovEstimator;
 

@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import Jama.Matrix;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
-import xiong.hdstats.graph.NonSparseEstimator;
+import xiong.hdstats.gaussian.NonSparseEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 
 public class NonSparseLDA implements Classifier<double[]>{

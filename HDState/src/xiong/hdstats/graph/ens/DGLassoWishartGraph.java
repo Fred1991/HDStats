@@ -15,8 +15,8 @@ import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.MLEstimator;
 import xiong.hdstats.NearPD;
+import xiong.hdstats.gaussian.NonSparseEstimator;
 import xiong.hdstats.graph.DGLassoGraph;
-import xiong.hdstats.graph.NonSparseEstimator;
 
 public class DGLassoWishartGraph extends MLEstimator {
 

@@ -19,7 +19,7 @@ import gov.sandia.cognition.statistics.distribution.InverseWishartDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.statistics.distribution.NormalInverseWishartDistribution;
 import smile.stat.distribution.MultivariateGaussianDistribution;
-import xiong.hdstats.graph.NonSparseEstimator;
+import xiong.hdstats.gaussian.NonSparseEstimator;
 
 public class RegularizedBayesLDA extends GLassoLDA {
 

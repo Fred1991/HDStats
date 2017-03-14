@@ -2,6 +2,7 @@ package xiong.hdstats.graph;
 
 import xiong.hdstats.Estimator;
 import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.NonSparseEstimator;
 
 public class DGLassoGraph extends MLEstimator{
 
