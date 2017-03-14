@@ -1,4 +1,4 @@
-package edu.uva.hdstats.graph;
+package xiong.hdstats.graph;
 
 import edu.uva.libopt.numeric.NumericFunction;
 import edu.uva.libopt.numeric.NumericOptimizer;

@@ -1,4 +1,4 @@
-package edu.uva.hdstats.graph;
+package xiong.hdstats.graph;
 
 import smile.stat.distribution.MultivariateGaussianDistribution;
 import smile.stat.distribution.MultivariateGaussianMixture;

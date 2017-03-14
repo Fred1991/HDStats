@@ -1,4 +1,4 @@
-package edu.uva.hdstats.graph;
+package xiong.hdstats.graph;
 
 import xiong.hdstats.MLEstimator;
 

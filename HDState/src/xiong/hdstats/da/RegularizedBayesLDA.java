@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import edu.uva.hdstats.graph.NonSparseEstimator;
 import edu.uva.libopt.numeric.Utils;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
@@ -20,6 +19,7 @@ import gov.sandia.cognition.statistics.distribution.InverseWishartDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.statistics.distribution.NormalInverseWishartDistribution;
 import smile.stat.distribution.MultivariateGaussianDistribution;
+import xiong.hdstats.graph.NonSparseEstimator;
 
 public class RegularizedBayesLDA extends GLassoLDA {
 

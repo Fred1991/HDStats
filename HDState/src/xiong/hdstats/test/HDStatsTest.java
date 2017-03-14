@@ -1,10 +1,10 @@
-package edu.uva.hdstats.test;
+package xiong.hdstats.test;
 
-import edu.uva.hdstats.gaussian.GLassoEstimator;
-import edu.uva.hdstats.graph.DiagKeptSparseCovEstimator;
-import edu.uva.hdstats.graph.NonSparseEstimator;
 import edu.uva.libopt.numeric.Utils;
 import xiong.hdstats.*;
+import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
+import xiong.hdstats.graph.NonSparseEstimator;
 
 public class HDStatsTest {
 	

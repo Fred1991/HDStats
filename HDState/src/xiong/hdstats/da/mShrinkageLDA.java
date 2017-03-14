@@ -34,9 +34,9 @@ package xiong.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import edu.uva.hdstats.graph.PDLassoEstimator;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.ShrinkageEstimator;
+import xiong.hdstats.graph.PDLassoEstimator;
 
 public class mShrinkageLDA implements Classifier<double[]>{
 	public double[][] groupMean;

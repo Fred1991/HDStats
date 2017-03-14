@@ -33,13 +33,13 @@ package xiong.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import edu.uva.hdstats.gaussian.GLassoEstimator;
-import edu.uva.hdstats.graph.DiagKeptSparseCovEstimator;
-import edu.uva.hdstats.graph.NonSparseEstimator;
-import edu.uva.hdstats.graph.PDLassoEstimator;
-import edu.uva.hdstats.graph.SparseCovEstimator;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.ShrinkageEstimator;
+import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
+import xiong.hdstats.graph.NonSparseEstimator;
+import xiong.hdstats.graph.PDLassoEstimator;
+import xiong.hdstats.graph.SparseCovEstimator;
 
 public class mDaehrLDA implements Classifier<double[]> {
 	private double[][] groupMean;

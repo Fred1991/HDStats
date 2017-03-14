@@ -1,10 +1,9 @@
-package edu.uva.hdstats.graph.ens;
+package xiong.hdstats.graph.ens;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import edu.uva.hdstats.graph.SampleGraph;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
@@ -15,8 +14,9 @@ import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionM
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import xiong.hdstats.MLEstimator;
 import xiong.hdstats.NearPD;
+import xiong.hdstats.graph.SampleGraph;
 
-public class GMMGraph extends MLEstimator{
+public class SampleWishartGraph extends MLEstimator {
 
 	public double[][] wishartMeanPrecision;
 	public double[] mean;
@@ -24,7 +24,7 @@ public class GMMGraph extends MLEstimator{
 	public int size;
 	//private NonSparseEstimator ne = new NonSparseEstimator();
 
-	public GMMGraph(double[][] data, int size) {
+	public SampleWishartGraph(double[][] data, int size) {
 		this.size = size;
 		this.covariance(data);
 		this.mean = this.getMean(data);

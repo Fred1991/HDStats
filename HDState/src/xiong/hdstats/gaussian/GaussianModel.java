@@ -1,4 +1,4 @@
-package edu.uva.hdstats.gaussian;
+package xiong.hdstats.gaussian;
 
 import edu.uva.libopt.numeric.Utils;
 import la.decomposition.LUDecomposition;

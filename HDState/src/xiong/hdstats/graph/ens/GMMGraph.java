@@ -1,10 +1,9 @@
-package edu.uva.hdstats.graph.ens;
+package xiong.hdstats.graph.ens;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import edu.uva.hdstats.graph.SampleGraph;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
@@ -13,58 +12,31 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionMTJ;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
+import smile.stat.distribution.MultivariateGaussianMixture;
 import xiong.hdstats.MLEstimator;
 import xiong.hdstats.NearPD;
+import xiong.hdstats.graph.SampleGraph;
 
-public class SampleWishartGraph extends MLEstimator {
+public class GMMGraph extends MLEstimator{
 
-	public double[][] wishartMeanPrecision;
-	public double[] mean;
+	public MultivariateGaussianMixture gmm;
 	public List<SampleGraph> sampledGraphs = new ArrayList<SampleGraph>();
+	public List<Double> weight=new ArrayList<Double>();
 	public int size;
+	public int nData;
+	public int dimensions;
 	//private NonSparseEstimator ne = new NonSparseEstimator();
 
-	public SampleWishartGraph(double[][] data, int size) {
+	public GMMGraph(double[][] data, int size) {
 		this.size = size;
-		this.covariance(data);
-		this.mean = this.getMean(data);
+		this.nData=data.length;
+		this.dimensions=data[0].length;
+		this.gmm=new MultivariateGaussianMixture(data,size);
 
-		for (int i = 0; i < this.wishartMeanPrecision.length; i++)
-			this.wishartMeanPrecision[i][i] += 1;
 
-		VectorFactory vf = VectorFactory.getDenseDefault();
-		MatrixFactory mf = MatrixFactory.getDenseDefault();
-		Vector meanV = vf.copyArray(mean);
-		Matrix covarianceSqrt = null;
-		try{
-			covarianceSqrt=CholeskyDecompositionMTJ
-				.create(DenseMatrixFactoryMTJ.INSTANCE.copyMatrix(mf.copyArray(wishartMeanPrecision).inverse())).getR();
-		}catch(Exception exp){
-			NearPD npd=new NearPD();
-			npd.calcNearPD(new Jama.Matrix(this.wishartMeanPrecision));
-			this.wishartMeanPrecision=npd.getX().getArray();
-			covarianceSqrt=CholeskyDecompositionMTJ
-					.create(DenseMatrixFactoryMTJ.INSTANCE.copyMatrix(mf.copyArray(wishartMeanPrecision).inverse())).getR();
-		}
-		int fDOF = Math.min(Math.max(this.wishartMeanPrecision.length, data.length) * 10, 2000);
-		Random r = new Random(System.currentTimeMillis());
-		while (sampledGraphs.size() < this.size) {
-			Matrix mtx = sample(r, meanV, covarianceSqrt, fDOF);
-			sampledGraphs.add(new SampleGraph(mtx.inverse().toArray(), false));
-		}
 	}
-
-	@Override
-	public double[][] covariance(double[][] samples) {
-		double[][] covar=super.covariance(samples);
-		this.wishartMeanPrecision=inverse(covar);
-		
-	//	this.wishartMeanPrecision=new NearPD().;
-		return covar;
-		//this.wishartMeanPrecision = ne._deSparsifiedGlassoPrecisionMatrix(super.covariance(samples));
-		//return inverse(this.wishartMeanPrecision);
-	}
-
+	
+	
 	public int[][] thresholding(double t, int e) {
 		List<int[][]> tGraphs = new ArrayList<int[][]>();
 		for (int i = 0; i < this.size; i++)
@@ -115,12 +87,12 @@ public class SampleWishartGraph extends MLEstimator {
 	
 	
 	public int[][] submodularSearch(List<int[][]> graphs, int e) {
-		int[][] sGraph = new int[this.wishartMeanPrecision.length][this.wishartMeanPrecision.length];
+		int[][] sGraph = new int[dimensions][dimensions];
 		int selected = 0;
 		while (selected < e) {
 			int i_index=-1, j_index=-1, maxV=-1;
-			for (int i = 0; i < this.wishartMeanPrecision.length; i++) {
-				for (int j = 0; j < this.wishartMeanPrecision.length; j++) {
+			for (int i = 0; i < dimensions; i++) {
+				for (int j = 0; j < dimensions; j++) {
 					if (sGraph[i][j] == 0) {
 						int v=0;
 						for(int[][] graph:graphs){
@@ -152,14 +124,14 @@ public class SampleWishartGraph extends MLEstimator {
 	}
 
 	public int[][] $_submodularSubmodularSearch(List<int[][]> graphs, double overlap) {
-		int[][] sGraph = new int[this.wishartMeanPrecision.length][this.wishartMeanPrecision.length];
+		int[][] sGraph = new int[this.dimensions][this.dimensions];
 		double error = 0;
 		while (error < overlap) {
 			int i_index = -1, j_index = -1;
 			double maxV = -1;
 			double ecost = 0;
-			for (int i = 0; i < this.wishartMeanPrecision.length; i++) {
-				for (int j = 0; j < this.wishartMeanPrecision.length; j++) {
+			for (int i = 0; i < this.dimensions; i++) {
+				for (int j = 0; j < this.dimensions; j++) {
 					if (sGraph[i][j] == 0) {
 						double v = 0;
 						double u = 0;
@@ -196,14 +168,14 @@ public class SampleWishartGraph extends MLEstimator {
 
 	
 	public int[][] submodularSubmodularSearch(List<int[][]> graphs, List<int[][]> wgraphs, double overlap) {
-		int[][] sGraph = new int[this.wishartMeanPrecision.length][this.wishartMeanPrecision.length];
+		int[][] sGraph = new int[this.dimensions][this.dimensions];
 		double error = 0;
 		while (error < overlap*size) {
 			int i_index=-1, j_index=-1; 
 			double maxV=-1;
 			double ecost=0;
-			for (int i = 0; i < this.wishartMeanPrecision.length; i++) {
-				for (int j = 0; j < this.wishartMeanPrecision.length; j++) {
+			for (int i = 0; i < this.dimensions; i++) {
+				for (int j = 0; j < this.dimensions; j++) {
 					if (sGraph[i][j] == 0) {
 						double v=0;
 						for(int[][] graph:graphs){

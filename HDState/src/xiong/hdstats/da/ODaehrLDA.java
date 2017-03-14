@@ -33,9 +33,9 @@ package xiong.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import edu.uva.hdstats.graph.DiagKeptSparseCovEstimator;
-import edu.uva.hdstats.graph.PDLassoEstimator;
 import xiong.hdstats.Estimator;
+import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
+import xiong.hdstats.graph.PDLassoEstimator;
 
 public class ODaehrLDA implements Classifier<double[]> {
 	private double[][] groupMean;
