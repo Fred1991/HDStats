@@ -1,4 +1,6 @@
-package edu.uva.hdstats;
+package edu.uva.hdstats.graph;
+
+import edu.uva.hdstats.MLEstimator;
 
 public class SampleGraph extends MLEstimator{
 
@@ -34,7 +36,7 @@ public class SampleGraph extends MLEstimator{
 		int[][] edges=new int[graph.length][graph[0].length];
 		for(int i=0;i<graph.length;i++){
 			for(int j=0;j<graph[i].length;j++){
-				if(graph[i][j]>=threshold)
+				if(Math.abs(graph[i][j])>threshold)
 					edges[i][j]=1;
 				else
 					edges[i][j]=0;
@@ -47,7 +49,7 @@ public class SampleGraph extends MLEstimator{
 		int[][] edges=new int[graph.length][graph[0].length];
 		for(int i=0;i<graph.length;i++){
 			for(int j=0;j<graph[i].length;j++){
-				if(graph[i][j]>=threshold*Math.sqrt(graph[i][i]*graph[j][j]))
+				if(Math.abs(graph[i][j])>threshold*Math.sqrt(Math.abs(graph[i][i]*graph[j][j]+graph[i][j]*graph[i][j])))
 					edges[i][j]=1;
 				else
 					edges[i][j]=0;
@@ -64,6 +66,8 @@ public class SampleGraph extends MLEstimator{
 			for(int j=0;j<dgraph.length;j++){
 				if(graph[i][j]!=wgraph[i][j])
 					dgraph[i][j]=1;
+				else
+					dgraph[i][j]=0;
 			}
 		}
 		return dgraph;
@@ -77,6 +81,8 @@ public class SampleGraph extends MLEstimator{
 			for(int j=0;j<dgraph.length;j++){
 				if(graph[i][j]!=wgraph[i][j])
 					dgraph[i][j]=1;
+				else
+					dgraph[i][j]=0;
 			}
 		}
 		return dgraph;

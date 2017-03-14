@@ -1,18 +1,22 @@
-package edu.uva.hdstats;
+package edu.uva.hdstats.graph;
 
-public class DebiasedGLassoGraph extends MLEstimator{
+import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.GLassoEstimator;
+import edu.uva.hdstats.MLEstimator;
+
+public class GLassoGraph extends MLEstimator{
 
 	public double[][] gaussianPrecision;
-	private NonSparseEstimator ne=new NonSparseEstimator();
+	private GLassoEstimator ne=new GLassoEstimator();
 	
-	public DebiasedGLassoGraph(double[][] data,double lambda){
+	public GLassoGraph(double[][] data,double lambda){
 		Estimator.lambda=lambda;
 		this.covariance(data);
 	}
 	
 	@Override
 	public double[][] covariance(double[][] samples) {
-		this.gaussianPrecision=ne._deSparsifiedGlassoPrecisionMatrix(super.covariance(samples));
+		this.gaussianPrecision=ne._glassoPrecisionMatrix(super.covariance(samples));
 		return inverse(this.gaussianPrecision);
 	}
 	
@@ -24,7 +28,7 @@ public class DebiasedGLassoGraph extends MLEstimator{
 		return SampleGraph._adaptiveThresholding(threshold,gaussianPrecision);
 	}
 	
-	public int[][] thresholdingDiff(double t, DebiasedGLassoGraph wg) {
+	public int[][] thresholdingDiff(double t, GLassoGraph wg) {
 		int[][] graph=this.thresholding(t);
 		int[][] wgraph=wg.thresholding(t);
 		int[][] dgraph=new int[graph.length][graph.length];
@@ -37,7 +41,7 @@ public class DebiasedGLassoGraph extends MLEstimator{
 		return dgraph;
 	}
 	
-	public int[][] adaptiveThresholdingDiff(double t, DebiasedGLassoGraph wg) {
+	public int[][] adaptiveThresholdingDiff(double t, GLassoGraph wg) {
 		int[][] graph=this.adaptiveThresholding(t);
 		int[][] wgraph=wg.adaptiveThresholding(t);
 		int[][] dgraph=new int[graph.length][graph.length];
