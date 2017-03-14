@@ -35,9 +35,9 @@ import java.util.ArrayList;
 
 import Jama.Matrix;
 import edu.uva.hdstats.Estimator;
-import edu.uva.hdstats.GLassoEstimator;
-import edu.uva.hdstats.NonSparseEstimator;
-import edu.uva.hdstats.PDLassoEstimator;
+import edu.uva.hdstats.gaussian.GLassoEstimator;
+import edu.uva.hdstats.graph.NonSparseEstimator;
+import edu.uva.hdstats.graph.PDLassoEstimator;
 
 public class NonSparseLDA implements Classifier<double[]>{
 	public double[][] groupMean;

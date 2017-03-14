@@ -35,8 +35,8 @@ import java.util.ArrayList;
 
 import Jama.Matrix;
 import edu.uva.hdstats.Estimator;
-import edu.uva.hdstats.PDLassoEstimator;
 import edu.uva.hdstats.ShrinkageEstimator;
+import edu.uva.hdstats.graph.PDLassoEstimator;
 
 public class mShrinkageLDA implements Classifier<double[]>{
 	public double[][] groupMean;

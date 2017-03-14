@@ -1,4 +1,4 @@
-package edu.uva.hdstats;
+package edu.uva.hdstats.graph;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.UUID;
+
+import edu.uva.hdstats.LassoEstimator;
+import edu.uva.hdstats.MLEstimator;
 
 public class SparseCovEstimator extends MLEstimator {
 

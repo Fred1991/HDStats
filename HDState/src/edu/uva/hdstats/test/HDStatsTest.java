@@ -1,6 +1,8 @@
 package edu.uva.hdstats.test;
 
 import edu.uva.hdstats.*;
+import edu.uva.hdstats.gaussian.GLassoEstimator;
+import edu.uva.hdstats.graph.NonSparseEstimator;
 import edu.uva.libopt.numeric.Utils;
 
 public class HDStatsTest {

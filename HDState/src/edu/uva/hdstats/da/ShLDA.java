@@ -35,8 +35,8 @@ import java.util.ArrayList;
 
 import Jama.Matrix;
 import edu.uva.hdstats.Estimator;
-import edu.uva.hdstats.PDLassoEstimator;
 import edu.uva.hdstats.ShrinkageEstimator;
+import edu.uva.hdstats.graph.PDLassoEstimator;
 
 public class ShLDA implements Classifier<double[]>{
 	private double[][] groupMean;

@@ -1,5 +1,9 @@
-package edu.uva.hdstats;
+package edu.uva.hdstats.graph;
 
+import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.LassoEstimator;
+import edu.uva.hdstats.MLEstimator;
+import edu.uva.hdstats.NearPD;
 
 public class PDLassoEstimator extends MLEstimator{
 

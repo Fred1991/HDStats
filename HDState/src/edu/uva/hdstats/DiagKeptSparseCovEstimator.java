@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.UUID;
 
+import edu.uva.hdstats.graph.DiagKeptLassoEstimator;
+
 public class DiagKeptSparseCovEstimator extends MLEstimator {
 
 	public int _iter;

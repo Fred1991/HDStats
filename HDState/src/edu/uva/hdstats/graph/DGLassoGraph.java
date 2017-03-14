@@ -2,7 +2,6 @@ package edu.uva.hdstats.graph;
 
 import edu.uva.hdstats.Estimator;
 import edu.uva.hdstats.MLEstimator;
-import edu.uva.hdstats.NonSparseEstimator;
 
 public class DGLassoGraph extends MLEstimator{
 

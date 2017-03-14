@@ -19,7 +19,7 @@ package edu.uva.hdstats.da;
 import java.util.Arrays;
 
 import edu.uva.hdstats.Estimator;
-import edu.uva.hdstats.PDLassoEstimator;
+import edu.uva.hdstats.graph.PDLassoEstimator;
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
 

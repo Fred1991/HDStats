@@ -1,5 +1,6 @@
-package edu.uva.hdstats;
+package edu.uva.hdstats.graph;
 
+import edu.uva.hdstats.MLEstimator;
 import edu.uva.libopt.numeric.NumericFunction;
 import edu.uva.libopt.numeric.NumericOptimizer;
 import edu.uva.libopt.numeric.Utils;

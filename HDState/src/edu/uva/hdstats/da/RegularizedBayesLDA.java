@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import edu.uva.hdstats.NonSparseEstimator;
+import edu.uva.hdstats.graph.NonSparseEstimator;
 import edu.uva.libopt.numeric.Utils;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;

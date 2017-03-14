@@ -1,8 +1,8 @@
 package edu.uva.hdstats.graph;
 
 import edu.uva.hdstats.Estimator;
-import edu.uva.hdstats.GLassoEstimator;
 import edu.uva.hdstats.MLEstimator;
+import edu.uva.hdstats.gaussian.GLassoEstimator;
 
 public class GLassoGraph extends MLEstimator{
 

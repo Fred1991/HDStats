@@ -7,7 +7,7 @@ import java.util.Random;
 import edu.uva.hdstats.Estimator;
 import edu.uva.hdstats.MLEstimator;
 import edu.uva.hdstats.NearPD;
-import edu.uva.hdstats.NonSparseEstimator;
+import edu.uva.hdstats.graph.NonSparseEstimator;
 import edu.uva.hdstats.graph.SampleGraph;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
