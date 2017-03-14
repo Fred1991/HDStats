@@ -1,4 +1,4 @@
-package edu.uva.hdstats;
+package edu.uva.hdstats.graph;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.UUID;
 
-import edu.uva.hdstats.graph.DiagKeptLassoEstimator;
+import edu.uva.hdstats.MLEstimator;
 
 public class DiagKeptSparseCovEstimator extends MLEstimator {
 

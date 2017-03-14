@@ -33,8 +33,8 @@ package edu.uva.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import edu.uva.hdstats.DiagKeptSparseCovEstimator;
 import edu.uva.hdstats.Estimator;
+import edu.uva.hdstats.graph.DiagKeptSparseCovEstimator;
 import edu.uva.hdstats.graph.PDLassoEstimator;
 
 public class ODaehrLDA implements Classifier<double[]> {
