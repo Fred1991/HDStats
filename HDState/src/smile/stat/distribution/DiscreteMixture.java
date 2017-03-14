@@ -18,7 +18,6 @@ package smile.stat.distribution;
 import java.util.List;
 import java.util.ArrayList;
 import smile.math.Math;
-import smile.stat.distribution.Component;
 import smile.stat.distribution.DiscreteDistribution;
 
 /**

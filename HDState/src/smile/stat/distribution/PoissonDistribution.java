@@ -20,10 +20,7 @@ import smile.math.special.Gamma;
 import smile.stat.distribution.DiscreteDistribution;
 import smile.stat.distribution.DiscreteExponentialFamily;
 import smile.stat.distribution.DiscreteMixture;
-import smile.stat.distribution.ModeSearch;
-import smile.stat.distribution.Patchwork;
 import smile.stat.distribution.PoissonDistribution;
-import smile.stat.distribution.RandomNumberGenerator;
 import smile.math.Math;
 
 /**

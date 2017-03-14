@@ -18,7 +18,6 @@ package smile.stat.distribution;
 import java.util.List;
 
 import smile.stat.distribution.AbstractMultivariateDistribution;
-import smile.stat.distribution.Component;
 import smile.stat.distribution.MultivariateDistribution;
 
 import java.util.ArrayList;

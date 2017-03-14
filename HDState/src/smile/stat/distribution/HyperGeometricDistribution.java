@@ -18,9 +18,6 @@ package smile.stat.distribution;
 
 import smile.math.Math;
 import smile.stat.distribution.DiscreteDistribution;
-import smile.stat.distribution.Inversion;
-import smile.stat.distribution.Patchwork;
-import smile.stat.distribution.RandomNumberGenerator;
 
 /**
  * The hypergeometric distribution is a discrete probability distribution that
