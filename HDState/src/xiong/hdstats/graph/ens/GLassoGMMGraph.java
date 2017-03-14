@@ -12,6 +12,7 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionMTJ;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
+import smile.stat.distribution.GLassoMultivariateGaussianMixture;
 import smile.stat.distribution.MultivariateGaussianMixture;
 import smile.stat.distribution.MultivariateMixture.Component;
 import xiong.hdstats.MLEstimator;
@@ -20,7 +21,7 @@ import xiong.hdstats.graph.SampleGraph;
 
 public class GLassoGMMGraph extends MLEstimator{
 
-	public MultivariateGaussianMixture gmm;
+	public GLassoMultivariateGaussianMixture gmm;
 	public List<SampleGraph> sampledGraphs = new ArrayList<SampleGraph>();
 	public List<Double> weight=new ArrayList<Double>();
 	public int size;
@@ -32,7 +33,7 @@ public class GLassoGMMGraph extends MLEstimator{
 		this.size = size;
 		this.nData=data.length;
 		this.dimensions=data[0].length;
-		this.gmm=new MultivariateGaussianMixture(data,size);
+		this.gmm=new GLassoMultivariateGaussianMixture(data,size);
 		for(Component comp:this.gmm.getComponents()){
 			weight.add(comp.priori);
 			sampledGraphs.add(new SampleGraph(inverse(comp.distribution.cov()),false));
