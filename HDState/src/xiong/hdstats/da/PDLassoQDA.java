@@ -18,10 +18,10 @@ package xiong.hdstats.da;
 
 import java.util.Arrays;
 
+import edu.uva.hdstats.graph.PDLassoEstimator;
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
 import xiong.hdstats.Estimator;
-import xiong.hdstats.graph.PDLassoEstimator;
 
 /**
  * Quadratic discriminant analysis. QDA is closely related to linear discriminant

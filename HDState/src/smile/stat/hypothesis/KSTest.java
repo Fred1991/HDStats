@@ -19,7 +19,7 @@ package smile.stat.hypothesis;
 import java.util.Arrays;
 
 import smile.math.Math;
-import xiong.hdstats.distribution.Distribution;
+import smile.stat.distribution.Distribution;
 
 /**
  * The Kolmogorov-Smirnov test (K-S test) is a form of minimum distance

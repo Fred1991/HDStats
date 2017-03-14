@@ -16,8 +16,8 @@ import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionMTJ;
 import gov.sandia.cognition.statistics.distribution.InverseWishartDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
+import smile.stat.distribution.MultivariateGaussianDistribution;
 import xiong.hdstats.NearPD;
-import xiong.hdstats.distribution.MultivariateGaussianDistribution;
 
 public class MCBayesLDA extends OLDA {
 

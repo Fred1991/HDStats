@@ -34,10 +34,10 @@ package xiong.hdstats.da;
 import java.util.ArrayList;
 
 import Jama.Matrix;
+import edu.uva.hdstats.gaussian.GLassoEstimator;
+import edu.uva.hdstats.graph.NonSparseEstimator;
+import edu.uva.hdstats.graph.PDLassoEstimator;
 import xiong.hdstats.Estimator;
-import xiong.hdstats.gaussian.GLassoEstimator;
-import xiong.hdstats.graph.NonSparseEstimator;
-import xiong.hdstats.graph.PDLassoEstimator;
 
 public class NonSparseLDA implements Classifier<double[]>{
 	public double[][] groupMean;
