@@ -22,8 +22,6 @@ import smile.stat.distribution.DGLassoMultivariateGaussianDistribution;
 import smile.stat.distribution.MultivariateMixture;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.da.PseudoInverse;
-import xiong.hdstats.gaussian.GLassoEstimator;
-import xiong.hdstats.gaussian.NonSparseEstimator;
 import Jama.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import smile.math.Math;
@@ -114,7 +112,6 @@ public class DGLassoMultivariateGaussianDistribution extends AbstractMultivariat
         if (mean.length != cov.length) {
             throw new IllegalArgumentException("Mean vector and covariance matrix have different dimension");
         }
-		cov=Estimator.inverse(new NonSparseEstimator()._deSparsifiedGlassoPrecisionMatrix(cov));
 
         mu = new double[mean.length];
         sigma = new double[mean.length][mean.length];
@@ -139,7 +136,6 @@ public class DGLassoMultivariateGaussianDistribution extends AbstractMultivariat
         double[][] cov;
 		try{
 			cov=new Matrix(precision).inverse().getArray();
-			cov=Estimator.inverse(new NonSparseEstimator()._deSparsifiedGlassoPrecisionMatrix(cov));
 		}catch(Exception exp){
 			cov=PseudoInverse.inverse(new Matrix(precision)).getArray();
 		}
@@ -184,8 +180,7 @@ public class DGLassoMultivariateGaussianDistribution extends AbstractMultivariat
                 sigma[j][j] /= (data.length - 1);
             }
         } else {
-            sigma = Math.cov(data, mu);
-    		sigma=Estimator.inverse(new NonSparseEstimator()._deSparsifiedGlassoPrecisionMatrix(sigma));
+            sigma = Math.dglassoCov(data, mu);
         }
 
         numParameters = mu.length + mu.length * (mu.length + 1) / 2;

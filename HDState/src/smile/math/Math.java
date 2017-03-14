@@ -28,6 +28,9 @@ import smile.math.matrix.SingularValueDecomposition;
 import smile.sort.QuickSelect;
 import smile.sort.QuickSort;
 import smile.sort.SortUtils;
+import xiong.hdstats.Estimator;
+import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.gaussian.NonSparseEstimator;
 
 /**
  * A collection of useful mathematical functions. The following functions are
@@ -2454,6 +2457,15 @@ public class Math {
         }
 
         return sigma;
+    }
+    
+    public static double[][] dglassoCov(double[][] data, double[] mu) {
+    	return Estimator.inverse(new NonSparseEstimator()._deSparsifiedGlassoPrecisionMatrix(cov(data,mu)));
+    }
+    
+    
+    public static double[][] glassoCov(double[][] data, double[] mu) {
+    	return Estimator.inverse(new GLassoEstimator()._glassoPrecisionMatrix(cov(data,mu)));
     }
 
     /**

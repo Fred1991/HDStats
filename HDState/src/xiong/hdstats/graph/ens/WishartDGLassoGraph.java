@@ -16,17 +16,17 @@ import xiong.hdstats.Estimator;
 import xiong.hdstats.MLEstimator;
 import xiong.hdstats.NearPD;
 import xiong.hdstats.gaussian.NonSparseEstimator;
-import xiong.hdstats.graph.SampleGraph;
+import xiong.hdstats.graph.DGLassoGraph;
 
-public class WishartGraph extends MLEstimator {
+public class WishartDGLassoGraph extends MLEstimator {
 
 	public double[][] wishartMeanPrecision;
 	public double[] mean;
-	public List<SampleGraph> sampledGraphs = new ArrayList<SampleGraph>();
+	public List<DGLassoGraph> sampledGraphs = new ArrayList<DGLassoGraph>();
 	public int size;
 	private NonSparseEstimator ne = new NonSparseEstimator();
 
-	public WishartGraph(double[][] data, double lambda, int size) {
+	public WishartDGLassoGraph(double[][] data, double lambda, int size, double K) {
 		Estimator.lambda = lambda;
 		this.size = size;
 		this.covariance(data);
@@ -47,13 +47,14 @@ public class WishartGraph extends MLEstimator {
 			NearPD npd = new NearPD();
 			npd.calcNearPD(new Jama.Matrix(mf.copyArray(wishartMeanPrecision).inverse().toArray()));
 			covarianceSqrt = CholeskyDecompositionMTJ
-					.create(DenseMatrixFactoryMTJ.INSTANCE.copyMatrix(mf.copyArray(npd.getX().getArray()))).getR();
+					.create(DenseMatrixFactoryMTJ.INSTANCE.copyMatrix(mf.copyArray(npd.getX().getArray())))
+					.getR();
 		}
 		int fDOF = Math.min(Math.max(this.wishartMeanPrecision.length, data.length) * 10, 2000);
 		Random r = new Random(System.currentTimeMillis());
 		while (sampledGraphs.size() < this.size) {
 			Matrix mtx = sample(r, meanV, covarianceSqrt, fDOF);
-			sampledGraphs.add(new SampleGraph(mtx.inverse().toArray(), false));
+			sampledGraphs.add(new DGLassoGraph(mtx.inverse().toArray(), lambda));
 		}
 	}
 
@@ -77,7 +78,7 @@ public class WishartGraph extends MLEstimator {
 		return this.submodularSearch(tGraphs, e);
 	}
 
-	public int[][] thresholdingDiff(double t, double e, WishartGraph wg) {
+	public int[][] thresholdingDiff(double t, double e, WishartDGLassoGraph wg) {
 		List<int[][]> tGraphs = new ArrayList<int[][]>();
 		for (int i = 0; i < this.size; i++)
 			tGraphs.add(sampledGraphs.get(i).thresholding(t));
@@ -88,9 +89,7 @@ public class WishartGraph extends MLEstimator {
 		return this.submodularSubmodularSearch(tGraphs, wGraphs, e);
 	}
 
-
-	
-	public int[][] adaptiveThresholdingDiff(double t, double overlap, WishartGraph wg) {
+	public int[][] adaptiveThresholdingDiff(double t, double overlap, WishartDGLassoGraph wg) {
 		List<int[][]> tGraphs = new ArrayList<int[][]>();
 		for (int i = 0; i < this.size; i++)
 			tGraphs.add(sampledGraphs.get(i).adaptiveThresholding(t));
@@ -136,57 +135,6 @@ public class WishartGraph extends MLEstimator {
 				return sGraph;
 			sGraph[i_index][j_index] = 1;
 			selected++;
-		}
-		return sGraph;
-	}
-	
-	public int[][] adaptiveThresholdingDiff(double t, double overlap) {
-		List<int[][]> tGraphs = new ArrayList<int[][]>();
-		for (int i = 0; i < this.size; i++)
-			tGraphs.add(sampledGraphs.get(i).adaptiveThresholding(t));
-
-		return this.$_submodularSubmodularSearch(tGraphs, overlap);
-	}
-
-	public int[][] $_submodularSubmodularSearch(List<int[][]> graphs, double overlap) {
-		int[][] sGraph = new int[this.wishartMeanPrecision.length][this.wishartMeanPrecision.length];
-		double error = 0;
-		while (error < overlap * size) {
-			int i_index = -1, j_index = -1;
-			double maxV = -1;
-			double ecost = 0;
-			for (int i = 0; i < this.wishartMeanPrecision.length; i++) {
-				for (int j = 0; j < this.wishartMeanPrecision.length; j++) {
-					if (sGraph[i][j] == 0) {
-						double v = 0;
-						double u = 0;
-
-						for (int[][] graph : graphs) {
-							if (graph[i][j] != 0)
-								v++;
-							else
-								u++;
-						}
-
-						if (u!=0&&v / u > maxV) {
-							maxV = v / u;
-							i_index = i;
-							j_index = j;
-							ecost = u;
-						}else if(u==0&&v!=0){
-							maxV = Double.POSITIVE_INFINITY;
-							i_index = i;
-							j_index = j;
-							ecost = u;
-
-						}
-					}
-				}
-			}
-			if (maxV <= 0)
-				return sGraph;
-			sGraph[i_index][j_index] = 1;
-			error += ecost;
 		}
 		return sGraph;
 	}
