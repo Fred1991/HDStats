@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import edu.uva.libopt.csensing.Compressor;
+import edu.uva.libopt.csensing.imp.LASSOCompressor;
+import edu.uva.libopt.numeric.Utils;
 import gov.sandia.cognition.math.RingAccumulator;
 import gov.sandia.cognition.math.matrix.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
@@ -33,6 +36,7 @@ public class GMMGraph extends MLEstimator{
 		this.nData=data.length;
 		this.dimensions=data[0].length;
 		this.gmm=new MultivariateGaussianMixture(data,size);
+		
 		for(Component comp:this.gmm.getComponents()){
 			weight.add(comp.priori);
 			sampledGraphs.add(new SampleGraph(inverse(comp.distribution.cov()),false));
@@ -222,6 +226,12 @@ public class GMMGraph extends MLEstimator{
 			sum.accumulate(x.outerProduct(x));
 		}
 		return sum.getSum();
+	}
+	
+	public static void main(String[] args){
+		double[][] data=Utils.getRandomMatrix(232, 2500);
+		GMMGraph gmm=new GMMGraph(data,100);
+		gmm.adaptiveThresholding(0,10);
 	}
 
 }

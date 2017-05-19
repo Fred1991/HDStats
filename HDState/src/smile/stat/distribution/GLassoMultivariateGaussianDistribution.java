@@ -25,6 +25,7 @@ import xiong.hdstats.da.PseudoInverse;
 import Jama.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import smile.math.Math;
+import smile.math.matrix.CholeskyDecomposition;
 
 /**
  * Multivariate Gaussian distribution.
@@ -193,10 +194,11 @@ public class GLassoMultivariateGaussianDistribution extends AbstractMultivariate
      */
     private void init() {
         dim = mu.length;
-      //  CholeskyDecomposition cholesky = new CholeskyDecomposition(sigma);
+        
+        CholeskyDecomposition cholesky = new CholeskyDecomposition(sigma);
         sigmaInv = this.theta;
-       // sigmaDet = cholesky.det();
-       // sigmaL = cholesky.getL();
+        sigmaDet = cholesky.det();
+        sigmaL = cholesky.getL();
 		MatrixFactory mf = MatrixFactory.getDenseDefault();
         pdfConstant = (dim * Math.log(2 * Math.PI) + mf.copyArray(sigma).logDeterminant().getRealPart()) / 2.0;
     }

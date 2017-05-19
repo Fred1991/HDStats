@@ -65,6 +65,51 @@ public class Utils {
 
 	}
 
+	
+	public static double getErrorL2(double[][] m1, double[][] m2) {
+		double base=0;
+		double err = 0;
+
+		for (int i = 0; i < m1.length; i++) {
+			for (int j = 0; j < m1[i].length; j++) {
+				err += Math.abs(m1[i][j] - m2[i][j]) * Math.abs(m1[i][j] - m2[i][j]);
+				base+=(m2[i][j]*m2[i][j]);
+			}
+		}
+
+		return Math.sqrt(err)/Math.sqrt(base);
+
+	}
+	
+	public static double getErrorL1(double[][] m1, double[][] m2) {
+		// double base=0;
+		double err = 0;
+		double base=0;
+		for (int i = 0; i < m1.length; i++) {
+			for (int j = 0; j < m1[i].length; j++) {
+				err += Math.abs(m1[i][j] - m2[i][j]);
+				base+=Math.abs(m2[i][j]);
+			}
+		}
+
+		return err/base;
+
+	}
+	
+	public static double getErrorInf(double[][] m1, double[][] m2) {
+		// double base=0;
+		double max =Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < m1.length; i++) {
+			for (int j = 0; j < m1[i].length; j++) {
+				if(max< Math.abs(m1[i][j] - m2[i][j]))
+					max=Math.abs(m1[i][j] - m2[i][j]);
+			}
+		}
+
+		return max;
+
+	}
+	
 	public static double normalizedErrorL1Recovery(double[][] m1, double[][] m, double[][] m2, double threshold) {
 		double base = 0;
 		double err = 0;
@@ -130,7 +175,7 @@ public class Utils {
 
 		return lxnorm;
 	}
-
+	
 	public static double getLxNorm(double[][] Xx, int l) {
 		double maxX = Double.NEGATIVE_INFINITY;
 		double lxnorm = 0;

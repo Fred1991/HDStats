@@ -49,7 +49,7 @@ public class SampleGraph extends MLEstimator{
 		int[][] edges=new int[graph.length][graph[0].length];
 		for(int i=0;i<graph.length;i++){
 			for(int j=0;j<graph[i].length;j++){
-				if(Math.abs(graph[i][j])>threshold*Math.sqrt(Math.abs(graph[i][i]*graph[j][j]+graph[i][j]*graph[i][j])))
+				if(Math.abs(graph[i][j])>threshold*Math.sqrt(Math.abs(graph[i][i]*graph[j][j])+Math.abs(graph[i][j]*graph[i][j])))
 					edges[i][j]=1;
 				else
 					edges[i][j]=0;

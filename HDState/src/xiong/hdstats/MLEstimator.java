@@ -11,7 +11,7 @@ public class MLEstimator extends Estimator{
 		for(int i=0;i<samples.length;i++){
 			for(int j=0;j<samples[i].length;j++){
 				for(int k=0;k<samples[i].length;k++){
-					covar[j][k]+=(samples[i][j]-mean[j])*(samples[i][k]-mean[k])/mean.length;
+					covar[j][k]+=(samples[i][j]-mean[j])*(samples[i][k]-mean[k])/samples.length;
 				}
 			}
 		}
