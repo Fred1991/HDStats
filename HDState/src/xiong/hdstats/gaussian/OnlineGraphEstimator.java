@@ -15,6 +15,9 @@ public class OnlineGraphEstimator extends MLEstimator {
 
 	public OnlineGraphEstimator(int k) {
 		this.k=k;
+	}	
+	
+	public OnlineGraphEstimator() {
 	}
 	
 	public void update(int index, double[] newdata){
@@ -44,24 +47,6 @@ public class OnlineGraphEstimator extends MLEstimator {
 	}
 	
 
-	
-	public static void HT(int kk, double[][] ggraph){
-		List<Double> absValues=new ArrayList<Double>();
-		for(int i=0;i<ggraph.length;i++){
-			for(int j=0;j<ggraph.length;j++){
-				absValues.add(Math.abs(ggraph[i][j]));
-			}
-		}
-		Collections.sort(absValues);
-
-		double thr=absValues.get(absValues.size()-kk);
-		for(int i=0;i<ggraph.length;i++){
-			for(int j=0;j<ggraph.length;j++){
-				if(Math.abs(ggraph[i][j])<thr)
-					ggraph[i][j]=0;
-			}
-		}
-	}
 	
 	@Override
 	public double[][] covariance(double[][] samples) {

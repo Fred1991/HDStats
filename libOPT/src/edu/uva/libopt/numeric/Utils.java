@@ -77,7 +77,8 @@ public class Utils {
 			}
 		}
 
-		return Math.sqrt(err)/Math.sqrt(base);
+		return Math.sqrt(err);
+		///Math.sqrt(base);
 
 	}
 	
