@@ -21,6 +21,10 @@ public class PDLassoEstimator extends MLEstimator{
 		covarianceApprox(covar_inner);
 		return covar_inner;
 	}
+	public double[][] covarianceFromCov(double[][] covar_inner) {
+		covarianceApprox(covar_inner);
+		return covar_inner;
+	}
 
 	
 	public void covarianceApprox2(double[][] covar_inner){

@@ -39,6 +39,8 @@ public class OLDA implements Classifier<double[]>{
 	public double[][] groupMean;
 	public 	double[] globalMean;
 	public double[][] pooledInverseCovariance;
+	public double[][] pooledCovariance;
+
 	private double[] probability;
 	private ArrayList<Integer> groupList = new ArrayList<Integer>();
 
@@ -144,6 +146,7 @@ public class OLDA implements Classifier<double[]>{
 			}
 		}
 
+		pooledCovariance = pooledInverseCovariance;
 		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
 				
 	//	double[][] im=new double[pooledInverseCovariance.length][pooledInverseCovariance.length];

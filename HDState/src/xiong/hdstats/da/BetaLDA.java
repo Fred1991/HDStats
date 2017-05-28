@@ -1,12 +1,8 @@
 package xiong.hdstats.da;
 
-import java.util.HashMap;
-
 import Jama.Matrix;
-import xiong.hdstats.gaussian.OnlineGraphEstimator;
 
-public class OnlineLDA implements Classifier<double[]> {
-	public OnlineGraphEstimator oge = new OnlineGraphEstimator();
+public class BetaLDA implements Classifier<double[]> {
 	public double[][][] means;
 	public int[] frequencies = new int[2];
 	public double[] c = new double[2];
@@ -14,8 +10,7 @@ public class OnlineLDA implements Classifier<double[]> {
 	public double delta = 0;
 	public int totalNum;
 
-	public void init(double[][] data, int[] label) {
-		this.oge.init(data);
+	public void init(double[][] data, double[][] graph, int[] label) {
 		int index = 0;
 		means = new double[2][1][data[0].length];
 
@@ -36,31 +31,13 @@ public class OnlineLDA implements Classifier<double[]> {
 		this.delta = Math.log((double) this.frequencies[0] / (double) this.frequencies[1]);
 		for (int l = 0; l < 2; l++) {
 			Matrix meanl = new Matrix(this.means[l]);
-			Matrix theta = new Matrix(this.oge.graph);
+			Matrix theta = new Matrix(graph);
 			this.beta[l] = theta.times(meanl.transpose());
 			this.c[l] = meanl.times(theta).times(meanl.transpose()).get(0, 0);
 		}
 		beta[2] = beta[0].minus(beta[1]);
 	}
 
-	public void update(double[] data, int label) {
-		int k = label > 0 ? 0 : 1;
-		// System.out.println(label+"\t"+k);
-		this.totalNum++;
-		double freq = ++this.frequencies[k];
-		for (int i = 0; i < data.length; i++) {
-			this.means[k][0][i] = (freq - 1.0) / freq * this.means[k][0][i] + 1.0 / freq * data[i];
-		}
-		this.oge.update(this.totalNum, data);
-		this.delta = Math.log((double) this.frequencies[0] / (double) this.frequencies[1]);
-		for (int l = 0; l < 2; l++) {
-			Matrix meanl = new Matrix(this.means[l]);
-			Matrix theta = new Matrix(this.oge.graph);
-			this.beta[l] = theta.times(meanl.transpose());
-			this.c[l] = meanl.times(theta).times(meanl.transpose()).get(0, 0);
-		}
-		beta[2] = beta[0].minus(beta[1]);
-	}
 
 	@Override
 	public int predict(double[] x) {

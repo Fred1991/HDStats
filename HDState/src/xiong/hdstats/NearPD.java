@@ -14,7 +14,7 @@ import Jama.Matrix;
  * The class implements the method of Higham (2002) and the code has been adapted from the
  * version implemented in R.   
  * 
- *   Reference: Higham, N. J., 2002. Computing the nearest correlation matrixâ€”a problem 
+ *   Reference: Higham, N. J., 2002. Computing the nearest correlation matrix—a problem 
  *              from finance, IMA Journal of Numerical Analysis,  22, 329-343.
  * 
  * The main method of this class calcNearPD has been tested against a matlab impl and also
@@ -81,7 +81,6 @@ public class NearPD {
 		double conv = Double.POSITIVE_INFINITY;
 		//Loop
 		while ((iter<maxit)&!converged) {
-			System.out.println("PD Loop\t"+iter+"\t converge:"+conv);
 			Y = X.copy();
 			
 			//Dykstra correction
@@ -193,8 +192,8 @@ public class NearPD {
 	private void setDefaults() {
 		keepDiag = false;
 		doDykstra = true;
-		eigTol = 1.e-4;
-		convTol = 0.005;
+		eigTol = 1.e-6;
+		convTol = 1.e-7;
 		maxit = 100;
 	}
 	

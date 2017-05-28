@@ -10,13 +10,7 @@ import xiong.hdstats.MLEstimator;
 public class OnlineGraphEstimator extends MLEstimator {
 	public double[][] graph;
 	public double[][] init_cov;
-	int k;
 
-
-	public OnlineGraphEstimator(int k) {
-		this.k=k;
-	}	
-	
 	public OnlineGraphEstimator() {
 	}
 	
