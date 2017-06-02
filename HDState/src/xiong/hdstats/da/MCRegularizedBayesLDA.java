@@ -21,7 +21,7 @@ import gov.sandia.cognition.statistics.distribution.NormalInverseWishartDistribu
 import smile.stat.distribution.MultivariateGaussianDistribution;
 import xiong.hdstats.gaussian.NonSparseEstimator;
 
-public class MCRegularizedBayesLDA extends GLassoLDA {
+public class MCRegularizedBayesLDA extends SDA {
 
 	private List<double[][]> pooledClassifiers = new ArrayList<double[][]>();
 	private HashMap<double[][], MultivariateGaussianDistribution> scoreFunctions = new HashMap<double[][], MultivariateGaussianDistribution>();

@@ -47,7 +47,7 @@ public class BetaLDA implements Classifier<double[]> {
 			inputArray[0][i] = x[i]-0.5*this.means[0][0][i]-0.5*this.means[1][0][i];
 		}
 		Matrix input = new Matrix(inputArray);
-		double result = this.delta;
+		double result = -1.0*this.delta;
 		// System.out.println(input.times(this.beta.get(label)).getRowDimension());
 		result += input.times(this.beta[2]).get(0, 0);
 		// System.out.println(result);

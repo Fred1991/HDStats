@@ -11,19 +11,20 @@ import edu.uva.libopt.numeric.*;
 import smile.math.matrix.Matrix;
 import smile.projection.PCA;
 import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
+import smile.stat.distribution.MultivariateGaussianDistribution;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.da.AdaBoostTreeClassifier;
 import xiong.hdstats.da.AdaboostLRClassifier;
 import xiong.hdstats.da.BayesLDA;
 import xiong.hdstats.da.Classifier;
 import xiong.hdstats.da.DTreeClassifier;
-import xiong.hdstats.da.GLassoLDA;
+import xiong.hdstats.da.SDA;
 import xiong.hdstats.da.LDA;
 import xiong.hdstats.da.LRClassifier;
 import xiong.hdstats.da.LiklihoodBayesLDA;
 import xiong.hdstats.da.MCBayesLDA;
 import xiong.hdstats.da.MCRegularizedBayesLDA;
-import xiong.hdstats.da.NonSparseLDA;
+import xiong.hdstats.da.DBSDA;
 import xiong.hdstats.da.NonlinearSVMClassifier;
 import xiong.hdstats.da.ODaehrLDA;
 import xiong.hdstats.da.OLDA;
@@ -38,19 +39,22 @@ import xiong.hdstats.da.ShLDA;
 import xiong.hdstats.da.ShrinkageLDA;
 import xiong.hdstats.da.mDaehrLDA;
 
-public class PsuedoRandomOnlineLDA {
+public class PsuedoRandomLDACompare {
 
 	public static PrintStream ps = null;
 
 	public static void main(String[] args) throws FileNotFoundException {
-		_main(200, 10, 200, 500, 5000, 5);
+		for (int i = 2; i <=10; i += 2)
+			_main(200, 10, 50*i, 500, 5);
 	}
 
-	public static void _main(int p, int nz, int initTrainSize, int testSize, int newSize, int rate)
-			throws FileNotFoundException {
+	public static void _main(int p, int nz, int initTrainSize, int testSize, int rate) throws FileNotFoundException {
 
-		ps = System.out;
+		ps = new PrintStream("C:/Users/xiongha/Desktop/OnlineLDA/trf-" + p + "-" + nz + "-" + initTrainSize + "-"
+				+ ((double) rate / 1.0) + ".txt");
 		double[][] cov = new double[p][p];
+		double[][] groupMean = new double[2][p];
+		double[] mud = new double[p];
 
 		for (int i = 0; i < cov.length; i++) {
 			for (int j = 0; j < cov.length; j++) {
@@ -60,16 +64,24 @@ public class PsuedoRandomOnlineLDA {
 		double[] meanPositive = new double[p];
 		double[] meanNegative = new double[p];
 		for (int i = 0; i < meanPositive.length; i++) {
-			if (i < nz)
+			if (i < nz) {
 				meanPositive[i] = 1.0;
-			else
+				mud[i] = 1.0;
+				groupMean[0][i] = 1.0;
+			} else {
 				meanPositive[i] = 0.0;
+				mud[i] = 0.0;
+				groupMean[0][i] = 0.0;
+			}
 			meanNegative[i] = 0.0;
+			groupMean[1][i] = 0.0;
 		}
 
 		double[][] theta_s = new Matrix(cov).inverse();
-		GLassoMultivariateGaussianDistribution posD = new GLassoMultivariateGaussianDistribution(meanPositive, cov);
+		double[] beta_s = new double[p];
+		new Matrix(theta_s).ax(mud, beta_s);
 
+		GLassoMultivariateGaussianDistribution posD = new GLassoMultivariateGaussianDistribution(meanPositive, cov);
 		GLassoMultivariateGaussianDistribution negD = new GLassoMultivariateGaussianDistribution(meanNegative, cov);
 
 		for (int r = 0; r < 20; r++) {
@@ -103,17 +115,77 @@ public class PsuedoRandomOnlineLDA {
 					for (int j = 0; j < cov.length; j++)
 						trainData[i][j] = tdat[j];
 				}
-
 			}
-			L0NormLDAClassifier olda = new L0NormLDAClassifier(trainData, trainLabel,false,50);
+			long start = 0;
+			long current = 0;
+
+			start = System.currentTimeMillis();
+			OptimalLDA opLDA = new OptimalLDA(beta_s, groupMean, -1.0 * Math.log(rate / (10.0 - rate)));
+			current = System.currentTimeMillis();
+			accuracy("optimal", testData, testLabel, opLDA, start, current);
+
+			Estimator.lambda = 12.0;
+
+			for (int k = 0; k < 10; k++) {
+				for (double i = 0.0001; i <0.1; i *= 10) {
+					start = System.currentTimeMillis();
+					StochasticTruncatedRayleighFlowDBSDA olda = new StochasticTruncatedRayleighFlowDBSDA(trainData,
+							trainLabel, false, k * 2 + 2, i);
+					current = System.currentTimeMillis();
+					accuracy("StochasticTruncatedRayleighFlowDBSDA-" + i + "-" + (k * 2 + 2), testData, testLabel, olda,
+							start, current);
+				}
+			}
+
+//			for (int i = 0; i < 5; i++) {
+//				start = System.currentTimeMillis();
+//				TruncatedRayleighFlowDBSDA olda = new TruncatedRayleighFlowDBSDA(trainData, trainLabel, false,
+//						i * 2 + 6);
+//				current = System.currentTimeMillis();
+//				accuracy("TruncatedRayleighFlowDBSDA-" + (i * 2 + 6), testData, testLabel, olda, start, current);
+//			}
+
+			for (int i = 0; i < 10; i++) {
+				start = System.currentTimeMillis();
+				TruncatedRayleighFlowLDA olda = new TruncatedRayleighFlowLDA(trainData, trainLabel, false, i * 2 + 2);
+				current = System.currentTimeMillis();
+				accuracy("TruncatedRayleighFlowLDA-" + (i * 2 + 2), testData, testLabel, olda, start, current);
+			}
+
+			start = System.currentTimeMillis();
+			RayleighFlowLDA olda = new RayleighFlowLDA(trainData, trainLabel, false);
+			current = System.currentTimeMillis();
+			accuracy("RayleighFlowLDA", testData, testLabel, olda, start, current);
+
+			// start = System.currentTimeMillis();
+			// DBSDA dblda = new DBSDA(trainData, trainLabel, false);
+			// current = System.currentTimeMillis();
+			// accuracy("DBSDA", testData, testLabel, dblda, start, current);
+
+			// Estimator.lambda = 32.0;
+			start = System.currentTimeMillis();
+			DBSDA dbsda = new DBSDA(trainData, trainLabel, false);
+			current = System.currentTimeMillis();
+			accuracy("DBSDA", testData, testLabel, dbsda, start, current);
+
+			start = System.currentTimeMillis();
+			SDA sda = new SDA(trainData, trainLabel, false);
+			current = System.currentTimeMillis();
+			accuracy("SDA", testData, testLabel, sda, start, current);
+
+			start = System.currentTimeMillis();
+			OLDA LDA = new OLDA(trainData, trainLabel, false);
+			current = System.currentTimeMillis();
+			accuracy("LDA", testData, testLabel, LDA, start, current);
+
 			// System.out.println(Utils.getErrorInf(olda.means[0], new
 			// double[1][p]));
-			accuracy("Oline-init", 0, testData, testLabel, olda, 0, 0);
+
 		}
 	}
 
-	private static void accuracy(String name, int s, double[][] data, int[] labels, Classifier<double[]> classifier,
-			long t1, long t2) {
+	private static void accuracy(String name, double[][] data, int[] labels, Classifier<double[]> classifier, long t1,
+			long t2) {
 		// int[] plabels=new int[labels.length];
 		// System.out.println("accuracy statistics");
 		int tp = 0, fp = 0, tn = 0, fn = 0;
@@ -133,8 +205,7 @@ public class PsuedoRandomOnlineLDA {
 		}
 		long train_time = t2 - t1;
 		double test_time = ((double) (System.currentTimeMillis() - t2)) / ((double) labels.length);
-		ps.println(
-				name + "\t" + s + "\t" + tp + "\t" + tn + "\t" + fp + "\t" + fn + "\t" + train_time + "\t" + test_time);
+		ps.println(name + "\t" + tp + "\t" + tn + "\t" + fp + "\t" + fn + "\t" + train_time + "\t" + test_time);
 
 	}
 

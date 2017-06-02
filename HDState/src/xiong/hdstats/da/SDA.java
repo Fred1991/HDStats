@@ -38,7 +38,7 @@ import xiong.hdstats.Estimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 
-public class GLassoLDA implements Classifier<double[]>{
+public class SDA implements Classifier<double[]>{
 	public double[][] groupMean;
 	public 	double[] globalMean;
 	public double[][] pooledInverseCovariance;
@@ -59,7 +59,7 @@ public class GLassoLDA implements Classifier<double[]>{
 	 *            should be equal
 	 */
 	@SuppressWarnings("unchecked")
-	public GLassoLDA(double[][] d, int[] g, boolean p) {
+	public SDA(double[][] d, int[] g, boolean p) {
 		// check if data and group array have the same size
 		//System.out.println("haha");
 		if (d.length != g.length)
@@ -442,7 +442,7 @@ public class GLassoLDA implements Classifier<double[]>{
 		double[][] data = { { 2.95, 6.63 }, { 2.53, 7.79 }, { 3.57, 5.65 },
 				{ 3.16, 5.47 }, { 2.58, 4.46 }, { 2.16, 6.22 }, { 3.27, 3.52 } };
 
-		GLassoLDA test = new GLassoLDA(data, group, true);
+		SDA test = new SDA(data, group, true);
 		double[] testData = { 2.81, 5.46 };
 		
 		//test

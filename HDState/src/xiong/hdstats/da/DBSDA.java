@@ -39,7 +39,7 @@ import xiong.hdstats.gaussian.GLassoEstimator;
 import xiong.hdstats.gaussian.NonSparseEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 
-public class NonSparseLDA implements Classifier<double[]>{
+public class DBSDA implements Classifier<double[]>{
 	public double[][] groupMean;
 	public double[] globalMean;
 	public double[][] pooledInverseCovariance;
@@ -60,7 +60,7 @@ public class NonSparseLDA implements Classifier<double[]>{
 	 *            should be equal
 	 */
 	@SuppressWarnings("unchecked")
-	public NonSparseLDA(double[][] d, int[] g, boolean p) {
+	public DBSDA(double[][] d, int[] g, boolean p) {
 		// check if data and group array have the same size
 		if (d.length != g.length)
 			return;
@@ -443,7 +443,7 @@ public class NonSparseLDA implements Classifier<double[]>{
 		double[][] data = { { 2.95, 6.63 }, { 2.53, 7.79 }, { 3.57, 5.65 },
 				{ 3.16, 5.47 }, { 2.58, 4.46 }, { 2.16, 6.22 }, { 3.27, 3.52 } };
 
-		NonSparseLDA test = new NonSparseLDA(data, group, true);
+		DBSDA test = new DBSDA(data, group, true);
 		double[] testData = { 2.81, 5.46 };
 		
 		//test
