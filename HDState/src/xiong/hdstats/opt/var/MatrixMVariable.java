@@ -1,6 +1,7 @@
-package xiong.hdstats.opt;
+package xiong.hdstats.opt.var;
 
 import Jama.Matrix;
+import xiong.hdstats.opt.MultiVariable;
 
 public class MatrixMVariable implements MultiVariable{
 	private Matrix mtx;
