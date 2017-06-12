@@ -4,6 +4,7 @@ import Jama.Matrix;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.gaussian.NonSparseEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
+import xiong.hdstats.opt.TruncatedRayleighFlow;
 
 public class TruncatedRayleighFlowDBSDA extends BetaLDA {
 	private TruncatedRayleighFlow TRF;

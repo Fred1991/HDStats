@@ -3,6 +3,7 @@ package xiong.hdstats.da;
 
 import Jama.Matrix;
 import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.opt.TruncatedRayleighFlow;
 
 public class SDAL0 extends BetaLDA {
 	private TruncatedRayleighFlow TRF;

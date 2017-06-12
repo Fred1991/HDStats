@@ -1,36 +1,30 @@
-package xiong.hdstats.da;
+package xiong.hdstats.opt;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import Jama.Matrix;
-import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
-import smile.stat.distribution.MultivariateGaussianDistribution;
 import xiong.hdstats.MLEstimator;
 
-public class StochasticRayleighFlow {
+public class RayleighFlow {
 	private double eta;
 	private double[][] I;
 	private Matrix vector;
 	private Matrix AMat;
 	private Matrix BMat;
 	private int p;
-	private double noise;
-	private GLassoMultivariateGaussianDistribution mgd;
-	public StochasticRayleighFlow(int p, double eta, double noise) {
+
+	public RayleighFlow(int p, double eta) {
 		this.eta = eta;
-		this.noise=noise;
 		I = new double[p][p];
 		for (int i = 0; i < p; i++)
 			I[i][i] = 1.0;
 		this.p = p;
-		double[] noiseMean=new double[p];
-		mgd=new GLassoMultivariateGaussianDistribution(noiseMean,I);
 	}
 
-	public StochasticRayleighFlow(double eta, double[][] cov, double noise) { // as PCA
-		this(cov.length, eta, noise);
+	public RayleighFlow(double eta, double[][] cov) { // as PCA
+		this(cov.length, eta);
 		double[][] arrayB = new double[p][p];
 		for (int i = 0; i < p; i++)
 			arrayB[i][i] = 1.0;
@@ -38,8 +32,8 @@ public class StochasticRayleighFlow {
 		this.setAB(arrayA, arrayB);
 	}
 
-	public StochasticRayleighFlow(double eta, double[][] cov1, double[][] cov2, double noise) { // as																// LDA
-		this(cov1.length, eta, noise);
+	public RayleighFlow(double eta, double[][] cov1, double[][] cov2) { // as																// LDA
+		this(cov1.length, eta);
 		double[][] arrayB = cov2;
 		double[][] arrayA = cov1;
 		this.setAB(arrayA, arrayB);
@@ -83,9 +77,6 @@ public class StochasticRayleighFlow {
 		Matrix vUpdate = C.times(vector);
 		vUpdate = vUpdate.times(1.0 / vUpdate.normF());
 		double[] vArray = vUpdate.transpose().getArray()[0];
-		double[] noiseVec=l2Normalized(mgd.rand());
- 		for(int i=0;i<p;i++)
-			vArray[i]+=noiseVec[i];
 		vArray = l2Normalized(vArray);
 		this.vector = new Matrix(vArray, 1).transpose();
 	}

@@ -1,7 +1,7 @@
 package xiong.hdstats;
 
 public class MLEstimator extends Estimator{
-	final public static String R_src_Path="/Users/xiongha/R_src/";
+	final public static String R_src_Path="C:/Users/xiongha/Desktop/R_src/";
 	
 	@Override
 	public double[][] covariance(double[][] samples) {

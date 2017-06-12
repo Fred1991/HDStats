@@ -44,8 +44,8 @@ public class PsuedoRandomLDACompare {
 	public static PrintStream ps = null;
 
 	public static void main(String[] args) throws FileNotFoundException {
-		for (int i = 2; i <=10; i += 2)
-			_main(200, 10, 50*i, 500, 5);
+		for (int i = 2; i <= 10; i += 2)
+			_main(200, 10, 500, 500, 5);
 	}
 
 	public static void _main(int p, int nz, int initTrainSize, int testSize, int rate) throws FileNotFoundException {
@@ -124,45 +124,8 @@ public class PsuedoRandomLDACompare {
 			current = System.currentTimeMillis();
 			accuracy("optimal", testData, testLabel, opLDA, start, current);
 
-			Estimator.lambda = 12.0;
+			Estimator.lambda = 12;
 
-			for (int k = 0; k < 10; k++) {
-				for (double i = 0.0001; i <0.1; i *= 10) {
-					start = System.currentTimeMillis();
-					StochasticTruncatedRayleighFlowDBSDA olda = new StochasticTruncatedRayleighFlowDBSDA(trainData,
-							trainLabel, false, k * 2 + 2, i);
-					current = System.currentTimeMillis();
-					accuracy("StochasticTruncatedRayleighFlowDBSDA-" + i + "-" + (k * 2 + 2), testData, testLabel, olda,
-							start, current);
-				}
-			}
-
-//			for (int i = 0; i < 5; i++) {
-//				start = System.currentTimeMillis();
-//				TruncatedRayleighFlowDBSDA olda = new TruncatedRayleighFlowDBSDA(trainData, trainLabel, false,
-//						i * 2 + 6);
-//				current = System.currentTimeMillis();
-//				accuracy("TruncatedRayleighFlowDBSDA-" + (i * 2 + 6), testData, testLabel, olda, start, current);
-//			}
-
-			for (int i = 0; i < 10; i++) {
-				start = System.currentTimeMillis();
-				TruncatedRayleighFlowLDA olda = new TruncatedRayleighFlowLDA(trainData, trainLabel, false, i * 2 + 2);
-				current = System.currentTimeMillis();
-				accuracy("TruncatedRayleighFlowLDA-" + (i * 2 + 2), testData, testLabel, olda, start, current);
-			}
-
-			start = System.currentTimeMillis();
-			RayleighFlowLDA olda = new RayleighFlowLDA(trainData, trainLabel, false);
-			current = System.currentTimeMillis();
-			accuracy("RayleighFlowLDA", testData, testLabel, olda, start, current);
-
-			// start = System.currentTimeMillis();
-			// DBSDA dblda = new DBSDA(trainData, trainLabel, false);
-			// current = System.currentTimeMillis();
-			// accuracy("DBSDA", testData, testLabel, dblda, start, current);
-
-			// Estimator.lambda = 32.0;
 			start = System.currentTimeMillis();
 			DBSDA dbsda = new DBSDA(trainData, trainLabel, false);
 			current = System.currentTimeMillis();
@@ -177,6 +140,52 @@ public class PsuedoRandomLDACompare {
 			OLDA LDA = new OLDA(trainData, trainLabel, false);
 			current = System.currentTimeMillis();
 			accuracy("LDA", testData, testLabel, LDA, start, current);
+
+			for (int i = 0; i < 10; i++) {
+				start = System.currentTimeMillis();
+				TruncatedRayleighFlowLDA olda = new TruncatedRayleighFlowLDA(trainData, trainLabel, false, i * 2 + 2);
+				current = System.currentTimeMillis();
+				accuracy("TruncatedRayleighFlowLDA-" + (i * 2 + 2), testData, testLabel, olda, start, current);
+			}
+			
+			for (int c = 50; c < 100; c += 10) {
+				Estimator.lambda = c * Math.sqrt(Math.log(p) / (double) trainData.length);
+
+				for (int k = 0; k < 10; k++) {
+					// for (double i = 0.0001; i < 0.1; i *= 10) {
+					start = System.currentTimeMillis();
+					StochasticTruncatedRayleighFlowDBSDA olda = new StochasticTruncatedRayleighFlowDBSDA(trainData,
+							trainLabel, false, k * 2 + 2, 0);
+					current = System.currentTimeMillis();
+					accuracy("StochasticTruncatedRayleighFlowDBSDA-" + c + "-" + (k * 2 + 2), testData, testLabel, olda,
+							start, current);
+					// }
+				}
+			}
+
+			// for (int i = 0; i < 5; i++) {
+			// start = System.currentTimeMillis();
+			// TruncatedRayleighFlowDBSDA olda = new
+			// TruncatedRayleighFlowDBSDA(trainData, trainLabel, false,
+			// i * 2 + 6);
+			// current = System.currentTimeMillis();
+			// accuracy("TruncatedRayleighFlowDBSDA-" + (i * 2 + 6), testData,
+			// testLabel, olda, start, current);
+			// }
+
+
+
+			start = System.currentTimeMillis();
+			RayleighFlowLDA olda = new RayleighFlowLDA(trainData, trainLabel, false);
+			current = System.currentTimeMillis();
+			accuracy("RayleighFlowLDA", testData, testLabel, olda, start, current);
+
+			// start = System.currentTimeMillis();
+			// DBSDA dblda = new DBSDA(trainData, trainLabel, false);
+			// current = System.currentTimeMillis();
+			// accuracy("DBSDA", testData, testLabel, dblda, start, current);
+
+			// Estimator.lambda = 32.0;
 
 			// System.out.println(Utils.getErrorInf(olda.means[0], new
 			// double[1][p]));
