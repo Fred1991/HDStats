@@ -1,4 +1,4 @@
-package xiong.hdstats.opt.exp;
+package xiong.hdstats.opt.estimator;
 
 import Jama.Matrix;
 import xiong.hdstats.opt.GradientDescent;
