@@ -24,6 +24,7 @@ import xiong.hdstats.da.comb.StochasticTruncatedRayleighFlowDBSDA;
 import xiong.hdstats.da.comb.TruncatedRayleighFlowDBSDA;
 import xiong.hdstats.da.comb.TruncatedRayleighFlowLDA;
 import xiong.hdstats.da.comb.TruncatedRayleighFlowSDA;
+import xiong.hdstats.da.comb.TruncatedRayleighFlowUnit;
 import xiong.hdstats.da.mcmc.BayesLDA;
 import xiong.hdstats.da.mcmc.LiklihoodBayesLDA;
 import xiong.hdstats.da.mcmc.MCBayesLDA;
@@ -51,7 +52,7 @@ public class PsuedoRandomLDACompare {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		for (int i = 2; i <= 10; i += 2)
-			_main(200, 10, 500, 500, 5);
+			_main(200, 10, i*20, 500, 5);
 	}
 
 	public static void _main(int p, int nz, int initTrainSize, int testSize, int rate) throws FileNotFoundException {
@@ -149,30 +150,38 @@ public class PsuedoRandomLDACompare {
 	//		current = System.currentTimeMillis();
 	//		accuracy("LDA", testData, testLabel, LDA, start, current);
 
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 20; i++) {
+				start = System.currentTimeMillis();
+				TruncatedRayleighFlowUnit olda = new TruncatedRayleighFlowUnit(trainData, trainLabel, false, i * 2 + 2);
+				current = System.currentTimeMillis();
+				accuracy("TruncatedRayleighFlowUnit-" + (i * 1 + 2), testData, testLabel, olda, start, current);
+				betacompare("TruncatedRayleighFlowUnit-" + (i * 1 + 2),olda.getBeta(),beta_s);
+			}
+			
+			for (int i = 0; i < 20; i++) {
 				start = System.currentTimeMillis();
 				TruncatedRayleighFlowLDA olda = new TruncatedRayleighFlowLDA(trainData, trainLabel, false, i * 2 + 2);
 				current = System.currentTimeMillis();
-				accuracy("TruncatedRayleighFlowLDA-" + (i * 2 + 2), testData, testLabel, olda, start, current);
-				betacompare("TruncatedRayleighFlowLDA-" + (i * 2 + 2),olda.getBeta(),beta_s);
+				accuracy("TruncatedRayleighFlowLDA-" + (i * 1 + 2), testData, testLabel, olda, start, current);
+				betacompare("TruncatedRayleighFlowLDA-" + (i * 1 + 2),olda.getBeta(),beta_s);
 			}
 			
 			Estimator.lambda=12;
 			
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 20; i++) {
 				start = System.currentTimeMillis();
 				TruncatedRayleighFlowSDA olda = new TruncatedRayleighFlowSDA(trainData, trainLabel, false, i * 2 + 2);
 				current = System.currentTimeMillis();
-				accuracy("TruncatedRayleighFlowSDA-" + (i * 2 + 2), testData, testLabel, olda, start, current);
-				betacompare("TruncatedRayleighFlowSDA-" + (i * 2 + 2),olda.getBeta(),beta_s);
+				accuracy("TruncatedRayleighFlowSDA-" + (i * 1 + 2), testData, testLabel, olda, start, current);
+				betacompare("TruncatedRayleighFlowSDA-" + (i * 1 + 2),olda.getBeta(),beta_s);
 			}
 			
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 20; i++) {
 				start = System.currentTimeMillis();
 				TruncatedRayleighFlowDBSDA olda = new TruncatedRayleighFlowDBSDA(trainData, trainLabel, false, i * 2 + 2);
 				current = System.currentTimeMillis();
-				accuracy("TruncatedRayleighFlowDBSDA-" + (i * 2 + 2), testData, testLabel, olda, start, current);
-				betacompare("TruncatedRayleighFlowDBSDA-" + (i * 2 + 2),olda.getBeta(),beta_s);
+				accuracy("TruncatedRayleighFlowDBSDA-" + (i * 1 + 2), testData, testLabel, olda, start, current);
+				betacompare("TruncatedRayleighFlowDBSDA-" + (i * 1 + 2),olda.getBeta(),beta_s);
 			}
 
 			// for (int i = 0; i < 5; i++) {
@@ -211,21 +220,24 @@ public class PsuedoRandomLDACompare {
 		// System.out.println("accuracy statistics");
 		if(beta.length!=betas.length)
 			System.exit(-1);
+		System.out.println(beta.length+"\t"+betas.length);
 		int tp = 0, fp = 0, tn = 0, fn = 0;
+		double[] err = new double[beta.length];
 		for (int i = 0; i < beta.length; i++) {
-			// System.out.println(pl + "\t vs\t" + labels[i]);
-			if (beta[i] !=0 && betas[i] !=0) {
+		//	System.out.println(beta[i] + "\t vs\t" + betas[i]);
+			if (beta[i] !=0 && betas[i] >= 1e-10) {
 				tp++;
-			} else if (beta[i] ==0 && betas[i] == 0) {
+			} else if (beta[i] == 0 && betas[i] <1e-10) {
 				tn++;
-			} else if (betas[i] !=0 && betas[i] == 0) {
+			} else if (betas[i] !=0 && betas[i] <1e-10) {
 				fp++;
 			} else {
 				fn++;
 			}
+			err[i] = beta[i] - betas[i];
 
 		}
-		ps1.println(name + "\t" + tp + "\t" + tn + "\t" + fp + "\t" + fn);
+		ps1.println(name + "\t" + tp + "\t" + tn + "\t" + fp + "\t" + fn +"\t"+Utils.getLxNorm(err, Utils.L1)+"\t"+Utils.getLxNorm(err, Utils.L2));
 
 	}
 

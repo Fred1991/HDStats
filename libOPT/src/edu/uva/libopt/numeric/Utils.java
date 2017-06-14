@@ -172,7 +172,7 @@ public class Utils {
 		if (l == LINF)
 			return maxX;
 		else if (l == L2)
-			lxnorm += Math.pow(lxnorm, 0.5);
+			lxnorm = Math.sqrt(lxnorm);
 
 		return lxnorm;
 	}
