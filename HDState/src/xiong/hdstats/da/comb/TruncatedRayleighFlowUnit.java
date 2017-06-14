@@ -29,7 +29,10 @@ public class TruncatedRayleighFlowUnit extends BetaLDA {
 	//	for (int i = 0; i < d[0].length; i++) {
 	//		ibeta[i] = 1;
 	//	}
-		TRF.init(new double[d[0].length]);
+		double[] init = new double[d[0].length];
+		for(int i=0;i<init.length;i++)
+			init[i]=Math.sqrt(1.0/(init.length));
+		TRF.init(init);
 		this.iterate(200);
 	}
 
