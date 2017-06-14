@@ -59,5 +59,9 @@ public class BetaLDA implements Classifier<double[]> {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	public double[] getBeta(){
+		return this.beta[2].transpose().getArrayCopy()[0];
+	}
 
 }
