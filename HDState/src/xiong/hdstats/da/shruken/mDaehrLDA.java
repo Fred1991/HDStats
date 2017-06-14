@@ -38,7 +38,7 @@ import xiong.hdstats.ShrinkageEstimator;
 import xiong.hdstats.da.Classifier;
 import xiong.hdstats.da.PseudoInverse;
 import xiong.hdstats.gaussian.GLassoEstimator;
-import xiong.hdstats.gaussian.NonSparseEstimator;
+import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 import xiong.hdstats.graph.SparseCovEstimator;
@@ -211,7 +211,7 @@ public class mDaehrLDA implements Classifier<double[]> {
 				}
 			}
 		}
-		return new NonSparseEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(_covar);
+		return new DBGLassoEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(_covar);
 	}
 	
 	public double[][] getShrinkagedCovCovarianceMatrx() {

@@ -15,7 +15,7 @@ import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.MLEstimator;
 import xiong.hdstats.NearPD;
-import xiong.hdstats.gaussian.NonSparseEstimator;
+import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.graph.SampleGraph;
 
 public class DGLassoWishartGraph extends MLEstimator {
@@ -24,7 +24,7 @@ public class DGLassoWishartGraph extends MLEstimator {
 	public double[] mean;
 	public List<SampleGraph> sampledGraphs = new ArrayList<SampleGraph>();
 	public int size;
-	private NonSparseEstimator ne = new NonSparseEstimator();
+	private DBGLassoEstimator ne = new DBGLassoEstimator();
 
 	public DGLassoWishartGraph(double[][] data, double lambda, int size) {
 		Estimator.lambda = lambda;

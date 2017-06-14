@@ -1,14 +1,19 @@
-package xiong.hdstats.da;
+package xiong.hdstats.da.comb;
 
 import Jama.Matrix;
 import xiong.hdstats.Estimator;
+import xiong.hdstats.da.BetaLDA;
+import xiong.hdstats.da.PseudoInverseLDA;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
-import xiong.hdstats.opt.StochasticRayleighFlow;
+import xiong.hdstats.graph.PDLassoEstimator;
+import xiong.hdstats.opt.TruncatedRayleighFlow;
 
-public class StochasticRayleighFlowDBSDA extends BetaLDA {
-	private StochasticRayleighFlow TRF;
+public class TruncatedRayleighFlowSDA extends BetaLDA {
+	private TruncatedRayleighFlow TRF;
+	private int k;
 
-	public StochasticRayleighFlowDBSDA(double[][] d, int[] g, boolean p, double noise) {
+	public TruncatedRayleighFlowSDA(double[][] d, int[] g, boolean p, int k) {
+		this.k = k;
 		PseudoInverseLDA olda = new PseudoInverseLDA(d, g, p);
 		double[][] AMat = olda.pooledCovariance;
 		DBGLassoEstimator nse = new DBGLassoEstimator(Estimator.lambda);
@@ -25,7 +30,7 @@ public class StochasticRayleighFlowDBSDA extends BetaLDA {
 			}
 		}
 
-		TRF = new StochasticRayleighFlow(1.0e-4, AMat, BMat,noise);
+		TRF = new TruncatedRayleighFlow(this.k, 1.0e-4, AMat, BMat);
 		TRF.init(this.beta[2].transpose().getArrayCopy()[0]);
 		this.iterate(200);
 	}

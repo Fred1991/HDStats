@@ -4,7 +4,7 @@ import Jama.Matrix;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.da.BetaLDA;
 import xiong.hdstats.da.PseudoInverseLDA;
-import xiong.hdstats.gaussian.NonSparseEstimator;
+import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 import xiong.hdstats.opt.TruncatedRayleighFlow;
 
@@ -16,7 +16,7 @@ public class TruncatedRayleighFlowDBSDA extends BetaLDA {
 		this.k = k;
 		PseudoInverseLDA olda = new PseudoInverseLDA(d, g, p);
 		double[][] AMat = olda.pooledCovariance;
-		NonSparseEstimator nse = new NonSparseEstimator(Estimator.lambda);
+		DBGLassoEstimator nse = new DBGLassoEstimator(Estimator.lambda);
 		double[][] graph = nse._deSparsifiedGlassoPrecisionMatrix(AMat);
 		this.init(d, graph, g);
 		// if(d.length<d[0].length*2)

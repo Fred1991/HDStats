@@ -3,7 +3,7 @@ package xiong.hdstats.test;
 import edu.uva.libopt.numeric.Utils;
 import xiong.hdstats.*;
 import xiong.hdstats.gaussian.GLassoEstimator;
-import xiong.hdstats.gaussian.NonSparseEstimator;
+import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
 
 public class HDStatsTest {
@@ -15,7 +15,7 @@ public class HDStatsTest {
 		double[][] spl_cov=new MLEstimator().covariance(samples);
 		double[][] l1p_cov=new DiagKeptSparseCovEstimator(0.001,5).covariance(samples);
 		double[][] gls_cov=new GLassoEstimator(0.001).covariance(samples);
-		double[][] ngl_cov=new NonSparseEstimator(0.001).covariance(samples);
+		double[][] ngl_cov=new DBGLassoEstimator(0.001).covariance(samples);
 
 		double error1=0;
 		double error2=0;

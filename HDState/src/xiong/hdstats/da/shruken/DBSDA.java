@@ -37,7 +37,7 @@ import Jama.Matrix;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.da.Classifier;
 import xiong.hdstats.gaussian.GLassoEstimator;
-import xiong.hdstats.gaussian.NonSparseEstimator;
+import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 
 public class DBSDA implements Classifier<double[]>{
@@ -153,7 +153,7 @@ public class DBSDA implements Classifier<double[]>{
 			}
 		}
 		
-		pooledInverseCovariance=new NonSparseEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(pooledInverseCovariance);
+		pooledInverseCovariance=new DBGLassoEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(pooledInverseCovariance);
 
 
 //		pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();

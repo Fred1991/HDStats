@@ -13,13 +13,13 @@ import Jama.Matrix;
 import xiong.hdstats.MLEstimator;
 import xiong.hdstats.da.PseudoInverse;
 
-public class NonSparseEstimator extends MLEstimator {
+public class DBGLassoEstimator extends MLEstimator {
 	private double _lambda = 0.01;
 
-	public NonSparseEstimator() {
+	public DBGLassoEstimator() {
 	}
 
-	public NonSparseEstimator(double lambda) {
+	public DBGLassoEstimator(double lambda) {
 		this._lambda = lambda;
 	}
 

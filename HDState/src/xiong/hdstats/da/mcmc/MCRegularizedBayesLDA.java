@@ -20,7 +20,7 @@ import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import gov.sandia.cognition.statistics.distribution.NormalInverseWishartDistribution;
 import smile.stat.distribution.MultivariateGaussianDistribution;
 import xiong.hdstats.da.shruken.SDA;
-import xiong.hdstats.gaussian.NonSparseEstimator;
+import xiong.hdstats.gaussian.DBGLassoEstimator;
 
 public class MCRegularizedBayesLDA extends SDA {
 

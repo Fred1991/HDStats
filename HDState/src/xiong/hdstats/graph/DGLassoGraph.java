@@ -2,12 +2,12 @@ package xiong.hdstats.graph;
 
 import xiong.hdstats.Estimator;
 import xiong.hdstats.MLEstimator;
-import xiong.hdstats.gaussian.NonSparseEstimator;
+import xiong.hdstats.gaussian.DBGLassoEstimator;
 
 public class DGLassoGraph extends MLEstimator{
 
 	public double[][] gaussianPrecision;
-	private NonSparseEstimator ne=new NonSparseEstimator();
+	private DBGLassoEstimator ne=new DBGLassoEstimator();
 
 	public DGLassoGraph(double[][] covar,double lambda, boolean s){
 		Estimator.lambda=lambda;

@@ -30,7 +30,7 @@ import smile.sort.QuickSort;
 import smile.sort.SortUtils;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
-import xiong.hdstats.gaussian.NonSparseEstimator;
+import xiong.hdstats.gaussian.DBGLassoEstimator;
 
 /**
  * A collection of useful mathematical functions. The following functions are
@@ -2460,7 +2460,7 @@ public class Math {
     }
     
     public static double[][] dglassoCov(double[][] data, double[] mu) {
-    	return Estimator.inverse(new NonSparseEstimator()._deSparsifiedGlassoPrecisionMatrix(cov(data,mu)));
+    	return Estimator.inverse(new DBGLassoEstimator()._deSparsifiedGlassoPrecisionMatrix(cov(data,mu)));
     }
     
     
