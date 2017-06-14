@@ -1,9 +1,7 @@
-package xiong.hdstats.da.comb;
+package xiong.hdstats.da;
 
 import Jama.Matrix;
 import xiong.hdstats.Estimator;
-import xiong.hdstats.da.BetaLDA;
-import xiong.hdstats.da.PseudoInverseLDA;
 import xiong.hdstats.gaussian.NonSparseEstimator;
 import xiong.hdstats.opt.StochasticRayleighFlow;
 
