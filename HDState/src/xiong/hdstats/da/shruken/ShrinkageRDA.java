@@ -14,57 +14,48 @@
  * limitations under the License.
  *******************************************************************************/
 
-package xiong.hdstats.da;
+package xiong.hdstats.da.shruken;
 
 import java.util.Arrays;
+
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
-import xiong.hdstats.da.shruken.QDA;
-import xiong.hdstats.da.shruken.RDA;
+import xiong.hdstats.Estimator;
+import xiong.hdstats.ShrinkageEstimator;
+import xiong.hdstats.da.Classifier;
+import xiong.hdstats.da.ClassifierTrainer;
+import xiong.hdstats.da.LDA;
+import xiong.hdstats.graph.PDLassoEstimator;
 
 /**
- * Linear discriminant analysis. LDA is based on the Bayes decision theory
- * and assumes that the conditional probability density functions are normally
- * distributed. LDA also makes the simplifying homoscedastic assumption (i.e.
- * that the class covariances are identical) and that the covariances have full
- * rank. With these assumptions, the discriminant function of an input being
- * in a class is purely a function of this linear combination of independent
- * variables.
- * <p>
- * LDA is closely related to ANOVA (analysis of variance) and linear regression
- * analysis, which also attempt to express one dependent variable as a
- * linear combination of other features or measurements. In the other two
- * methods, however, the dependent variable is a numerical quantity, while
- * for LDA it is a categorical variable (i.e. the class label). Logistic
- * regression and probit regression are more similar to LDA, as they also
- * explain a categorical variable. These other methods are preferable in
- * applications where it is not reasonable to assume that the independent 
- * variables are normally distributed, which is a fundamental assumption
- * of the LDA method.
- * <p>
- * One complication in applying LDA (and Fisher's discriminant) to real data
- * occurs when the number of variables/features does not exceed
- * the number of samples. In this case, the covariance estimates do not have
- * full rank, and so cannot be inverted. This is known as small sample size
- * problem.
+ * Regularized discriminant analysis. RDA is a compromise between LDA and QDA,
+ * which allows one to shrink the separate covariances of QDA toward a common
+ * variance as in LDA. This method is very similar in flavor to ridge regression.
+ * The regularized covariance matrices of each class is
+ * &Sigma;<sub>k</sub>(&alpha;) = &alpha; &Sigma;<sub>k</sub> + (1 - &alpha;) &Sigma;.
+ * The quadratic discriminant function is defined using the shrunken covariance
+ * matrices &Sigma;<sub>k</sub>(&alpha;). The parameter &alpha; in [0, 1]
+ * controls the complexity of the model. When &alpha; is one, RDA becomes QDA.
+ * While &alpha; is zero, RDA is equivalent to LDA. Therefore, the
+ * regularization factor &alpha; allows a continuum of models between LDA and QDA.
  * 
- * @see FLD
+ * @see LDA
  * @see QDA
- * @see RDA
- * @see NaiveBayes
  * 
  * @author Haifeng Li
  */
-public class LDA implements Classifier<double[]> {
+public class ShrinkageRDA implements Classifier<double[]> {
 
+	public static double slambda=0.1;
+	
     /**
      * The dimensionality of data.
      */
-    private final int p;
+    private int p;
     /**
      * The number of classes.
      */
-    private final int k;
+    private int k;
     /**
      * Constant term of discriminant function of each class.
      */
@@ -72,26 +63,31 @@ public class LDA implements Classifier<double[]> {
     /**
      * A priori probabilities of each class.
      */
-    private final double[] priori;
+    private double[] priori;
     /**
      * Mean vectors of each class.
      */
-    private final double[][] mu;
+    private double[][] mu;
     /**
-     * Eigen vectors of common covariance matrix, which transforms observations
-     * to discriminant functions, normalized so that common covariance
+     * Eigen vectors of each covariance matrix, which transforms observations
+     * to discriminant functions, normalized so that within groups covariance
      * matrix is spherical.
      */
-    private final double[][] scaling;
+    private double[][][] scaling;
     /**
-     * Eigen values of common variance matrix.
+     * Eigen values of each covariance matrix.
      */
-    private final double[] eigen;
+    private double[][] ev;
 
     /**
-     * Trainer for linear discriminant analysis.
+     * Trainer for regularized discriminant analysis.
      */
-    public static class Trainer  extends ClassifierTrainer <double[]>{
+    public static class Trainer extends ClassifierTrainer <double[]>{
+        /**
+         * Regularization factor in [0, 1] allows a continuum of models
+         * between LDA and QDA.
+         */
+        private double alpha;
         /**
          * A priori probabilities of each class.
          */
@@ -100,13 +96,21 @@ public class LDA implements Classifier<double[]> {
          * A tolerance to decide if a covariance matrix is singular. The trainer
          * will reject variables whose variance is less than tol<sup>2</sup>.
          */
-        private double tol = 0;
+        private double tol = 1E-4;
 
         /**
          * Constructor. The default tolerance to covariance matrix singularity
          * is 1E-4.
+         * 
+         * @param alpha regularization factor in [0, 1] allows a continuum of
+         * models between LDA and QDA.
          */
-        public Trainer() {
+        public Trainer(double alpha) {
+            if (alpha < 0.0 || alpha > 1.0) {
+                throw new IllegalArgumentException("Invalid regularization factor: " + alpha);
+            }
+
+            this.alpha = alpha;
         }
         
         /**
@@ -118,7 +122,7 @@ public class LDA implements Classifier<double[]> {
         }
         
         /**
-         * Sets covariance matrix singularity tolerance.
+         * Sets covariance matrix singular tolerance.
          * 
          * @param tol a tolerance to decide if a covariance matrix is singular.
          * The trainer will reject variables whose variance is less than tol<sup>2</sup>.
@@ -131,56 +135,52 @@ public class LDA implements Classifier<double[]> {
             this.tol = tol;
         }
         
-       
-        public LDA train(double[][] x, int[] y) {
-            return new LDA(x, y, priori, tol);
+        public ShrinkageRDA train(double[][] x, int[] y) {
+            return new ShrinkageRDA(x, y, priori, alpha, tol);
         }
     }
     
     /**
-     * Constructor. Learn linear discriminant analysis.
+     * Constructor. Learn regularized discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
      */
-    public LDA(double[][] x, int[] y) {
-        this(x, y, null);
+    public ShrinkageRDA(double[][] x, int[] y, double alpha) {
+        this(x, y, null, alpha, 1E-4);
     }
 
+
     /**
-     * Constructor. Learn linear discriminant analysis.
+     * Constructor. Learn regularized discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
+     * @param alpha regularization factor in [0, 1] allows a continuum of models
+     * between LDA and QDA.
      * @param priori the priori probability of each class.
      */
-    public LDA(double[][] x, int[] y, double[] priori) {
-        this(x, y, priori, 1E-4);
+    public ShrinkageRDA(double[][] x, int[] y, double[] priori, double alpha) {
+        this(x, y, priori, alpha, 1E-4);
     }
 
     /**
-     * Constructor. Learn linear discriminant analysis.
+     * Constructor. Learn regularized discriminant analysis.
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
-     * @param tol a tolerance to decide if a covariance matrix is singular; it
+     * @param alpha regularization factor in [0, 1] allows a continuum of models
+     * between LDA and QDA.
+     * @param priori the priori probability of each class.
+     * @param tol tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public LDA(double[][] x, int[] y, double tol) {
-        this(x, y, null, tol);
-    }
-    
-    /**
-     * Constructor. Learn linear discriminant analysis.
-     * @param x training samples.
-     * @param y training labels in [0, k), where k is the number of classes.
-     * @param priori the priori probability of each class. If null, it will be
-     * estimated from the training data.
-     * @param tol a tolerance to decide if a covariance matrix is singular; it
-     * will reject variables whose variance is less than tol<sup>2</sup>.
-     */
-    public LDA(double[][] x, int[] y, double[] priori, double tol) {
+    public ShrinkageRDA(double[][] x, int[] y, double[] priori, double alpha, double tol) {
         if (x.length != y.length) {
             throw new IllegalArgumentException(String.format("The sizes of X and Y don't match: %d != %d", x.length, y.length));
         }
-        
+
+        if (alpha < 0.0 || alpha > 1.0) {
+            throw new IllegalArgumentException("Invalid regularization factor: " + alpha);
+        }
+
         if (priori != null) {
             if (priori.length < 2) {
                 throw new IllegalArgumentException("Invalid number of priori probabilities: " + priori.length);
@@ -233,6 +233,7 @@ public class LDA implements Classifier<double[]> {
         }
 
         p = x[0].length;
+
         // The number of instances in each class.
         int[] ni = new int[k];
         // Common mean vector.
@@ -241,6 +242,8 @@ public class LDA implements Classifier<double[]> {
         double[][] C = new double[p][p];
         // Class mean vectors.
         mu = new double[k][p];
+        // Class covarainces.
+        double[][][] cov = new double[k][p][p];
 
         for (int i = 0; i < n; i++) {
             int c = y[i];
@@ -251,6 +254,10 @@ public class LDA implements Classifier<double[]> {
         }
 
         for (int i = 0; i < k; i++) {
+            if (ni[i] <= 1) {
+                throw new IllegalArgumentException(String.format("Class %d has only one sample.", i));
+            }
+
             for (int j = 0; j < p; j++) {
                 mu[i][j] /= ni[i];
             }
@@ -262,16 +269,13 @@ public class LDA implements Classifier<double[]> {
                 priori[i] = (double) ni[i] / n;
             }
         }
-        
         this.priori = priori;
-        ct = new double[k];
-        for (int i = 0; i < k; i++) {
-            ct[i] = Math.log(priori[i]);
-        }
-        
+
         for (int i = 0; i < n; i++) {
+            int c = y[i];
             for (int j = 0; j < p; j++) {
                 for (int l = 0; l <= j; l++) {
+                    cov[c][j][l] += (x[i][j] - mu[c][j]) * (x[i][l] - mu[c][l]);
                     C[j][l] += (x[i][j] - mean[j]) * (x[i][l] - mean[l]);
                 }
             }
@@ -285,20 +289,51 @@ public class LDA implements Classifier<double[]> {
             }
 
             if (C[j][j] < tol) {
-        //        throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
+             //   throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
             }
         }
+        
+       new ShrinkageEstimator(slambda).covarianceApprox(C);
 
-        EigenValueDecomposition evd = EigenValueDecomposition.decompose(C, true);
 
-        for (double s : evd.getEigenValues()) {
-            if (s < tol) {
-      //          throw new IllegalArgumentException("The covariance matrix is close to singular.");
+        ev = new double[k][];
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < p; j++) {
+                for (int l = 0; l <= j; l++) {
+                    cov[i][j][l] /= (ni[i] - 1);
+                    cov[i][j][l] = alpha * cov[i][j][l] + (1 - alpha) * C[j][l];
+                    cov[i][l][j] = cov[i][j][l];
+                }
+
+                if (cov[i][j][j] < tol) {
+              //      throw new IllegalArgumentException(String.format("Class %d covariance matrix (variable %d) is close to singular.", i, j));
+                }
             }
+
+            new PDLassoEstimator(Estimator.lambda).covarianceApprox(cov[i]);
+            
+            EigenValueDecomposition eigen = EigenValueDecomposition.decompose(cov[i], true);
+
+            for (double s : eigen.getEigenValues()) {
+                if (s < tol) {
+            //        throw new IllegalArgumentException(String.format("Class %d covariance matrix is close to singular.", i));
+                }
+            }
+
+            ev[i] = eigen.getEigenValues();
+            cov[i] = eigen.getEigenVectors();
         }
 
-        eigen = evd.getEigenValues();
-        scaling = evd.getEigenVectors();
+        scaling = cov;
+        ct = new double[k];
+        for (int i = 0; i < k; i++) {
+            double logev = 0.0;
+            for (int j = 0; j < p; j++) {
+                logev += Math.log(ev[i][j]);
+            }
+
+            ct[i] = Math.log(priori[i]) - 0.5 * logev;
+        }
     }
 
     /**
@@ -334,23 +369,14 @@ public class LDA implements Classifier<double[]> {
                 d[j] = x[j] - mu[i][j];
             }
 
-            Math.atx(scaling, d, ux);
+            Math.atx(scaling[i], d, ux);
 
             double f = 0.0;
             for (int j = 0; j < p; j++) {
-				double dx = (ux[j] * ux[j] / eigen[j]);
-				if (dx != dx)
-					f += 0.0;
-				else
-					f += ux[j] * ux[j] / eigen[j];
-	            //	System.err.println("ux value\t"+ux[j]+" eigen value:\t"+ eigen[j]);
-            //	f+=Math.exp(2*Math.log(ux[j])-Math.log(Math.max(eigen[j],0.0000000001)));
-
+                f += ux[j] * ux[j] / ev[i][j];
             }
 
             f = ct[i] - 0.5 * f;
-            
-           System.err.println("ct value\t"+ct[i]+" f:\t"+ f);
             if (max < f) {
                 max = f;
                 y = i;
@@ -372,8 +398,6 @@ public class LDA implements Classifier<double[]> {
                 posteriori[i] /= sum;
             }
         }
-        
-        System.err.println(max);
 
         return y;
     }

@@ -17,10 +17,13 @@
 package xiong.hdstats.da;
 
 import java.util.Arrays;
+
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
+import xiong.hdstats.Estimator;
 import xiong.hdstats.da.shruken.QDA;
 import xiong.hdstats.da.shruken.RDA;
+import xiong.hdstats.graph.PDLassoEstimator;
 
 /**
  * Linear discriminant analysis. LDA is based on the Bayes decision theory
@@ -55,7 +58,7 @@ import xiong.hdstats.da.shruken.RDA;
  * 
  * @author Haifeng Li
  */
-public class LDA implements Classifier<double[]> {
+public class CovLDA implements Classifier<double[]> {
 
     /**
      * The dimensionality of data.
@@ -132,8 +135,8 @@ public class LDA implements Classifier<double[]> {
         }
         
        
-        public LDA train(double[][] x, int[] y) {
-            return new LDA(x, y, priori, tol);
+        public CovLDA train(double[][] x, int[] y) {
+            return new CovLDA(x, y, priori, tol);
         }
     }
     
@@ -142,7 +145,7 @@ public class LDA implements Classifier<double[]> {
      * @param x training samples.
      * @param y training labels in [0, k), where k is the number of classes.
      */
-    public LDA(double[][] x, int[] y) {
+    public CovLDA(double[][] x, int[] y) {
         this(x, y, null);
     }
 
@@ -152,7 +155,7 @@ public class LDA implements Classifier<double[]> {
      * @param y training labels in [0, k), where k is the number of classes.
      * @param priori the priori probability of each class.
      */
-    public LDA(double[][] x, int[] y, double[] priori) {
+    public CovLDA(double[][] x, int[] y, double[] priori) {
         this(x, y, priori, 1E-4);
     }
 
@@ -163,7 +166,7 @@ public class LDA implements Classifier<double[]> {
      * @param tol a tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public LDA(double[][] x, int[] y, double tol) {
+    public CovLDA(double[][] x, int[] y, double tol) {
         this(x, y, null, tol);
     }
     
@@ -176,7 +179,7 @@ public class LDA implements Classifier<double[]> {
      * @param tol a tolerance to decide if a covariance matrix is singular; it
      * will reject variables whose variance is less than tol<sup>2</sup>.
      */
-    public LDA(double[][] x, int[] y, double[] priori, double tol) {
+    public CovLDA(double[][] x, int[] y, double[] priori, double tol) {
         if (x.length != y.length) {
             throw new IllegalArgumentException(String.format("The sizes of X and Y don't match: %d != %d", x.length, y.length));
         }
@@ -229,7 +232,7 @@ public class LDA implements Classifier<double[]> {
         final int n = x.length;
 
         if (n <= k) {
-            throw new IllegalArgumentException(String.format("Sample size is too small: %d <= %d", n, k));
+      //      throw new IllegalArgumentException(String.format("Sample size is too small: %d <= %d", n, k));
         }
 
         p = x[0].length;
@@ -285,15 +288,19 @@ public class LDA implements Classifier<double[]> {
             }
 
             if (C[j][j] < tol) {
-        //        throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
+           //     throw new IllegalArgumentException(String.format("Covariance matrix (variable %d) is close to singular.", j));
             }
         }
+        
+      //  new PDLassoEstimator(Estimator.lambda).covarianceApprox(C);
+      //  B= new PDLassoEstimator(Estimator.lambda).covarianceApprox(B);
+
 
         EigenValueDecomposition evd = EigenValueDecomposition.decompose(C, true);
 
         for (double s : evd.getEigenValues()) {
             if (s < tol) {
-      //          throw new IllegalArgumentException("The covariance matrix is close to singular.");
+     //           throw new IllegalArgumentException("The covariance matrix is close to singular.");
             }
         }
 
@@ -338,19 +345,10 @@ public class LDA implements Classifier<double[]> {
 
             double f = 0.0;
             for (int j = 0; j < p; j++) {
-				double dx = (ux[j] * ux[j] / eigen[j]);
-				if (dx != dx)
-					f += 0.0;
-				else
-					f += ux[j] * ux[j] / eigen[j];
-	            //	System.err.println("ux value\t"+ux[j]+" eigen value:\t"+ eigen[j]);
-            //	f+=Math.exp(2*Math.log(ux[j])-Math.log(Math.max(eigen[j],0.0000000001)));
-
+                f += ux[j] * ux[j] / eigen[j];
             }
 
             f = ct[i] - 0.5 * f;
-            
-           System.err.println("ct value\t"+ct[i]+" f:\t"+ f);
             if (max < f) {
                 max = f;
                 y = i;
@@ -373,8 +371,6 @@ public class LDA implements Classifier<double[]> {
             }
         }
         
-        System.err.println(max);
-
         return y;
     }
 }

@@ -1,4 +1,4 @@
-package xiong.hdstats.da;
+package xiong.hdstats.da.mcmc;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,8 +18,9 @@ import gov.sandia.cognition.statistics.distribution.InverseWishartDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import smile.stat.distribution.MultivariateGaussianDistribution;
 import xiong.hdstats.NearPD;
+import xiong.hdstats.da.PseudoInverseLDA;
 
-public class MCBayesGraphs extends PseudoInverseLDA {
+public class MCBayesLDA extends PseudoInverseLDA {
 
 	private List<double[][]> pooledClassifiers = new ArrayList<double[][]>();
 	private HashMap<double[][], MultivariateGaussianDistribution> scoreFunctions = new HashMap<double[][], MultivariateGaussianDistribution>();
@@ -37,7 +38,7 @@ public class MCBayesGraphs extends PseudoInverseLDA {
 		return sum.getSum();
 	}
 
-	public MCBayesGraphs(double[][] d, int[] g, int size, double K) {
+	public MCBayesLDA(double[][] d, int[] g, int size, double K) {
 		super(d, g, false);
 		VectorFactory vf = VectorFactory.getDenseDefault();
 		MatrixFactory mf = MatrixFactory.getDenseDefault();
@@ -180,7 +181,7 @@ public class MCBayesGraphs extends PseudoInverseLDA {
 		double[][] data = { { 2.95, 6.63 }, { 2.53, 7.79 }, { 3.57, 5.65 }, { 3.16, 5.47 }, { 2.58, 4.46 },
 				{ 2.16, 6.22 }, { 3.27, 3.52 } };
 
-		MCBayesGraphs test = new MCBayesGraphs(data, group, 1000, 1);
+		MCBayesLDA test = new MCBayesLDA(data, group, 1000, 1);
 		double[] testData = { 3.57, 4.46 };
 
 		// test
