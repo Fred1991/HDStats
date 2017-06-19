@@ -17,11 +17,11 @@ import xiong.hdstats.opt.estimator.L2NZMF;
 import xiong.hdstats.opt.estimator.L2NZNMF;
 import xiong.hdstats.opt.var.ChainedMVariables;
 
-public class CrowdSensor {
+public class NetworkedSensor {
 	public static PrintStream ps;
 	public static int cycle = 0;
 	public static List<double[]> allData;
-	public static HashMap<Integer, CrowdSensor> cmap = new HashMap<Integer, CrowdSensor>();
+	public static HashMap<Integer, NetworkedSensor> cmap = new HashMap<Integer, NetworkedSensor>();
 	public static double[][] estimated;
 	public static double[][] truth;
 
@@ -30,27 +30,27 @@ public class CrowdSensor {
 	public double[][] collectedData;
 	public double[][] nz;
 
-	public CrowdSensor() {
+	public NetworkedSensor() {
 		this.id = cmap.size();
 		cmap.put(id, this);
 	}
 
 	public static void creatWorldWithCrowds(String fname, int N) {
 		cycle = 0;
-		cmap = new HashMap<Integer, CrowdSensor>();
+		cmap = new HashMap<Integer, NetworkedSensor>();
 		allData = DataLoader.allSensorData(fname);
 		for (int i = 0; i < N; i++)
-			new CrowdSensor();
+			new NetworkedSensor();
 	}
 
 	public static void pseudoLocations(double r, int maxLocations) {
-		Set<CrowdSensor> selected = new HashSet<CrowdSensor>();
+		Set<NetworkedSensor> selected = new HashSet<NetworkedSensor>();
 		while (selected.size() < cmap.size() * r) {
 			int index = (int) (Math.random() * cmap.size());
 			index = index == cmap.size() ? index - 1 : index;
 			selected.add(cmap.get(index));
 		}
-		for (CrowdSensor cs : selected) {
+		for (NetworkedSensor cs : selected) {
 			int num = (int) Math.random() * maxLocations;
 			num = num == 0 ? 1 : num;
 			// num=50;
@@ -65,7 +65,7 @@ public class CrowdSensor {
 	public static void autoMasking(double maxNoise) {
 		double[][] _addData = DataLoader.getAllDataBeforeTime(allData, cycle + 1);
 		truth = _addData;
-		for (CrowdSensor cs : cmap.values()) {
+		for (NetworkedSensor cs : cmap.values()) {
 			cs.collectedData = new double[_addData.length][_addData[0].length];
 			cs.nz = new double[_addData.length][_addData[0].length];
 			for (int t : cs.collected.keySet()) {
@@ -133,7 +133,7 @@ public class CrowdSensor {
 
 	public static void estimating(double _lp, double _lq, int wind, int latent) {
 		List<ChainedFunction> lcf = new ArrayList<ChainedFunction>();
-		for (CrowdSensor cs : cmap.values()) {
+		for (NetworkedSensor cs : cmap.values()) {
 			lcf.add(cs.getRiskFunction(_lp, _lq, wind));
 		}
 		AveragedChainedRiskFunction arf = new AveragedChainedRiskFunction(lcf);

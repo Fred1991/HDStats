@@ -10,12 +10,12 @@ import javax.imageio.ImageIO;
 
 import Jama.Matrix;
 import xiong.hdstats.opt.ChainedFunction;
-import xiong.hdstats.opt.ChainedMVariables;
 import xiong.hdstats.opt.ChainedRiskFunction;
 import xiong.hdstats.opt.GradientDescent;
-import xiong.hdstats.opt.MatrixMVariable;
+import xiong.hdstats.opt.var.MatrixMVariable;
 import xiong.hdstats.opt.MultiVariable;
 import xiong.hdstats.opt.RiskFunction;
+import xiong.hdstats.opt.var.ChainedMVariables;
 
 public class L2ProbMF {
 

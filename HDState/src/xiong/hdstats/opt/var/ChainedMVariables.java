@@ -1,7 +1,9 @@
-package xiong.hdstats.opt;
+package xiong.hdstats.opt.var;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import xiong.hdstats.opt.MultiVariable;
 
 public class ChainedMVariables implements MultiVariable {
 
