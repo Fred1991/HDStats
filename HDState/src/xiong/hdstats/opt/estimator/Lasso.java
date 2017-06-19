@@ -2,9 +2,9 @@ package xiong.hdstats.opt.estimator;
 
 import Jama.Matrix;
 import xiong.hdstats.opt.GradientDescent;
+import xiong.hdstats.opt.MatrixMVariable;
 import xiong.hdstats.opt.MultiVariable;
 import xiong.hdstats.opt.RiskFunction;
-import xiong.hdstats.opt.var.MatrixMVariable;
 
 public class Lasso implements RiskFunction {
 	public Matrix X;
@@ -21,9 +21,9 @@ public class Lasso implements RiskFunction {
 	public Matrix func(MultiVariable input) {
 		// TODO Auto-generated method stub
 		MatrixMVariable mmv = (MatrixMVariable) input;
-		double value = this.Y.minus(X.times(mmv.getMtx())).normF() + mmv.getMtx().norm1();
+		double value = this.Y.minus(this.X.times(mmv.getMtx())).normF() + mmv.getMtx().norm1() * this.lambda;
 		Matrix m = new Matrix(1, 1);
-		m.set(1, 1, value);
+		m.set(0, 0, value);
 		return m;
 	}
 
@@ -32,6 +32,7 @@ public class Lasso implements RiskFunction {
 		// TODO Auto-generated method stub
 		Matrix mtx = ((MatrixMVariable) input).getMtx();
 		Matrix gradient = X.transpose().times(-1).times(Y.minus(X.times(mtx)));
+		//System.out.println(gradient.getArray()[0].length);
 		for (int i = 0; i < mtx.getArray().length; i++) {
 			for (int j = 0; j < mtx.getArray()[0].length; j++) {
 				if (mtx.getArray()[i][j] > 0)
@@ -41,20 +42,21 @@ public class Lasso implements RiskFunction {
 
 			}
 		}
+	//	gradient = gradient.times(1.0/gradient.norm2());
 		return new MatrixMVariable(gradient);
 	}
 
 	public static void main(String[] args) {
-		Matrix truth = Matrix.random(100, 1);
-		for (int i = 10; i < 100; i++)
+		Matrix truth = Matrix.random(1000, 1);
+		for (int i = 0; i < 100; i++)
 			truth.getArray()[i][0] = 0;
-		Matrix _X = Matrix.random(30, 100);
+		Matrix _X = Matrix.random(300, 1000);
 		Matrix _Y = _X.times(truth);
-		Matrix _init = new Matrix(100, 1);
-		for (double l = 0.15; l < 0.2; l += 0.001) {
+		Matrix _init = new Matrix(1000, 1);
+		for (double l = 0.3; l < 0.4; l += 0.01) {
 			Lasso lasso = new Lasso(_X, _Y, l);
 			MatrixMVariable result = (MatrixMVariable) GradientDescent.getMinimum(lasso, new MatrixMVariable(_init),
-					1e-3, 1e-3, 10000, GradientDescent.GD);
+					1e-4, 1e-3, 10000, GradientDescent.GD);
 			System.out.println(l+"\t"+result.getMtx().minus(truth).normF() / truth.normF());
 		}
 	}

@@ -51,7 +51,7 @@ public class PsuedoRandomLDACompare {
 	public static PrintStream ps1 = null;
 
 	public static void main(String[] args) throws FileNotFoundException {
-		for (int i = 2; i <= 10; i += 2)
+		for (int i = 1; i <= 10; i += 2)
 			_main(200, 10, i*20, 500, 5);
 	}
 

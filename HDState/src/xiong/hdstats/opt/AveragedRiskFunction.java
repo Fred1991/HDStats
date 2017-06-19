@@ -53,7 +53,7 @@ public class AveragedRiskFunction implements RiskFunction {
 
 	public MultiVariable randomGradient(MultiVariable input) {
 		int n = funcs.size();
-		int i = rn.nextInt() % n;
+		int i = Math.abs(rn.nextInt()) % n;
 		return this.funcs.get(i).gradient(input);
 	}
 
@@ -61,7 +61,7 @@ public class AveragedRiskFunction implements RiskFunction {
 		Set<Integer> miniBatch = new HashSet<Integer>();
 		int n = funcs.size();
 		while (miniBatch.size() < miniSize) {
-			int i = rn.nextInt() % n;
+			int i = Math.abs(rn.nextInt()) % n;
 			miniBatch.add(i);
 		}
 

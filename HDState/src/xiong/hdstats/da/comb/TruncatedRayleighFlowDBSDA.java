@@ -32,7 +32,7 @@ public class TruncatedRayleighFlowDBSDA extends BetaLDA {
 
 		TRF = new TruncatedRayleighFlow(this.k, 1.0e-4, AMat, BMat);
 		TRF.init(this.beta[2].transpose().getArrayCopy()[0]);
-		this.iterate(200);
+		this.iterate(1000);
 	}
 
 	public void iterate(int n) {
