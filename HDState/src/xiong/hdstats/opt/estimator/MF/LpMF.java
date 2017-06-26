@@ -1,4 +1,4 @@
-package xiong.hdstats.opt.estimator;
+package xiong.hdstats.opt.estimator.MF;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -21,35 +21,50 @@ import xiong.hdstats.opt.var.ChainedMVariables;
 import ml.clustering.*;
 import ml.options.L1NMFOptions;
 
-public class L2NZNMF {
+public class LpMF {
 
 	public Matrix R;
 	public Matrix P;
 	public Matrix Q;
 	public double lambdaP;
 	public double lambdaQ;
-	public double[][] nonzeros;
-	public int nzs;
+	public int[][] selection;
+	public int numSel = 0;
+	public int lpNorm;
+	public int mfOpt;
 
-	public L2NZNMF(Matrix _R, double[][] _nonzeros, double _lp, double _lq) {
+	public LpMF(Matrix _R, int _mfOpt, int _lpNorm, double _lp, double _lq) {
 		this.R = _R;
 		this.lambdaP = _lp;
 		this.lambdaQ = _lq;
-		this.nonzeros=_nonzeros;
-		for(int i=0;i<nonzeros.length;i++){
-			for(int j=0;j<nonzeros[i].length;j++){
-				if(this.nonzeros[i][j]!=0)
-					nzs++;
+		this.lpNorm = _lpNorm;
+		this.mfOpt = _mfOpt;
+	}
+
+	public LpMF(Matrix _R, int _mfOpt, int _lpNorm, int[][] _select, double _lp, double _lq) {
+		this.R = _R;
+		this.lambdaP = _lp;
+		this.lambdaQ = _lq;
+		this.lpNorm = _lpNorm;
+		this.mfOpt = _mfOpt;
+
+		this.selection = _select;
+		if (this.selection == null)
+			return;
+		for (int i = 0; i < selection.length; i++) {
+			for (int j = 0; j < selection[i].length; j++) {
+				if (this.selection[i][j] != 0)
+					numSel++;
 			}
 		}
 	}
 
 	public void setP(Matrix _P) {
-		this.P = project(_P);
+		this.P = _P;
 	}
 
 	public void setQ(Matrix _Q) {
-		this.Q = project(_Q);
+		this.Q = _Q;
 	}
 
 	public Matrix func() {
@@ -62,68 +77,38 @@ public class L2NZNMF {
 
 	public MultiVariable gradientP() {
 		// TODO Auto-generated method stub
-		// System.out.println(R.getColumnDimension()+"\t"+R.getRowDimension());
-		// System.out.println(P.getColumnDimension()+"\t"+P.getRowDimension());
-		// R.minus(P.times(Q)).times(Q);
-		// System.out.println("P gradient");
+		if (numSel == 0) {
+			return new MatrixMVariable(MFUtil.getEmptyGradient(P));
+		}
+
 		Matrix err = R.minus(P.times(Q));
-		for(int i=0;i<nonzeros.length;i++){
-			for(int j=0;j<nonzeros[0].length;j++){
-				if(nonzeros[i][j]==0)
-					err.getArray()[i][j]=0;
-			}
-		}
-		Matrix gradientP = (err.times(Q.transpose()).minus(P.times(lambdaP))).times(-1.0);
-		// gradientP=gradientP.times(1.0/gradientP.norm2());
-		// for(int i=0;i<gradientP.getRowDimension();i++){
-		// for(int j=0;j<gradientP.getColumnDimension();j++){
-		// System.out.println("P"+gradientP.get(i, j));
-		// }
-		// }
-		// System.out.println(this.func().get(0,0));
-		if(nzs==0){
-			for(int i=0;i<gradientP.getArray().length;i++){
-				for(int j=0;j<gradientP.getArray()[i].length;j++){
-					gradientP.getArray()[i][j]=0;
-				}
-			}
-		}
+		if (this.selection != null && this.numSel != 0)
+			err = MFUtil.subMatrixSelection(err, this.selection);
+		Matrix normGradient = MFUtil.getLpNormGradient(P, this.lpNorm);
+		Matrix gradientP = (err.times(Q.transpose()).minus(normGradient.times(lambdaP))).times(-1.0);
+
 		return new MatrixMVariable(gradientP);
 	}
 
 	public MultiVariable gradientQ() {
 		// TODO Auto-generated method stub
-		// System.out.println("Q gradient");
-		Matrix err = R.minus(P.times(Q));
-		for(int i=0;i<nonzeros.length;i++){
-			for(int j=0;j<nonzeros[0].length;j++){
-				if(nonzeros[i][j]==0)
-					err.getArray()[i][j]=0;
-			}
+		if (numSel == 0) {
+			return new MatrixMVariable(MFUtil.getEmptyGradient(Q));
 		}
-		Matrix gradientQ = (P.transpose().times(err).minus(Q.times(lambdaQ))).times(-1.0);
-		// gradientQ=gradientQ.times(1.0/gradientQ.norm2());
 
-		// for(int i=0;i<gradientQ.getRowDimension();i++){
-		// for(int j=0;j<gradientQ.getColumnDimension();j++){
-		// System.out.println("Q"+gradientQ.get(i, j));
-		// }
-		// }
-		// System.out.println(this.func().get(0,0));
-		if(nzs==0){
-			for(int i=0;i<gradientQ.getArray().length;i++){
-				for(int j=0;j<gradientQ.getArray()[i].length;j++){
-					gradientQ.getArray()[i][j]=0;
-				}
-			}
-		}
+		Matrix err = R.minus(P.times(Q));
+		if (this.selection != null && this.numSel != 0)
+			err = MFUtil.subMatrixSelection(err, this.selection);
+		Matrix normGradient = MFUtil.getLpNormGradient(Q, this.lpNorm);
+		Matrix gradientQ = (P.transpose().times(err).minus(normGradient.times(lambdaQ))).times(-1.0);
+
 		return new MatrixMVariable(gradientQ);
 	}
 
 	public static class NMFPRiskFunction implements RiskFunction {
-		private L2NZNMF mf;
+		private LpMF mf;
 
-		public NMFPRiskFunction(L2NZNMF _mf) {
+		public NMFPRiskFunction(LpMF _mf) {
 			this.mf = _mf;
 		}
 
@@ -149,13 +134,24 @@ public class L2NZNMF {
 			return this.mf.gradientP();
 		}
 
+		@Override
+		public MultiVariable project(MultiVariable input) {
+			// TODO Auto-generated method stub
+			ChainedMVariables PQ = (ChainedMVariables) input;
+			Matrix P = LpMF.project(((MatrixMVariable) PQ.get(0)).getMtx(), this.mf.mfOpt);
+			Matrix Q = LpMF.project(((MatrixMVariable) PQ.get(1)).getMtx(), this.mf.mfOpt);
+			((MatrixMVariable)PQ.get(0)).setMtx(P);
+			((MatrixMVariable)PQ.get(1)).setMtx(Q);
+			return PQ;
+		}
+
 	}
 
 	public static class NMFQRiskFunction implements RiskFunction {
 
-		private L2NZNMF mf;
+		private LpMF mf;
 
-		public NMFQRiskFunction(L2NZNMF _mf) {
+		public NMFQRiskFunction(LpMF _mf) {
 			this.mf = _mf;
 		}
 
@@ -181,10 +177,22 @@ public class L2NZNMF {
 			return this.mf.gradientQ();
 		}
 
+		@Override
+		public MultiVariable project(MultiVariable input) {
+			// TODO Auto-generated method stub
+			ChainedMVariables PQ = (ChainedMVariables) input;
+			Matrix P = LpMF.project(((MatrixMVariable) PQ.get(0)).getMtx(), this.mf.mfOpt);
+			Matrix Q = LpMF.project(((MatrixMVariable) PQ.get(1)).getMtx(), this.mf.mfOpt);
+			((MatrixMVariable)PQ.get(0)).setMtx(P);
+			((MatrixMVariable)PQ.get(1)).setMtx(Q);
+			return PQ;
+		}
+
 	}
 
-	public static ChainedFunction getNMFRiskFunction(Matrix R, double[][] nonzeros, double _lp, double _lq) {
-		L2NZNMF mf = new L2NZNMF(R, nonzeros, _lp, _lq);
+	public static ChainedFunction getNMFRiskFunction(Matrix R, int mfOpt, int lpNorm, int[][] selected, double _lp,
+			double _lq) {
+		LpMF mf = new LpMF(R, mfOpt, lpNorm, selected, _lp, _lq);
 		List<RiskFunction> lrf = new ArrayList<RiskFunction>();
 		lrf.add(new NMFPRiskFunction(mf));
 		lrf.add(new NMFQRiskFunction(mf));
@@ -200,23 +208,20 @@ public class L2NZNMF {
 		return cmvs;
 	}
 
-	public static Matrix project(Matrix p){
-		for(int i=0;i<p.getRowDimension();i++){
-			for(int j=0;j<p.getColumnDimension();j++){
-				if(p.get(i, j)<0)
-					p.set(i, j, 0);
-			}
-		}
-//		System.out.println("projected");
+	public static Matrix project(Matrix p, int mfOpt) {
+		if (mfOpt == 2)
+			MFUtil.nonnegativeHT(p);
+		else if (mfOpt == 3)
+			MFUtil.probHT(p);
 		return p;
 	}
-	
-	public static Matrix getP(ChainedMVariables cmv) {
-		return project(((MatrixMVariable) cmv.get(0)).getMtx());
+
+	public static Matrix getP(ChainedMVariables cmv, int mfOpt) {
+		return project(((MatrixMVariable) cmv.get(0)).getMtx(), mfOpt);
 	}
 
-	public static Matrix getQ(ChainedMVariables cmv) {
-		return project(((MatrixMVariable) cmv.get(1)).getMtx());
+	public static Matrix getQ(ChainedMVariables cmv, int mfOpt) {
+		return project(((MatrixMVariable) cmv.get(1)).getMtx(), mfOpt);
 	}
 
 	public static double[][] convert(BufferedImage image) {
@@ -236,7 +241,7 @@ public class L2NZNMF {
 	public static void main(String[] args) throws IOException {
 		BufferedImage hugeImage = ImageIO.read(new File("C:\\Users\\jbn42\\Desktop\\leyewang.png"));
 		double[][] original = convert(hugeImage);
-		DoubleFFT_2D fft=new DoubleFFT_2D(original.length,original[0].length);
+		DoubleFFT_2D fft = new DoubleFFT_2D(original.length, original[0].length);
 		fft.realForward(original);
 
 		Matrix orginal = new Matrix(original);
@@ -271,16 +276,16 @@ public class L2NZNMF {
 		Clustering L1NMF = new L1NMF(L1NMFOptions);
 		L1NMF.feedData(toM.getArrayCopy());
 		L1NMF.clustering();
-		la.matrix.Matrix L= L1NMF.getCenters();
+		la.matrix.Matrix L = L1NMF.getCenters();
 		la.matrix.Matrix R = L1NMF.getIndicatorMatrix();
-		L=L.transpose();
-		R=R.transpose();
-		System.out.println(L.getRowDimension()+"\t"+L.getColumnDimension());
-		System.out.println(R.getRowDimension()+"\t"+R.getColumnDimension());
+		L = L.transpose();
+		R = R.transpose();
+		System.out.println(L.getRowDimension() + "\t" + L.getColumnDimension());
+		System.out.println(R.getRowDimension() + "\t" + R.getColumnDimension());
 		Matrix G = new Matrix(L.getData()).times(new Matrix(R.getData()));
-		System.out.println(G.getRowDimension()+"\t"+G.getColumnDimension());
+		System.out.println(G.getRowDimension() + "\t" + G.getColumnDimension());
 
-		double[][] recovered =G.getArrayCopy();
+		double[][] recovered = G.getArrayCopy();
 		fft.realInverse(recovered, true);
 		System.out.println("nmf\t" + G.minus(orginal).norm1() / orginal.norm1());
 
@@ -297,14 +302,13 @@ public class L2NZNMF {
 
 		ImageIO.write(bufferedImage2, "PNG", new File("C:\\Users\\jbn42\\Desktop\\leyewang4.png"));
 
-		
 		// for (int i = 2; i <50; i += 1) {
 		int i = 50;
-		ChainedFunction cf = L2NZNMF.getNMFRiskFunction(toM, toM.getArray(), 0.0001, 0.0001);
-		ChainedMVariables cmv = L2NZNMF.initiNMFPQ(toM, i);
+		ChainedFunction cf = LpMF.getNMFRiskFunction(toM, MFUtil.nmf, MFUtil.L2, null, 0.0001, 0.0001);
+		ChainedMVariables cmv = LpMF.initiNMFPQ(toM, i);
 		ChainedMVariables res = GradientDescent.getMinimum(cf, cmv, 10e-16, 10e-4, 1000, GradientDescent.GD);
-		Matrix P = getP(res);
-		Matrix Q = getQ(res);
+		Matrix P = getP(res, MFUtil.nmf);
+		Matrix Q = getQ(res, MFUtil.nmf);
 		System.out.println(i + "\t" + P.times(Q).minus(orginal).norm1() / orginal.norm1());
 		// }
 		recovered = P.times(Q).getArrayCopy();

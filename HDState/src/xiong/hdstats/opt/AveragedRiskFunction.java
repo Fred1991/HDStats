@@ -74,4 +74,10 @@ public class AveragedRiskFunction implements RiskFunction {
 		}
 		return m.times(1.0 / miniBatchList.size());
 	}
+
+	@Override
+	public MultiVariable project(MultiVariable input) {
+		// TODO Auto-generated method stub
+		return input;
+	}
 }

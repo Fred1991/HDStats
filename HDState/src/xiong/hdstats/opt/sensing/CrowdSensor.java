@@ -12,9 +12,8 @@ import Jama.Matrix;
 import xiong.hdstats.opt.AveragedChainedRiskFunction;
 import xiong.hdstats.opt.ChainedFunction;
 import xiong.hdstats.opt.GradientDescent;
-import xiong.hdstats.opt.estimator.L2MF;
-import xiong.hdstats.opt.estimator.L2NZMF;
-import xiong.hdstats.opt.estimator.L2NZNMF;
+import xiong.hdstats.opt.estimator.MF.LpMF;
+import xiong.hdstats.opt.estimator.MF.MFUtil;
 import xiong.hdstats.opt.var.ChainedMVariables;
 
 public class CrowdSensor {
@@ -78,13 +77,13 @@ public class CrowdSensor {
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
-		ps=new PrintStream("C:\\Users\\jbn42\\Desktop\\pm25Output.txt");
+		ps = new PrintStream("C:\\Users\\xiongha\\Desktop\\tempOutput.txt");
 		for (int maxLoc = 1; maxLoc <= 10; maxLoc++)
-			for (int crowdSize = 10; crowdSize < 100; crowdSize+=10) {
+			for (int crowdSize = 10; crowdSize < 100; crowdSize += 10) {
 				for (int par = 2; par < 10; par++) {
 					for (int wind = 5; wind <= 50; wind += 5) {
 						for (int latent = 2; latent <= 30; latent += 2) {
-							creatWorldWithCrowds("C:\\Users\\jbn42\\Desktop\\pm25Leye.csv", crowdSize);
+							creatWorldWithCrowds("C:\\Users\\xiongha\\Desktop\\tempLeye.csv", crowdSize);
 							List<Double> MMSE = new ArrayList<Double>();
 							List<Double> TMSE = new ArrayList<Double>();
 							for (; cycle < 100; cycle++) {
@@ -117,14 +116,14 @@ public class CrowdSensor {
 							for (double m : MMSE)
 								aMSE += m;
 							aMSE /= MMSE.size();
-							ps.println("average MSE\t" + latent + "\t" + wind + "\t" + crowdSize + "\t" + par
-									+ "\t" + maxLoc+ "\t" + aMSE);
+							ps.println("average MSE\t" + latent + "\t" + wind + "\t" + crowdSize + "\t" + par + "\t"
+									+ maxLoc + "\t" + aMSE);
 
 							double aTemp = 0;
 							for (double t : TMSE)
 								aTemp += t / TMSE.size();
-							ps.println("average T-err\t" + latent + "\t" + wind + "\t" + crowdSize + "\t" + par
-									+ "\t" + maxLoc+ "\t"  + aTemp);
+							ps.println("average T-err\t" + latent + "\t" + wind + "\t" + crowdSize + "\t" + par + "\t"
+									+ maxLoc + "\t" + aTemp);
 						}
 					}
 				}
@@ -138,10 +137,9 @@ public class CrowdSensor {
 		}
 		AveragedChainedRiskFunction arf = new AveragedChainedRiskFunction(lcf);
 
-		ChainedMVariables cmv = L2NZNMF.initiNMFPQ(new Matrix(getLatestWindow(cmap.get(0).collectedData, wind)),
-				latent);
+		ChainedMVariables cmv = LpMF.initiNMFPQ(new Matrix(getLatestWindow(cmap.get(0).collectedData, wind)), latent);
 		ChainedMVariables res = GradientDescent.getMinimum(arf, cmv, 10e-4, 10e-2, 2000, GradientDescent.SGD);
-		estimated = L2NZNMF.getP(res).times(L2NZNMF.getQ(res)).getArray();
+		estimated = LpMF.getP(res, MFUtil.nmf).times(LpMF.getQ(res, MFUtil.nmf)).getArray();
 	}
 
 	public static double[][] getLatestWindow(double[][] collectedData, int wind) {
@@ -157,8 +155,8 @@ public class CrowdSensor {
 	}
 
 	public ChainedFunction getRiskFunction(double _lp, double _lq, int wind) {
-		return L2NZNMF.getNMFRiskFunction(new Matrix(getLatestWindow(this.collectedData, wind)),
-				getLatestWindow(this.nz, wind), _lp, _lq);
+		return LpMF.getNMFRiskFunction(new Matrix(getLatestWindow(this.collectedData, wind)), MFUtil.nmf, MFUtil.L1, null, _lp,
+				_lq);
 	}
 
 }

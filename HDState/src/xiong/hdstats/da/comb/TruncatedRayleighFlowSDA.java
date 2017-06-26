@@ -7,7 +7,7 @@ import xiong.hdstats.da.PseudoInverseLDA;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
-import xiong.hdstats.opt.TruncatedRayleighFlow;
+import xiong.hdstats.opt.comb.TruncatedRayleighFlow;
 
 public class TruncatedRayleighFlowSDA extends BetaLDA {
 	private TruncatedRayleighFlow TRF;

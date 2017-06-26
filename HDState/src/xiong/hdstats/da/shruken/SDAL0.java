@@ -5,7 +5,7 @@ import Jama.Matrix;
 import xiong.hdstats.da.BetaLDA;
 import xiong.hdstats.da.PseudoInverseLDA;
 import xiong.hdstats.gaussian.GLassoEstimator;
-import xiong.hdstats.opt.TruncatedRayleighFlow;
+import xiong.hdstats.opt.comb.TruncatedRayleighFlow;
 
 public class SDAL0 extends BetaLDA {
 	private TruncatedRayleighFlow TRF;

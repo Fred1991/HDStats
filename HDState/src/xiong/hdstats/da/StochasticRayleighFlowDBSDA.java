@@ -3,7 +3,7 @@ package xiong.hdstats.da;
 import Jama.Matrix;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
-import xiong.hdstats.opt.StochasticRayleighFlow;
+import xiong.hdstats.opt.comb.StochasticRayleighFlow;
 
 public class StochasticRayleighFlowDBSDA extends BetaLDA {
 	private StochasticRayleighFlow TRF;

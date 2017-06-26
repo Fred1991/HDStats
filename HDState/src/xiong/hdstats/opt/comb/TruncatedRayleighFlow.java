@@ -1,4 +1,4 @@
-package xiong.hdstats.opt;
+package xiong.hdstats.opt.comb;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,7 +7,8 @@ import java.util.List;
 import Jama.Matrix;
 import xiong.hdstats.MLEstimator;
 
-public class RayleighFlow {
+public class TruncatedRayleighFlow {
+	private int k;
 	private double eta;
 	private double[][] I;
 	private Matrix vector;
@@ -15,7 +16,8 @@ public class RayleighFlow {
 	private Matrix BMat;
 	private int p;
 
-	public RayleighFlow(int p, double eta) {
+	public TruncatedRayleighFlow(int k, int p, double eta) {
+		this.k = k;
 		this.eta = eta;
 		I = new double[p][p];
 		for (int i = 0; i < p; i++)
@@ -23,8 +25,8 @@ public class RayleighFlow {
 		this.p = p;
 	}
 
-	public RayleighFlow(double eta, double[][] cov) { // as PCA
-		this(cov.length, eta);
+	public TruncatedRayleighFlow(int k, double eta, double[][] cov) { // as PCA
+		this(k, cov.length, eta);
 		double[][] arrayB = new double[p][p];
 		for (int i = 0; i < p; i++)
 			arrayB[i][i] = 1.0;
@@ -32,8 +34,9 @@ public class RayleighFlow {
 		this.setAB(arrayA, arrayB);
 	}
 
-	public RayleighFlow(double eta, double[][] cov1, double[][] cov2) { // as																// LDA
-		this(cov1.length, eta);
+	public TruncatedRayleighFlow(int k, double eta, double[][] cov1, double[][] cov2) { // as
+																						// LDA
+		this(k, cov1.length, eta);
 		double[][] arrayB = cov2;
 		double[][] arrayA = cov1;
 		this.setAB(arrayA, arrayB);
@@ -77,8 +80,24 @@ public class RayleighFlow {
 		Matrix vUpdate = C.times(vector);
 		vUpdate = vUpdate.times(1.0 / vUpdate.normF());
 		double[] vArray = vUpdate.transpose().getArray()[0];
+		vArray = truncate(k, vArray);
 		vArray = l2Normalized(vArray);
 		this.vector = new Matrix(vArray, 1).transpose();
+	}
+
+	private static double[] truncate(int k, double[] v) {
+		List<Double> items = new ArrayList<Double>();
+		for (double vv : v) {
+			items.add(Math.abs(vv));
+		}
+		Collections.sort(items);
+		double thr = items.get(items.size() - k);
+		for (int i = 0; i < v.length; i++) {
+			if (Math.abs(v[i]) < thr) {
+				v[i] = 0.0;
+			}
+		}
+		return v;
 	}
 
 	private static double[] l2Normalized(double[] v) {

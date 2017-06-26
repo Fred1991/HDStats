@@ -5,7 +5,7 @@ import xiong.hdstats.Estimator;
 import xiong.hdstats.da.BetaLDA;
 import xiong.hdstats.da.PseudoInverseLDA;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
-import xiong.hdstats.opt.StochasticTruncatedRayleighFlow;
+import xiong.hdstats.opt.comb.StochasticTruncatedRayleighFlow;
 
 public class StochasticTruncatedRayleighFlowDBSDA extends BetaLDA {
 	private StochasticTruncatedRayleighFlow TRF;

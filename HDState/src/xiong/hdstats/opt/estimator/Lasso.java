@@ -46,6 +46,12 @@ public class Lasso implements RiskFunction {
 		return new MatrixMVariable(gradient);
 	}
 
+	@Override
+	public MultiVariable project(MultiVariable input) {
+		// TODO Auto-generated method stub
+		return input;
+	}
+	
 	public static void main(String[] args) {
 		Matrix truth = Matrix.random(1000, 1);
 		for (int i = 0; i < 100; i++)

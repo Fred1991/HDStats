@@ -1,8 +1,5 @@
 package xiong.hdstats.opt;
 
-import java.util.List;
-import java.util.Random;
-
 import xiong.hdstats.opt.var.ChainedMVariables;
 
 public class GradientDescent {

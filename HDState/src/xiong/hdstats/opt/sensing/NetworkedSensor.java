@@ -12,9 +12,8 @@ import Jama.Matrix;
 import xiong.hdstats.opt.AveragedChainedRiskFunction;
 import xiong.hdstats.opt.ChainedFunction;
 import xiong.hdstats.opt.GradientDescent;
-import xiong.hdstats.opt.estimator.L2MF;
-import xiong.hdstats.opt.estimator.L2NZMF;
-import xiong.hdstats.opt.estimator.L2NZNMF;
+import xiong.hdstats.opt.estimator.MF.LpMF;
+import xiong.hdstats.opt.estimator.MF.MFUtil;
 import xiong.hdstats.opt.var.ChainedMVariables;
 
 public class NetworkedSensor {
@@ -138,10 +137,10 @@ public class NetworkedSensor {
 		}
 		AveragedChainedRiskFunction arf = new AveragedChainedRiskFunction(lcf);
 
-		ChainedMVariables cmv = L2NZNMF.initiNMFPQ(new Matrix(getLatestWindow(cmap.get(0).collectedData, wind)),
+		ChainedMVariables cmv = LpMF.initiNMFPQ(new Matrix(getLatestWindow(cmap.get(0).collectedData, wind)),
 				latent);
 		ChainedMVariables res = GradientDescent.getMinimum(arf, cmv, 10e-4, 10e-2, 2000, GradientDescent.SGD);
-		estimated = L2NZNMF.getP(res).times(L2NZNMF.getQ(res)).getArray();
+		estimated = LpMF.getP(res,MFUtil.nmf).times(LpMF.getQ(res,MFUtil.nmf)).getArray();
 	}
 
 	public static double[][] getLatestWindow(double[][] collectedData, int wind) {
@@ -157,8 +156,8 @@ public class NetworkedSensor {
 	}
 
 	public ChainedFunction getRiskFunction(double _lp, double _lq, int wind) {
-		return L2NZNMF.getNMFRiskFunction(new Matrix(getLatestWindow(this.collectedData, wind)),
-				getLatestWindow(this.nz, wind), _lp, _lq);
+		return LpMF.getNMFRiskFunction(new Matrix(getLatestWindow(this.collectedData, wind)),
+				MFUtil.nmf, MFUtil.L2,null, _lp, _lq);
 	}
 
 }

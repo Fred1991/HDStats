@@ -13,6 +13,10 @@ public class ChainedMVariables implements MultiVariable {
 	public MultiVariable get(int in) {
 		return this.mvs.get(in);
 	}
+	
+	public void set(int in, MultiVariable mv){
+		mvs.set(in, mv);
+	}
 
 	public ChainedMVariables(List<MultiVariable> mv) {
 		for (MultiVariable m : mv)

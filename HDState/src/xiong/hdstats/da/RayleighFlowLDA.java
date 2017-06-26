@@ -4,7 +4,7 @@ import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
 import smile.stat.distribution.MultivariateGaussianDistribution;
 import xiong.hdstats.Estimator;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
-import xiong.hdstats.opt.RayleighFlow;
+import xiong.hdstats.opt.comb.RayleighFlow;
 
 public class RayleighFlowLDA extends BetaLDA {
 	private RayleighFlow TRF;

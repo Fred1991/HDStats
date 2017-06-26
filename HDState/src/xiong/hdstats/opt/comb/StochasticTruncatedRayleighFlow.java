@@ -1,4 +1,4 @@
-package xiong.hdstats.opt;
+package xiong.hdstats.opt.comb;
 
 import java.util.ArrayList;
 import java.util.Collections;

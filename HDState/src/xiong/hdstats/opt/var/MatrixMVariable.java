@@ -13,6 +13,10 @@ public class MatrixMVariable implements MultiVariable{
 	public Matrix getMtx(){
 		return this.mtx;
 	}
+	
+	public void setMtx(Matrix _mtx){
+		this.mtx = _mtx;
+	}
 
 	@Override
 	public void updatedByGradient(MultiVariable gradient, double eta) {

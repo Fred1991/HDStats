@@ -74,6 +74,12 @@ public class LADLasso implements RiskFunction{
 		return new MatrixMVariable(gradient);
 	}
 
+	@Override
+	public MultiVariable project(MultiVariable input) {
+		// TODO Auto-generated method stub
+		return input;
+	}
+	
 	public static void main(String[] args) {
 		Matrix truth = Matrix.random(100, 1);
 		for (int i = 10; i < 100; i++)
