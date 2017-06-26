@@ -78,6 +78,8 @@ public class AveragedRiskFunction implements RiskFunction {
 	@Override
 	public MultiVariable project(MultiVariable input) {
 		// TODO Auto-generated method stub
-		return input;
+		int n = funcs.size();
+		int i = Math.abs(rn.nextInt()) % n;
+		return this.funcs.get(i).project(input);
 	}
 }

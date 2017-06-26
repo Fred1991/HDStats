@@ -140,7 +140,7 @@ public class NetworkedSensor {
 		ChainedMVariables cmv = LpMF.initiNMFPQ(new Matrix(getLatestWindow(cmap.get(0).collectedData, wind)),
 				latent);
 		ChainedMVariables res = GradientDescent.getMinimum(arf, cmv, 10e-4, 10e-2, 2000, GradientDescent.SGD);
-		estimated = LpMF.getP(res,MFUtil.nmf).times(LpMF.getQ(res,MFUtil.nmf)).getArray();
+		estimated = LpMF.getP(res).times(LpMF.getQ(res)).getArray();
 	}
 
 	public static double[][] getLatestWindow(double[][] collectedData, int wind) {

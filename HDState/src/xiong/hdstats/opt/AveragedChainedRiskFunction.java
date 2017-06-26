@@ -90,4 +90,10 @@ public class AveragedChainedRiskFunction extends AveragedRiskFunction implements
 	public void toNext() {
 		((ChainedFunction) this.getCurrent()).toNext();
 	}
+	
+	@Override
+	public MultiVariable project(MultiVariable input) {
+		// TODO Auto-generated method stub
+		return this.getCurrent().project(input);
+	}
 }

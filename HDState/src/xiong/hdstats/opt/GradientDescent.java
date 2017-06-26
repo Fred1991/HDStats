@@ -28,6 +28,7 @@ public class GradientDescent {
 			else
 				gradient = ((AveragedRiskFunction) f).randomSetGradient(val, GradientDescent.miniBatchSize);
 			val.updatedByGradient(gradient, eta);
+			val = f.project(val);
 			err = gradient.scalar();
 			step++;
 			// System.out.println(step+"\t"+err);
@@ -74,9 +75,11 @@ public class GradientDescent {
 				((AveragedChainedRiskFunction) f).toNextRandomMiniBatch(GradientDescent.miniBatchSize);
 
 			}
+			val = (ChainedMVariables)(f.project(val));
 			step++;
-		//	if (step % 100 == 0)
-		//		System.out.println(step + "\t" + err + "\t" + f.func(val).get(0, 0));
+			// if (step % 100 == 0)
+			// System.out.println(step + "\t" + err + "\t" + f.func(val).get(0,
+			// 0));
 		}
 		// System.out.println(err+"\t"+f.func(val).get(0, 0));
 		return val;

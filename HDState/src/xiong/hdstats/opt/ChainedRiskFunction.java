@@ -45,6 +45,6 @@ public class ChainedRiskFunction implements ChainedFunction {
 	@Override
 	public MultiVariable project(MultiVariable input) {
 		// TODO Auto-generated method stub
-		return input;
+		return this.getCurrent().project(input);
 	}
 }

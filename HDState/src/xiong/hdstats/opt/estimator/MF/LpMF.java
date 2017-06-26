@@ -216,12 +216,12 @@ public class LpMF {
 		return p;
 	}
 
-	public static Matrix getP(ChainedMVariables cmv, int mfOpt) {
-		return project(((MatrixMVariable) cmv.get(0)).getMtx(), mfOpt);
+	public static Matrix getP(ChainedMVariables cmv) {
+		return (((MatrixMVariable) cmv.get(0)).getMtx());
 	}
 
-	public static Matrix getQ(ChainedMVariables cmv, int mfOpt) {
-		return project(((MatrixMVariable) cmv.get(1)).getMtx(), mfOpt);
+	public static Matrix getQ(ChainedMVariables cmv) {
+		return (((MatrixMVariable) cmv.get(1)).getMtx());
 	}
 
 	public static double[][] convert(BufferedImage image) {
@@ -307,8 +307,8 @@ public class LpMF {
 		ChainedFunction cf = LpMF.getNMFRiskFunction(toM, MFUtil.nmf, MFUtil.L2, null, 0.0001, 0.0001);
 		ChainedMVariables cmv = LpMF.initiNMFPQ(toM, i);
 		ChainedMVariables res = GradientDescent.getMinimum(cf, cmv, 10e-16, 10e-4, 1000, GradientDescent.GD);
-		Matrix P = getP(res, MFUtil.nmf);
-		Matrix Q = getQ(res, MFUtil.nmf);
+		Matrix P = getP(res);
+		Matrix Q = getQ(res);
 		System.out.println(i + "\t" + P.times(Q).minus(orginal).norm1() / orginal.norm1());
 		// }
 		recovered = P.times(Q).getArrayCopy();
