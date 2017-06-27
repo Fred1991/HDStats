@@ -1,21 +1,21 @@
-package xiong.hdstats.da;
+package xiong.hdstats.da.comb;
 
-import Jama.Matrix;
+import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
+import smile.stat.distribution.MultivariateGaussianDistribution;
 import xiong.hdstats.Estimator;
+import xiong.hdstats.da.BetaLDA;
+import xiong.hdstats.da.PseudoInverseLDA;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
-import xiong.hdstats.opt.comb.StochasticRayleighFlow;
+import xiong.hdstats.opt.comb.RayleighFlow;
 
-public class StochasticRayleighFlowDBSDA extends BetaLDA {
-	private StochasticRayleighFlow TRF;
+public class RayleighFlowLDA extends BetaLDA {
+	private RayleighFlow TRF;
 
-	public StochasticRayleighFlowDBSDA(double[][] d, int[] g, boolean p, double noise) {
+	public RayleighFlowLDA(double[][] d, int[] g, boolean p) {
 		PseudoInverseLDA olda = new PseudoInverseLDA(d, g, p);
 		double[][] AMat = olda.pooledCovariance;
-		DBGLassoEstimator nse = new DBGLassoEstimator(Estimator.lambda);
-		double[][] graph = nse._deSparsifiedGlassoPrecisionMatrix(AMat);
-		this.init(d, graph, g);
-		// if(d.length<d[0].length*2)
-		AMat = new Matrix(graph).inverse().getArrayCopy();
+		this.init(d, olda.pooledInverseCovariance, g);
+
 		double[][] BMat = new double[d[0].length][d[0].length];
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < d[0].length; j++) {
@@ -24,8 +24,12 @@ public class StochasticRayleighFlowDBSDA extends BetaLDA {
 				}
 			}
 		}
-
-		TRF = new StochasticRayleighFlow(1.0e-4, AMat, BMat,noise);
+		
+		TRF = new RayleighFlow(1.0e-4, AMat, BMat);
+//		double[] ibeta=new double[d[0].length];
+//		for(int i=0;i<d[0].length;i++){
+//			ibeta[i]=1;
+//		} 
 		TRF.init(this.beta[2].transpose().getArrayCopy()[0]);
 		this.iterate(200);
 	}
