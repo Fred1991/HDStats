@@ -42,25 +42,26 @@ import xiong.hdstats.da.ml.SVMClassifier;
 import xiong.hdstats.da.shruken.DBSDA;
 import xiong.hdstats.da.shruken.ODaehrLDA;
 import xiong.hdstats.da.shruken.SDA;
+import xiong.hdstats.da.shruken.SDABeta;
 import xiong.hdstats.da.shruken.ShLDA;
 import xiong.hdstats.da.shruken.ShrinkageLDA;
 import xiong.hdstats.da.shruken.mDaehrLDA;
 
-public class PsuedoRandomLDACompare {
+public class PsuedoRandomLDACompareCDA {
 
 	public static PrintStream ps = null;
 	public static PrintStream ps1 = null;
 
 	public static void main(String[] args) throws FileNotFoundException {
-		for (int i = 1; i <= 10; i += 2)
+		for (int i = 2; i <= 10; i += 2)
 			_main(200, 10, i*20, 500, 5);
 	}
 
 	public static void _main(int p, int nz, int initTrainSize, int testSize, int rate) throws FileNotFoundException {
 
-		ps = new PrintStream("C:/Users/xiongha/Desktop/TruncatedLDA/accuracy-" + p + "-" + nz + "-" + initTrainSize + "-"
+		ps = new PrintStream("C:/Users/xiongha/Desktop/TruncatedLDA/accuracy2-" + p + "-" + nz + "-" + initTrainSize + "-"
 				+ ((double) rate / 1.0) + ".txt");
-		ps1 = new PrintStream("C:/Users/xiongha/Desktop/TruncatedLDA/betacomp-" + p + "-" + nz + "-" + initTrainSize + "-"
+		ps1 = new PrintStream("C:/Users/xiongha/Desktop/TruncatedLDA/betacomp2-" + p + "-" + nz + "-" + initTrainSize + "-"
 				+ ((double) rate / 1.0) + ".txt");
 		double[][] cov = new double[p][p];
 		double[][] groupMean = new double[2][p];
@@ -142,23 +143,24 @@ public class PsuedoRandomLDACompare {
 	//		accuracy("DBSDA", testData, testLabel, dbsda, start, current);
 
 			start = System.currentTimeMillis();
-			SDA sda = new SDA(trainData, trainLabel, false);
+			SDABeta sda = new SDABeta(trainData, trainLabel, false);
 			current = System.currentTimeMillis();
 			accuracy("SDA", testData, testLabel, sda, start, current);
+			betacompare("SDA",sda.getBeta(),beta_s);
 
 	//		start = System.currentTimeMillis();
 	//		PseudoInverseLDA LDA = new PseudoInverseLDA(trainData, trainLabel, false);
 	//		current = System.currentTimeMillis();
 	//		accuracy("LDA", testData, testLabel, LDA, start, current);
 			
-			for (int i = 1; i < 20; i++) {
-				start = System.currentTimeMillis();
-				OMPDA olda = new OMPDA
-						(trainData, trainLabel, false, i);
-				current = System.currentTimeMillis();
-				accuracy("OMP-" + (i), testData, testLabel, olda, start, current);
-				betacompare("OMP-" + (i),olda.getBeta(),beta_s);
-			}
+//			for (int i = 1; i < 20; i++) {
+//				start = System.currentTimeMillis();
+//				OMPDA olda = new OMPDA
+//						(trainData, trainLabel, false, i);
+//				current = System.currentTimeMillis();
+//				accuracy("OMP-" + (i), testData, testLabel, olda, start, current);
+//				betacompare("OMP-" + (i),olda.getBeta(),beta_s);
+//			}
 
 	//		for (int i = 1; i < 20; i++) {
 	//			start = System.currentTimeMillis();
@@ -168,15 +170,15 @@ public class PsuedoRandomLDACompare {
 	//			betacompare("TruncatedRayleighFlowUnit-" + (i),olda.getBeta(),beta_s);
 	//		}
 			
-			for (int i = 5; i < 15; i++) {
-				start = System.currentTimeMillis();
-				TruncatedRayleighFlowLDA olda = new TruncatedRayleighFlowLDA(trainData, trainLabel, false, i * 2 + 2);
-				current = System.currentTimeMillis();
-				accuracy("TruncatedRayleighFlowLDA-" + (i), testData, testLabel, olda, start, current);
-				betacompare("TruncatedRayleighFlowLDA-" + (i),olda.getBeta(),beta_s);
-			}
+//			for (int i = 5; i < 15; i++) {
+//				start = System.currentTimeMillis();
+//				TruncatedRayleighFlowLDA olda = new TruncatedRayleighFlowLDA(trainData, trainLabel, false, i * 2 + 2);
+//				current = System.currentTimeMillis();
+//				accuracy("TruncatedRayleighFlowLDA-" + (i), testData, testLabel, olda, start, current);
+//				betacompare("TruncatedRayleighFlowLDA-" + (i),olda.getBeta(),beta_s);
+//			}
 			
-			Estimator.lambda=12;
+//			Estimator.lambda=12;
 			
 	//		for (int i = 1; i < 20; i++) {
 	//			start = System.currentTimeMillis();
@@ -235,11 +237,11 @@ public class PsuedoRandomLDACompare {
 		double[] err = new double[beta.length];
 		for (int i = 0; i < beta.length; i++) {
 		//	System.out.println(beta[i] + "\t vs\t" + betas[i]);
-			if (beta[i] !=0 && betas[i] >= 1e-10) {
+			if (beta[i]  >= 1e-10 && betas[i] >= 1e-10) {
 				tp++;
-			} else if (beta[i] == 0 && betas[i] <1e-10) {
+			} else if (beta[i] <1e-10 && betas[i] <1e-10) {
 				tn++;
-			} else if (betas[i] !=0 && betas[i] <1e-10) {
+			} else if (betas[i] >= 1e-10 && betas[i] <1e-10) {
 				fp++;
 			} else {
 				fn++;
@@ -247,7 +249,7 @@ public class PsuedoRandomLDACompare {
 			err[i] = beta[i] - betas[i];
 
 		}
-		ps1.println(name + "\t" + tp + "\t" + tn + "\t" + fp + "\t" + fn +"\t"+Utils.getLxNorm(err, Utils.L1)+"\t"+Utils.getLxNorm(err, Utils.L2));
+		ps1.println(name + "\t" + tp + "\t" + tn + "\t" + fp + "\t" + fn +"\t"+Utils.getLxNorm(beta, Utils.L0)+"\t"+Utils.getLxNorm(err, Utils.L1)+"\t"+Utils.getLxNorm(err, Utils.L2));
 
 	}
 

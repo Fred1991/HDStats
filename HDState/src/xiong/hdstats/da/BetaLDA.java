@@ -2,13 +2,14 @@ package xiong.hdstats.da;
 
 import Jama.Matrix;
 
-public class BetaLDA implements Classifier<double[]> {
+public  class BetaLDA implements Classifier<double[]> {
 	public double[][][] means;
 	public int[] frequencies = new int[2];
 	public double[] c = new double[2];
 	public Matrix[] beta = new Matrix[3];
 	public double delta = 0;
 	public int totalNum;
+	
 
 	public void init(double[][] data, double[][] graph, int[] label) {
 		int index = 0;

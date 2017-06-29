@@ -12,8 +12,8 @@ public class TruncatedRayleighFlowDBSDA extends BetaLDA {
 	private TruncatedRayleighFlow TRF;
 	private int k;
 
-	public TruncatedRayleighFlowDBSDA(double[][] d, int[] g, boolean p, int k) {
-		this.k = k;
+	public TruncatedRayleighFlowDBSDA(double[][] d, int[] g, boolean p, int _k) {
+		this.k = _k;
 		PseudoInverseLDA olda = new PseudoInverseLDA(d, g, p);
 		double[][] AMat = olda.pooledCovariance;
 		DBGLassoEstimator nse = new DBGLassoEstimator(Estimator.lambda);
@@ -32,7 +32,7 @@ public class TruncatedRayleighFlowDBSDA extends BetaLDA {
 
 		TRF = new TruncatedRayleighFlow(this.k, 1.0e-4, AMat, BMat);
 		TRF.init(this.beta[2].transpose().getArrayCopy()[0]);
-		this.iterate(1000);
+		this.iterate(200);
 	}
 
 	public void iterate(int n) {
