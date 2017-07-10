@@ -165,7 +165,7 @@ public class Utils {
 			else if (l == LNULL)
 				lxnorm += 0;
 			else if (l == L0) {
-				if (x != 0)
+				if (x >10e-10 ||x<-10e-10)
 					lxnorm++;
 			}
 		}

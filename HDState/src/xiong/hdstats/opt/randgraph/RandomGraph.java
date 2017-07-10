@@ -21,7 +21,7 @@ public class RandomGraph {
 			adjacencyList.put(i, new LinkedList<Integer>());
 			this.setMaxDegree(i, Integer.MAX_VALUE);
 		}
-		seed = new Random();
+		seed = new Random(); 
 	}
 
 	public int nextInt() {
