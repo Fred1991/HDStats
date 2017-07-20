@@ -31,7 +31,7 @@ public class TruncatedRayleighFlowSDA extends BetaLDA {
 			}
 		}
 
-		TRF = new TruncatedRayleighFlow(this.k, 1.0e-4, AMat, BMat);
+		TRF = new TruncatedRayleighFlow(this.k, 1.0e-4, 1.0e-3, AMat, BMat);
 		TRF.init(this.beta[2].transpose().getArrayCopy()[0]);
 		this.iterate(1000);
 	}

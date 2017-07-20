@@ -24,18 +24,22 @@ public class TruncatedRayleighFlowLDA extends BetaLDA {
 			}
 		}
 
-		TRF = new TruncatedRayleighFlow(k, 1.0e-4, AMat, BMat);
-	//	double[] ibeta = new double[d[0].length];
-	//	for (int i = 0; i < d[0].length; i++) {
-	//		ibeta[i] = 1;
-	//	}
+		TRF = new TruncatedRayleighFlow(k, 1.0e-4, 1.0e-3, AMat, BMat);
+		// double[] ibeta = new double[d[0].length];
+		// for (int i = 0; i < d[0].length; i++) {
+		// ibeta[i] = 1;
+		// }
 		TRF.init(this.beta[2].transpose().getArrayCopy()[0]);
 		this.iterate(200);
 	}
 
 	public void iterate(int n) {
-		for (int i = 0; i < n; i++)
-			TRF.iterate();
+		boolean cont = true;
+		int count =0;
+		while (cont == true && count < n) {
+			cont = TRF.iterate();
+			count++;
+		}
 		this.beta[2] = TRF.getVector();
 	}
 

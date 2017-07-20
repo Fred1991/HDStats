@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import Jama.Matrix;
+import edu.uva.libopt.numeric.Utils;
 import xiong.hdstats.MLEstimator;
 
 public class TruncatedRayleighFlow {
@@ -15,18 +16,20 @@ public class TruncatedRayleighFlow {
 	private Matrix AMat;
 	private Matrix BMat;
 	private int p;
+	private double tol;
 
-	public TruncatedRayleighFlow(int k, int p, double eta) {
+	public TruncatedRayleighFlow(int k, int p, double eta, double tol) {
 		this.k = k;
 		this.eta = eta;
 		I = new double[p][p];
 		for (int i = 0; i < p; i++)
 			I[i][i] = 1.0;
 		this.p = p;
+		this.tol =tol;
 	}
 
-	public TruncatedRayleighFlow(int k, double eta, double[][] cov) { // as PCA
-		this(k, cov.length, eta);
+	public TruncatedRayleighFlow(int k, double eta, double tol, double[][] cov) { // as PCA
+		this(k, cov.length, eta, tol);
 		double[][] arrayB = new double[p][p];
 		for (int i = 0; i < p; i++)
 			arrayB[i][i] = 1.0;
@@ -34,9 +37,9 @@ public class TruncatedRayleighFlow {
 		this.setAB(arrayA, arrayB);
 	}
 
-	public TruncatedRayleighFlow(int k, double eta, double[][] cov1, double[][] cov2) { // as
-																						// LDA
-		this(k, cov1.length, eta);
+	public TruncatedRayleighFlow(int k, double eta, double tol, double[][] cov1, double[][] cov2) { // as
+																									// LDA
+		this(k, cov1.length, eta, tol);
 		double[][] arrayB = cov2;
 		double[][] arrayA = cov1;
 		this.setAB(arrayA, arrayB);
@@ -72,7 +75,7 @@ public class TruncatedRayleighFlow {
 		return this.vector;
 	}
 
-	public void iterate() {
+	public boolean iterate() {
 		// System.out.println(vector.getRowDimension()+"\t"+vector.getColumnDimension());
 		double rho = vector.transpose().times(AMat).times(vector).get(0, 0);
 		rho /= vector.transpose().times(BMat).times(vector).get(0, 0);
@@ -82,7 +85,17 @@ public class TruncatedRayleighFlow {
 		double[] vArray = vUpdate.transpose().getArray()[0];
 		vArray = truncate(k, vArray);
 		vArray = l2Normalized(vArray);
+		double[] err =new double[vArray.length];
+		for(int i=0;i<err.length;i++){
+			err[i] = vArray[i]-this.vector.get(i,0);
+		}
 		this.vector = new Matrix(vArray, 1).transpose();
+		if(Utils.getLxNorm(err, Utils.LINF)>=(tol*eta)){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	private static double[] truncate(int k, double[] v) {
@@ -106,7 +119,7 @@ public class TruncatedRayleighFlow {
 			norml2 += vv * vv;
 		norml2 = Math.sqrt(norml2);
 		for (int i = 0; i < v.length; i++) {
-			v[i] /= norml2;
+			v[i] = v[i] / norml2;
 		}
 		return v;
 	}

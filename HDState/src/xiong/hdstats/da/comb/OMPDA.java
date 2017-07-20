@@ -29,7 +29,7 @@ public class OMPDA extends BetaLDA {
 		omp = new OrthogonalMatchingPursuit(new Matrix(d), new Matrix(_g), this.k);
 		Matrix _init = new Matrix(d[0].length, 1);
 		MatrixMVariable result = (MatrixMVariable) GradientDescent.getMinimum(omp, new MatrixMVariable(_init),
-				1e-4, 1e-3, 10000, GradientDescent.GD);
+				1e-4, 1e-1, 1000, GradientDescent.GD);
 		this.beta[2] = result.getMtx();
 	}
 

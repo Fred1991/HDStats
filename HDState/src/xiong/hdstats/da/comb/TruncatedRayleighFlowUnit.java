@@ -24,7 +24,7 @@ public class TruncatedRayleighFlowUnit extends BetaLDA {
 			}
 		}
 
-		TRF = new TruncatedRayleighFlow(k, 1.0e-4, AMat, BMat);
+		TRF = new TruncatedRayleighFlow(k, 1.0e-4, 1.0e-3, AMat, BMat);
 	//	double[] ibeta = new double[d[0].length];
 	//	for (int i = 0; i < d[0].length; i++) {
 	//		ibeta[i] = 1;
