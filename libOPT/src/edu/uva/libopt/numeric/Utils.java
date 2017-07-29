@@ -93,7 +93,8 @@ public class Utils {
 			}
 		}
 
-		return err/base;
+		return err;
+		///base;
 
 	}
 	

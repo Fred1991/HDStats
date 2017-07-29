@@ -158,7 +158,7 @@ public class DBGLassoEstimator extends MLEstimator {
 			}
 			inputReader.close();
 			
-			new File(R_src_Path+"R_non_sparse_tmp"+id+".txt").delete();
+			new File(R_src_Path+"R_non_sparse_tmp"+id+".R").delete();
 			new File(R_src_Path+"R_non_sparse_tmp"+id+".data").delete();
 			new File(R_src_Path+"r_non_sparse_wi_tmp"+id+".txt").delete();
 
