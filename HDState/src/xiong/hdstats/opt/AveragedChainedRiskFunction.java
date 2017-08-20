@@ -15,7 +15,7 @@ public class AveragedChainedRiskFunction extends AveragedRiskFunction implements
 
 	public AveragedChainedRiskFunction(List<ChainedFunction> fs) {
 		// super(fs);
-		for(ChainedFunction f:fs)
+		for (ChainedFunction f : fs)
 			addFunction(f);
 	}
 
@@ -42,6 +42,7 @@ public class AveragedChainedRiskFunction extends AveragedRiskFunction implements
 			return null;
 		MultiVariable m = this.funcs.get(0).gradient(input).clone();
 		for (int i = 1; i < funcs.size(); i++) {
+		//	((ChainedRiskFunction) this.funcs.get(i)).index = ((ChainedRiskFunction) this.funcs.get(0)).index;
 			m = m.plus(this.funcs.get(i).gradient(input).clone());
 		}
 		return m.times(1.0 / funcs.size());
@@ -90,7 +91,12 @@ public class AveragedChainedRiskFunction extends AveragedRiskFunction implements
 	public void toNext() {
 		((ChainedFunction) this.getCurrent()).toNext();
 	}
-	
+
+	public void toAllNext() {
+		for (RiskFunction rf : this.funcs)
+			((ChainedFunction) rf).toNext();
+	}
+
 	@Override
 	public MultiVariable project(MultiVariable input) {
 		// TODO Auto-generated method stub

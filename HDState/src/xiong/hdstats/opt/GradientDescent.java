@@ -52,7 +52,7 @@ public class GradientDescent {
 					MultiVariable gradient = f.gradient(val);
 					val.updatedByGradient(gradient, eta);
 					err += gradient.scalar();
-					f.toNext();
+					((AveragedChainedRiskFunction)f).toAllNext();
 					val.toNext();
 				} while (f.innerLoop());
 			} else if (ty == SGD) {

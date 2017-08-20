@@ -34,6 +34,10 @@ public class MatrixMVariable implements MultiVariable{
 	@Override
 	public MultiVariable plus(MultiVariable m) {
 		// TODO Auto-generated method stub
+		System.out.println(this.mtx.getColumnDimension()+"\t"+
+						   this.mtx.getRowDimension()+"\t"+
+						   ((MatrixMVariable)m).mtx.getColumnDimension()+"\t"+
+						   ((MatrixMVariable)m).mtx.getRowDimension());
 		return new MatrixMVariable(this.mtx.plus(((MatrixMVariable)m).mtx));
 	}
 

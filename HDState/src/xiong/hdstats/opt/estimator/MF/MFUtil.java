@@ -11,15 +11,13 @@ public class MFUtil {
 	public static int nmf = 2;
 	public static int prob = 3;
 
-	public static Matrix subMatrixSelection(Matrix m, int[][] selection) {
-		double[][] aCopy = m.getArrayCopy();
+	public static void subMatrixSelection(Matrix m, int[][] selection) {
 		for (int i = 0; i < selection.length; i++) {
 			for (int j = 0; j < selection[0].length; j++) {
 				if (selection[i][j] == 0)
-					aCopy[i][j] = 0;
+					 m.getArray()[i][j] = 0;
 			}
 		}
-		return new Matrix(aCopy);
 	}
 
 	public static Matrix getL2NormGradient(Matrix m) {
@@ -71,28 +69,24 @@ public class MFUtil {
 			return getLInfNormGradient(m);
 	}
 
-	public static Matrix nonnegativeHT(Matrix m) {
-		double[][] aCopy = m.getArrayCopy();
-		for (int i = 0; i < aCopy.length; i++) {
-			for (int j = 0; j < aCopy[0].length; j++) {
-				if (aCopy[i][j] < 0)
-					aCopy[i][j] = -aCopy[i][j];
+	public static void nonnegativeHT(Matrix m) {
+		for (int i = 0; i < m.getArray().length; i++) {
+			for (int j = 0; j < m.getArray()[0].length; j++) {
+				if (m.getArray()[i][j] < 0)
+					m.getArray()[i][j] = 0;
 			}
 		}
-		return new Matrix(aCopy);
 	}
 
-	public static Matrix probHT(Matrix m) {
-		double[][] aCopy = m.getArrayCopy();
-		for (int i = 0; i < aCopy.length; i++) {
-			for (int j = 0; j < aCopy[0].length; j++) {
-				if (aCopy[i][j] < 0)
-					aCopy[i][j] = 0;
-				else if (aCopy[i][j] > 1)
-					aCopy[i][j] = 1;
+	public static void probHT(Matrix m) {
+		for (int i = 0; i < m.getArray().length; i++) {
+			for (int j = 0; j < m.getArray()[0].length; j++) {
+				if (m.getArray()[i][j] < 0)
+					m.getArray()[i][j] = 0;
+				else if (m.getArray()[i][j] > 1)
+					m.getArray()[i][j] = 1;
 			}
 		}
-		return new Matrix(aCopy);
 	}
 
 }

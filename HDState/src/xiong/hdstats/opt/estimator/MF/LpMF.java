@@ -83,7 +83,7 @@ public class LpMF {
 
 		Matrix err = R.minus(P.times(Q));
 		if (this.selection != null && this.numSel != 0)
-			err = MFUtil.subMatrixSelection(err, this.selection);
+			MFUtil.subMatrixSelection(err, this.selection);
 		Matrix normGradient = MFUtil.getLpNormGradient(P, this.lpNorm);
 		Matrix gradientP = (err.times(Q.transpose()).minus(normGradient.times(lambdaP))).times(-1.0);
 
@@ -98,7 +98,7 @@ public class LpMF {
 
 		Matrix err = R.minus(P.times(Q));
 		if (this.selection != null && this.numSel != 0)
-			err = MFUtil.subMatrixSelection(err, this.selection);
+			MFUtil.subMatrixSelection(err, this.selection);
 		Matrix normGradient = MFUtil.getLpNormGradient(Q, this.lpNorm);
 		Matrix gradientQ = (P.transpose().times(err).minus(normGradient.times(lambdaQ))).times(-1.0);
 
@@ -138,10 +138,12 @@ public class LpMF {
 		public MultiVariable project(MultiVariable input) {
 			// TODO Auto-generated method stub
 			ChainedMVariables PQ = (ChainedMVariables) input;
-			Matrix P = LpMF.project(((MatrixMVariable) PQ.get(0)).getMtx(), this.mf.mfOpt);
-			Matrix Q = LpMF.project(((MatrixMVariable) PQ.get(1)).getMtx(), this.mf.mfOpt);
-			((MatrixMVariable)PQ.get(0)).setMtx(P);
-			((MatrixMVariable)PQ.get(1)).setMtx(Q);
+			Matrix P = ((MatrixMVariable) PQ.get(0)).getMtx();
+			LpMF.project(P, this.mf.mfOpt);
+			Matrix Q = ((MatrixMVariable) PQ.get(1)).getMtx();
+			LpMF.project(Q, this.mf.mfOpt);
+			((MatrixMVariable) PQ.get(0)).setMtx(P);
+			((MatrixMVariable) PQ.get(1)).setMtx(Q);
 			return PQ;
 		}
 
@@ -181,18 +183,20 @@ public class LpMF {
 		public MultiVariable project(MultiVariable input) {
 			// TODO Auto-generated method stub
 			ChainedMVariables PQ = (ChainedMVariables) input;
-			Matrix P = LpMF.project(((MatrixMVariable) PQ.get(0)).getMtx(), this.mf.mfOpt);
-			Matrix Q = LpMF.project(((MatrixMVariable) PQ.get(1)).getMtx(), this.mf.mfOpt);
-			((MatrixMVariable)PQ.get(0)).setMtx(P);
-			((MatrixMVariable)PQ.get(1)).setMtx(Q);
+			Matrix P = ((MatrixMVariable) PQ.get(0)).getMtx();
+			LpMF.project(P, this.mf.mfOpt);
+			Matrix Q = ((MatrixMVariable) PQ.get(1)).getMtx();
+			LpMF.project(Q, this.mf.mfOpt);
+			((MatrixMVariable) PQ.get(0)).setMtx(P);
+			((MatrixMVariable) PQ.get(1)).setMtx(Q);
 			return PQ;
 		}
 
 	}
 
-	public static ChainedFunction getNMFRiskFunction(Matrix R, int mfOpt, int lpNorm, int[][] selected, double _lp,
+	public static ChainedFunction getNMFRiskFunction(Matrix R, int mfOpt, int lpNorm, int[][] _selected, double _lp,
 			double _lq) {
-		LpMF mf = new LpMF(R, mfOpt, lpNorm, selected, _lp, _lq);
+		LpMF mf = new LpMF(R, mfOpt, lpNorm, _selected, _lp, _lq);
 		List<RiskFunction> lrf = new ArrayList<RiskFunction>();
 		lrf.add(new NMFPRiskFunction(mf));
 		lrf.add(new NMFQRiskFunction(mf));
@@ -208,12 +212,12 @@ public class LpMF {
 		return cmvs;
 	}
 
-	public static Matrix project(Matrix p, int mfOpt) {
-		if (mfOpt == 2)
+	public static void project(Matrix p, int mfOpt) {
+		if (mfOpt == 2) {
 			MFUtil.nonnegativeHT(p);
-		else if (mfOpt == 3)
+		} else if (mfOpt == 3) {
 			MFUtil.probHT(p);
-		return p;
+		}
 	}
 
 	public static Matrix getP(ChainedMVariables cmv) {
