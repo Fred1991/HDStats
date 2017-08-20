@@ -100,7 +100,7 @@ public class TruncatedEVD {
 		double[][] dgLasso = new DBGLassoEstimator(12)._deSparsifiedGlassoPrecisionMatrix(samCov);
 		long t5 = System.currentTimeMillis();
 
-		double[][] graph = new Matrix(cov).inverse().getArray();
+		double[][] graph = new Matrix(cov).plus(ident.times(lambda)).inverse().getArray();
 		double[][] graphEst = new Matrix(estCov).plus(ident.times(lambda)).inverse().getArray();
 		double[][] graphEst2 = new Matrix(estCov2).plus(ident.times(lambda)).inverse().getArray();
 		double[][] graphEst3 = new Matrix(estCov3).plus(ident.times(lambda)).inverse().getArray();
