@@ -87,13 +87,13 @@ public class CrowdSensor {
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
-		ps = new PrintStream("C:\\Users\\xiongha\\Desktop\\tempOutput3-B"+batch+".txt");
-		for (int maxLoc = 1; maxLoc <= 1; maxLoc++)
+		ps = new PrintStream("C:\\Users\\xiongha\\Desktop\\pm25OutputAAAI"+batch+".txt");
+		for (int maxLoc = 1; maxLoc <= 3; maxLoc++)
 			for (int crowdSize = 10; crowdSize <= 30; crowdSize += 5) {
 				for (int par = 10; par <= 10; par++) {
-					for (int wind = 40; wind <= 40; wind += 10) {
-						for (int latent = 2; latent <= 2; latent += 2) {
-							creatWorldWithCrowds("C:\\Users\\xiongha\\Desktop\\tempLeye.csv", crowdSize);
+					for (int wind = 20; wind <= 40; wind += 10) {
+						for (int latent = 2; latent <= 6; latent += 2) {
+							creatWorldWithCrowds("C:\\Users\\xiongha\\Desktop\\pm25leye.csv", crowdSize);
 							List<Double> absErrorCSWA = new ArrayList<Double>();
 							List<Double> absErrorCentra = new ArrayList<Double>();
 							List<Double> absErrorTSVD = new ArrayList<Double>();
@@ -105,14 +105,14 @@ public class CrowdSensor {
 								if (cycle > wind) {
 									runCSWA(wind, latent, absErrorCSWA);
 									System.out.println("CSWA finished");
-							//		runCentraCS(wind, latent, absErrorCentra);
-							//		System.out.println("CS finished");
-							//		runPCAComp(wind,latent, absErrorTSVD, absErrorPCA);
-							//		System.out.println("RPCA finished");
+									runCentraCS(wind, latent, absErrorCentra);
+									System.out.println("CS finished");
+								//	runPCAComp(wind,latent, absErrorTSVD, absErrorPCA);
+								//	System.out.println("RPCA finished");
 								}
 							}
 							plot("CSWA", maxLoc, crowdSize, par, wind, latent, absErrorCSWA);
-						//	plot("CS", maxLoc, crowdSize, par, wind, latent, absErrorCentra);
+							plot("CS", maxLoc, crowdSize, par, wind, latent, absErrorCentra);
 						//	plot("TSVD", maxLoc, crowdSize, par, wind, latent, absErrorTSVD);
 						//	plot("PCA", maxLoc, crowdSize, par, wind, latent, absErrorPCA);
 						}
