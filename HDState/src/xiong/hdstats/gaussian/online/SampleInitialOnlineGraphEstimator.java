@@ -6,15 +6,12 @@ import java.util.List;
 
 import Jama.Matrix;
 import xiong.hdstats.gaussian.SampleCovarianceEstimator;
-import xiong.hdstats.gaussian.SpikedEstimator;
 
-public class SpikedInitialOnlineGraphEstimator implements OnlineGraphEstimator {
+public class SampleInitialOnlineGraphEstimator implements OnlineGraphEstimator{
 	public double[][] graph;
 	public double[][] init_cov;
-	public int comp;
 
-	public SpikedInitialOnlineGraphEstimator(int comp) {
-		this.comp=comp;
+	public SampleInitialOnlineGraphEstimator() {
 	}
 	
 	public void update(int index, double[] newdata){
@@ -44,9 +41,11 @@ public class SpikedInitialOnlineGraphEstimator implements OnlineGraphEstimator {
 	}
 	
 
+	
+
 	public void init(double[][] samples){
-		this.init_cov=new SpikedEstimator(comp).covariance(samples);
-		this.graph=new SpikedEstimator(comp).inverseCovariance(samples);
+		this.init_cov=new SampleCovarianceEstimator().covariance(samples);
+		this.graph=new Matrix(this.init_cov).inverse().getArray();
 		//HT(k,this.graph);
 	}
 

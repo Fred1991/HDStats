@@ -5,7 +5,7 @@ import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
 import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
-public class GLassoIntialOnlineGraphEstimator {
+public class GLassoIntialOnlineGraphEstimator implements OnlineGraphEstimator {
 	public double[][] graph;
 	public double[][] init_cov;
 	private double lambda;
@@ -46,6 +46,12 @@ public class GLassoIntialOnlineGraphEstimator {
 		this.init_cov=new SampleCovarianceEstimator().covariance(samples);
 		this.graph=new GLassoEstimator(lambda).inverseCovariance(samples);
 		//HT(k,this.graph);
+	}
+
+	@Override
+	public double[][] getGraph() {
+		// TODO Auto-generated method stub
+		return this.graph;
 	}
 
 

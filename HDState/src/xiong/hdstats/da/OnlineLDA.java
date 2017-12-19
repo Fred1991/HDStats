@@ -3,10 +3,10 @@ package xiong.hdstats.da;
 import java.util.HashMap;
 
 import Jama.Matrix;
-import xiong.hdstats.gaussian.online.OnlineGraphEstimator;
+import xiong.hdstats.gaussian.online.SampleInitialOnlineGraphEstimator;
 
 public class OnlineLDA implements Classifier<double[]> {
-	public OnlineGraphEstimator oge = new OnlineGraphEstimator();
+	public SampleInitialOnlineGraphEstimator oge = new SampleInitialOnlineGraphEstimator();
 	public double[][][] means;
 	public int[] frequencies = new int[2];
 	public double[] c = new double[2];
