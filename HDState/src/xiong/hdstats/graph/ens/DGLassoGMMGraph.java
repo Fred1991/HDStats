@@ -16,11 +16,11 @@ import smile.stat.distribution.DGLassoMultivariateGaussianMixture;
 import smile.stat.distribution.GLassoMultivariateGaussianMixture;
 import smile.stat.distribution.MultivariateGaussianMixture;
 import smile.stat.distribution.MultivariateMixture.Component;
-import xiong.hdstats.MLEstimator;
-import xiong.hdstats.NearPD;
+import xiong.hdstats.gaussian.NearPD;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 import xiong.hdstats.graph.SampleGraph;
 
-public class DGLassoGMMGraph extends MLEstimator{
+public class DGLassoGMMGraph extends SampleCovarianceEstimator{
 
 	public DGLassoMultivariateGaussianMixture gmm;
 	public List<SampleGraph> sampledGraphs = new ArrayList<SampleGraph>();

@@ -8,10 +8,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.UUID;
 
-import xiong.hdstats.LassoEstimator;
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.LassoEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
-public class SparseCovEstimator extends MLEstimator {
+public class SparseCovEstimator extends SampleCovarianceEstimator {
 
 	public int _iter;
 	public double _lambda;
@@ -29,7 +29,7 @@ public class SparseCovEstimator extends MLEstimator {
 	}
 
 	
-	@Override
+//	@Override
 	public void covarianceApprox(double[][] covar_inner){
 		LassoEstimator le = new LassoEstimator(this._lambda);
 		for (int i = 0; i < _iter; i++) {

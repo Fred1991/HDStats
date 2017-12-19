@@ -17,11 +17,11 @@ import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionM
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import smile.stat.distribution.MultivariateGaussianMixture;
 import smile.stat.distribution.MultivariateMixture.Component;
-import xiong.hdstats.MLEstimator;
-import xiong.hdstats.NearPD;
+import xiong.hdstats.gaussian.NearPD;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 import xiong.hdstats.graph.SampleGraph;
 
-public class GMMGraph extends MLEstimator{
+public class GMMGraph extends SampleCovarianceEstimator{
 
 	public MultivariateGaussianMixture gmm;
 	public List<SampleGraph> sampledGraphs = new ArrayList<SampleGraph>();

@@ -21,9 +21,9 @@ import smile.stat.distribution.GaussianDistribution;
 import smile.stat.distribution.MultivariateExponentialFamily;
 import smile.stat.distribution.MultivariateGaussianDistribution;
 import smile.stat.distribution.MultivariateMixture;
-import xiong.hdstats.Estimator;
-import xiong.hdstats.NearPD;
 import xiong.hdstats.da.PseudoInverse;
+import xiong.hdstats.gaussian.CovarianceEstimator;
+import xiong.hdstats.gaussian.NearPD;
 import Jama.Matrix;
 import gov.sandia.cognition.math.matrix.MatrixFactory;
 import smile.math.Math;
@@ -71,7 +71,7 @@ public class MultivariateGaussianDistribution extends AbstractMultivariateDistri
 
         diagonal = true;
         numParameters = mu.length + 1;
-        this.theta=Estimator.inverse(sigma);
+        this.theta=CovarianceEstimator.inverse(sigma);
         init();
     }
 
@@ -100,7 +100,7 @@ public class MultivariateGaussianDistribution extends AbstractMultivariateDistri
 
         diagonal = true;
         numParameters = 2 * mu.length;
-        this.theta=Estimator.inverse(sigma);
+        this.theta=CovarianceEstimator.inverse(sigma);
         init();
     }
 
@@ -127,7 +127,7 @@ public class MultivariateGaussianDistribution extends AbstractMultivariateDistri
     //    NearPD npd=new NearPD();
     //    npd.calcNearPD(new Jama.Matrix(sigma));
      //   sigma=npd.getNearPD().getArray();
-        this.theta=Estimator.inverse(sigma);
+        this.theta=CovarianceEstimator.inverse(sigma);
         init();
     }
     
@@ -189,7 +189,7 @@ public class MultivariateGaussianDistribution extends AbstractMultivariateDistri
         }
 
         numParameters = mu.length + mu.length * (mu.length + 1) / 2;
-        this.theta=Estimator.inverse(sigma);
+        this.theta=CovarianceEstimator.inverse(sigma);
         init();
     }
 

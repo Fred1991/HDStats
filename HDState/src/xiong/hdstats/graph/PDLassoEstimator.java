@@ -1,14 +1,14 @@
 package xiong.hdstats.graph;
 
-import xiong.hdstats.Estimator;
-import xiong.hdstats.LassoEstimator;
-import xiong.hdstats.MLEstimator;
-import xiong.hdstats.NearPD;
+import xiong.hdstats.gaussian.CovarianceEstimator;
+import xiong.hdstats.gaussian.LassoEstimator;
+import xiong.hdstats.gaussian.NearPD;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
-public class PDLassoEstimator extends MLEstimator{
+public class PDLassoEstimator extends SampleCovarianceEstimator{
 
 	private double _lambda;
-	private int _iter=Estimator.iter;
+	private int _iter=CovarianceEstimator.iter;
 	
 	
 	public PDLassoEstimator(double lambda){

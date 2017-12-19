@@ -15,11 +15,11 @@ import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import smile.stat.distribution.GLassoMultivariateGaussianMixture;
 import smile.stat.distribution.MultivariateGaussianMixture;
 import smile.stat.distribution.MultivariateMixture.Component;
-import xiong.hdstats.MLEstimator;
-import xiong.hdstats.NearPD;
+import xiong.hdstats.gaussian.NearPD;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 import xiong.hdstats.graph.SampleGraph;
 
-public class GLassoGMMGraph extends MLEstimator{
+public class GLassoGMMGraph extends SampleCovarianceEstimator{
 
 	public GLassoMultivariateGaussianMixture gmm;
 	public List<SampleGraph> sampledGraphs = new ArrayList<SampleGraph>();

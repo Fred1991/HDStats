@@ -10,9 +10,8 @@ import java.util.Set;
 import edu.uva.libopt.numeric.*;
 import smile.math.matrix.Matrix;
 import smile.projection.PCA;
-import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
+import smile.stat.distribution.SpikedMultivariateGaussianDistribution;
 import smile.stat.distribution.MultivariateGaussianDistribution;
-import xiong.hdstats.Estimator;
 import xiong.hdstats.da.BetaLDA;
 import xiong.hdstats.da.Classifier;
 import xiong.hdstats.da.LDA;
@@ -47,6 +46,7 @@ import xiong.hdstats.da.shruken.SDABeta;
 import xiong.hdstats.da.shruken.ShLDA;
 import xiong.hdstats.da.shruken.ShrinkageLDA;
 import xiong.hdstats.da.shruken.mDaehrLDA;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 
 public class PsuedoRandomLDACompareCDA {
 
@@ -97,8 +97,8 @@ public class PsuedoRandomLDACompareCDA {
 		double[] beta_s = new double[p];
 		new Matrix(theta_s).ax(mud, beta_s);
 
-		GLassoMultivariateGaussianDistribution posD = new GLassoMultivariateGaussianDistribution(meanPositive, cov);
-		GLassoMultivariateGaussianDistribution negD = new GLassoMultivariateGaussianDistribution(meanNegative, cov);
+		SpikedMultivariateGaussianDistribution posD = new SpikedMultivariateGaussianDistribution(meanPositive, cov);
+		SpikedMultivariateGaussianDistribution negD = new SpikedMultivariateGaussianDistribution(meanNegative, cov);
 
 		for (int r = 0; r < 100; r++) {
 			double[][] testData = new double[testSize][p];
@@ -140,7 +140,7 @@ public class PsuedoRandomLDACompareCDA {
 			current = System.currentTimeMillis();
 //			accuracy("optimal", testData, testLabel, opLDA, start, current);
 
-			Estimator.lambda = 12;
+			CovarianceEstimator.lambda = 12;
 
 			// start = System.currentTimeMillis();
 			// DBSDA dbsda = new DBSDA(trainData, trainLabel, false);

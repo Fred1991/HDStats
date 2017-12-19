@@ -1,16 +1,16 @@
 package xiong.hdstats.graph;
 
-import xiong.hdstats.Estimator;
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
-public class GLassoGraph extends MLEstimator{
+public class GLassoGraph extends SampleCovarianceEstimator{
 
 	public double[][] gaussianPrecision;
 	private GLassoEstimator ne=new GLassoEstimator();
 	
 	public GLassoGraph(double[][] data,double lambda){
-		Estimator.lambda=lambda;
+		CovarianceEstimator.lambda=lambda;
 		this.covariance(data);
 	}
 	

@@ -10,9 +10,8 @@ import java.io.PrintWriter;
 import java.util.UUID;
 
 import Jama.Matrix;
-import xiong.hdstats.MLEstimator;
 
-public class GLassoEstimator extends MLEstimator {
+public class GLassoEstimator extends SampleCovarianceEstimator {
 	private double _lambda = 0.01;
 
 	public GLassoEstimator() {
@@ -29,16 +28,24 @@ public class GLassoEstimator extends MLEstimator {
 		// Matrix m = new Matrix(precision_matrix);
 		// return m.inverse().getArray();
 	}
-
+	
 	@Override
-	public void covarianceApprox(double[][] covar_inner) {
-		double[][] glassoCov = _glassoCovarianceMatrix(covar_inner);
-		for (int i = 0; i < covar_inner.length; i++) {
-			for (int j = 0; j < covar_inner[i].length; j++) {
-				covar_inner[i][j] = glassoCov[i][j];
-			}
-		}
+	public double[][] inverseCovariance(double[][] samples) {
+		return _glassoPrecisionMatrix(super.covariance(samples));
+		// covarianceApprox(covar_inner);
+		// Matrix m = new Matrix(precision_matrix);
+		// return m.inverse().getArray();
 	}
+
+//	@Override
+//	public void covarianceApprox(double[][] covar_inner) {
+//		double[][] glassoCov = _glassoCovarianceMatrix(covar_inner);
+//		for (int i = 0; i < covar_inner.length; i++) {
+//			for (int j = 0; j < covar_inner[i].length; j++) {
+//				covar_inner[i][j] = glassoCov[i][j];
+//			}
+//		}
+//	}
 
 	public double[][] _glassoCovarianceMatrix(double[][] covx) {
 		String id = UUID.randomUUID().toString();

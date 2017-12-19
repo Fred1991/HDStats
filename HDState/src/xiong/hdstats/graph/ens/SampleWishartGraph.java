@@ -14,11 +14,11 @@ import gov.sandia.cognition.math.matrix.VectorFactory;
 import gov.sandia.cognition.math.matrix.mtj.DenseMatrixFactoryMTJ;
 import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionMTJ;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
-import xiong.hdstats.MLEstimator;
-import xiong.hdstats.NearPD;
+import xiong.hdstats.gaussian.NearPD;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 import xiong.hdstats.graph.SampleGraph;
 
-public class SampleWishartGraph extends MLEstimator {
+public class SampleWishartGraph extends SampleCovarianceEstimator {
 
 	public double[][] wishartMeanPrecision;
 	public double[] mean;

@@ -1,4 +1,4 @@
-package xiong.hdstats;
+package xiong.hdstats.gaussian;
 
 import java.util.StringTokenizer;
 

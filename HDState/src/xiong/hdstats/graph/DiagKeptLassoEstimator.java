@@ -4,10 +4,10 @@ import edu.uva.libopt.numeric.NumericFunction;
 import edu.uva.libopt.numeric.NumericOptimizer;
 import edu.uva.libopt.numeric.Utils;
 import edu.uva.libopt.numeric.optimizer.SparseGradientOptimizer;
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
 
-public class DiagKeptLassoEstimator extends MLEstimator{
+public class DiagKeptLassoEstimator extends SampleCovarianceEstimator{
 	private double lambda;
 	
 	public DiagKeptLassoEstimator(double lambda){
@@ -20,7 +20,7 @@ public class DiagKeptLassoEstimator extends MLEstimator{
 		covarianceApprox(covar_inner);
 		return covar_inner;
 	}
-	@Override
+//	@Override
 	public void covarianceApprox(double[][] covar_inner){
 		double[] covar_2=new double[covar_inner.length*covar_inner.length];
 		double[] diag=new double[covar_inner.length];

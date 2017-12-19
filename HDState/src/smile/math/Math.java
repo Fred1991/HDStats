@@ -28,8 +28,8 @@ import smile.math.matrix.SingularValueDecomposition;
 import smile.sort.QuickSelect;
 import smile.sort.QuickSort;
 import smile.sort.SortUtils;
-import xiong.hdstats.Estimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
 
 /**
@@ -2460,12 +2460,12 @@ public class Math {
     }
     
     public static double[][] dglassoCov(double[][] data, double[] mu) {
-    	return Estimator.inverse(new DBGLassoEstimator()._deSparsifiedGlassoPrecisionMatrix(cov(data,mu)));
+    	return CovarianceEstimator.inverse(new DBGLassoEstimator()._deSparsifiedGlassoPrecisionMatrix(cov(data,mu)));
     }
     
     
     public static double[][] glassoCov(double[][] data, double[] mu) {
-    	return Estimator.inverse(new GLassoEstimator()._glassoPrecisionMatrix(cov(data,mu)));
+    	return CovarianceEstimator.inverse(new GLassoEstimator()._glassoPrecisionMatrix(cov(data,mu)));
     }
 
     /**

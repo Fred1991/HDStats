@@ -1,10 +1,10 @@
 package xiong.hdstats.da.comb;
 
-import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
+import smile.stat.distribution.SpikedMultivariateGaussianDistribution;
 import smile.stat.distribution.MultivariateGaussianDistribution;
-import xiong.hdstats.Estimator;
 import xiong.hdstats.da.BetaLDA;
 import xiong.hdstats.da.PseudoInverseLDA;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.opt.comb.TruncatedRayleighFlow;
 

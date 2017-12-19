@@ -9,9 +9,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.UUID;
 
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
-public class DiagKeptSparseCovEstimator extends MLEstimator {
+public class DiagKeptSparseCovEstimator extends SampleCovarianceEstimator {
 
 	public int _iter;
 	public double _lambda;
@@ -29,7 +29,7 @@ public class DiagKeptSparseCovEstimator extends MLEstimator {
 	}
 
 	
-	@Override
+//	@Override
 	public void covarianceApprox(double[][] covar_inner){
 		DiagKeptLassoEstimator le = new DiagKeptLassoEstimator(this._lambda);
 		for (int i = 0; i < _iter; i++) {

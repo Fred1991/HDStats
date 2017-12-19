@@ -1,21 +1,21 @@
 package xiong.hdstats.graph;
 
-import xiong.hdstats.Estimator;
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
-public class DGLassoGraph extends MLEstimator{
+public class DGLassoGraph extends SampleCovarianceEstimator{
 
 	public double[][] gaussianPrecision;
 	private DBGLassoEstimator ne=new DBGLassoEstimator();
 
 	public DGLassoGraph(double[][] covar,double lambda, boolean s){
-		Estimator.lambda=lambda;
+		CovarianceEstimator.lambda=lambda;
 		this.gaussianPrecision=ne._deSparsifiedGlassoPrecisionMatrix(covar);
 	}
 	
 	public DGLassoGraph(double[][] data,double lambda){
-		Estimator.lambda=lambda;
+		CovarianceEstimator.lambda=lambda;
 		this.covariance(data);
 	}
 	

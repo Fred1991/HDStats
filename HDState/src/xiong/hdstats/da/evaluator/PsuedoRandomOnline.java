@@ -8,9 +8,9 @@ import java.util.concurrent.Executors;
 
 import edu.uva.libopt.numeric.*;
 import smile.math.matrix.Matrix;
-import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
-import xiong.hdstats.gaussian.OnlineGraphEstimator;
-import xiong.hdstats.gaussian.OnlineSparseGraphEstimator;
+import smile.stat.distribution.SpikedMultivariateGaussianDistribution;
+import xiong.hdstats.gaussian.online.OnlineGraphEstimator;
+import xiong.hdstats.gaussian.online.OnlineSparseGraphEstimator;
 
 public class PsuedoRandomOnline {
 	public static ExecutorService ctp=Executors.newFixedThreadPool(4);
@@ -59,7 +59,7 @@ public class PsuedoRandomOnline {
 		OnlineSparseGraphEstimator.HT(origin_density, theta_s);
 		double[][] sparseICov = new Matrix(theta_s).inverse();
 		double density = Utils.getLxNorm(theta_s, Utils.L0);
-		GLassoMultivariateGaussianDistribution gaussian = new GLassoMultivariateGaussianDistribution(mean, sparseICov);
+		SpikedMultivariateGaussianDistribution gaussian = new SpikedMultivariateGaussianDistribution(mean, sparseICov);
 		double[][] init = new double[init_size][p];
 		for (int i = 0; i < init.length; i++) {
 			double[] randv = gaussian.rand();

@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 import Jama.Matrix;
-import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
+import smile.stat.distribution.SpikedMultivariateGaussianDistribution;
 import smile.stat.distribution.MultivariateGaussianDistribution;
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
 public class StochasticTruncatedRayleighFlow {
 	private double eta;
@@ -17,7 +17,7 @@ public class StochasticTruncatedRayleighFlow {
 	private Matrix BMat;
 	private int p;
 	private double noise;
-	private GLassoMultivariateGaussianDistribution mgd;
+	private SpikedMultivariateGaussianDistribution mgd;
 	private int k;
 	
 	public StochasticTruncatedRayleighFlow(int p, double eta, int k, double noise) {
@@ -29,7 +29,7 @@ public class StochasticTruncatedRayleighFlow {
 			I[i][i] = 1.0;
 		this.p = p;
 		double[] noiseMean=new double[p];
-		mgd=new GLassoMultivariateGaussianDistribution(noiseMean,I);
+		mgd=new SpikedMultivariateGaussianDistribution(noiseMean,I);
 	}
 
 	public StochasticTruncatedRayleighFlow(double eta, double[][] cov, int k, double noise) { // as PCA
@@ -66,7 +66,7 @@ public class StochasticTruncatedRayleighFlow {
 	}
 
 	public void iterateWithBatchUpdate(double[][] newData) {
-		MLEstimator MLE = new MLEstimator();
+		SampleCovarianceEstimator MLE = new SampleCovarianceEstimator();
 		Matrix _AMat = new Matrix(MLE.covariance(newData));
 		Matrix _AMat_ = this.AMat;
 		this.AMat = _AMat;

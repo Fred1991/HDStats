@@ -3,11 +3,11 @@ package xiong.hdstats.mat;
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 import edu.uva.libopt.numeric.Utils;
-import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
-import xiong.hdstats.Estimator;
-import xiong.hdstats.MLEstimator;
+import smile.stat.distribution.SpikedMultivariateGaussianDistribution;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
 public class TruncatedEVD {
 
@@ -48,10 +48,18 @@ public class TruncatedEVD {
 		// System.out.println(data.getRowDimension());
 		return V.times(D).times(V.transpose());
 	}
+	
+	public static Matrix spikedInverseCovarianceMatrix(Matrix data, int k) {
+		Matrix[] DV = decompose(data, k);
+		Matrix DI = DV[0].inverse();
+		Matrix V = DV[1];
+		// System.out.println(data.getRowDimension());
+		return V.times(DI).times(V.transpose());
+	}
 
 	public static double[][] spikedCovarianceMatrix(double[][] data, int k, double lambda) {
 		Matrix ident = 	Matrix.identity(data[0].length, data[0].length);
-		Matrix sampleCov = new Matrix(new MLEstimator().covariance(data));
+		Matrix sampleCov = new Matrix(new SampleCovarianceEstimator().covariance(data));
 		Matrix spikedCov =  spikedCovarianceMatrix(sampleCov, k);
 		return spikedCov.plus(ident.times(lambda)).copy().getArray();
 	}
@@ -66,7 +74,7 @@ public class TruncatedEVD {
 			}
 		}
 		double[] zero = new double[p];
-		GLassoMultivariateGaussianDistribution gen = new GLassoMultivariateGaussianDistribution(zero, cov);
+		SpikedMultivariateGaussianDistribution gen = new SpikedMultivariateGaussianDistribution(zero, cov);
 
 		double[][] data = new double[n][p];
 		for (int i = 0; i < n; i++) {
@@ -82,16 +90,16 @@ public class TruncatedEVD {
 		
 		long start = System.currentTimeMillis();
 
-		double[][] samCov = new MLEstimator().covariance(data);
+		double[][] samCov = new SampleCovarianceEstimator().covariance(data);
 		long t0 = System.currentTimeMillis();
 
 		double[][] estCov = TruncatedEVD.spikedCovarianceMatrix(data, k, 0);
 		long t1 = System.currentTimeMillis();
 
-		double[][] estCov2 = TruncatedSVD.spikedCovarianceMatrix(data, k, 0);
+		double[][] estCov2 = TruncatedSVD.spikedCovarianceMatrix(data, k);
 		long t2 = System.currentTimeMillis();
 
-		double[][] estCov3 = RandSVD.spikedCovarianceMatrix(data, k, d, 0);
+		double[][] estCov3 = RandSVD.spikedInverseCovarianceMatrix(data, k, d);
 		long t3 = System.currentTimeMillis();
 		
 		double[][] gLasso = new GLassoEstimator(12)._glassoPrecisionMatrix(samCov);
@@ -105,12 +113,12 @@ public class TruncatedEVD {
 		double[][] graphEst2 = new Matrix(estCov2).plus(ident.times(lambda)).inverse().getArray();
 		double[][] graphEst3 = new Matrix(estCov3).plus(ident.times(lambda)).inverse().getArray();
 		
-		double[][] graphSam = Estimator.inverse(new Matrix(samCov).getArray());
-		Estimator.lambda = 16.0;
-		double[][] gCov = MLEstimator.inverse(gLasso);
-		Estimator.lambda = 16.0;
+		double[][] graphSam = CovarianceEstimator.inverse(new Matrix(samCov).getArray());
+		CovarianceEstimator.lambda = 16.0;
+		double[][] gCov = SampleCovarianceEstimator.inverse(gLasso);
+		CovarianceEstimator.lambda = 16.0;
 	
-		double[][] dgCov = MLEstimator.inverse(dgLasso);
+		double[][] dgCov = SampleCovarianceEstimator.inverse(dgLasso);
 
 		// double[][] samCov = new Matrix(data).transpose().times(new
 		// Matrix(data)).times(1.0/n).getArray();

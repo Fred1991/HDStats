@@ -34,8 +34,8 @@ package xiong.hdstats.da.shruken;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import xiong.hdstats.Estimator;
 import xiong.hdstats.da.Classifier;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 
@@ -153,7 +153,7 @@ public class SDA implements Classifier<double[]>{
 			}
 		}
 
-		pooledInverseCovariance=new GLassoEstimator(Estimator.lambda)._glassoPrecisionMatrix(pooledInverseCovariance);
+		pooledInverseCovariance=new GLassoEstimator(CovarianceEstimator.lambda)._glassoPrecisionMatrix(pooledInverseCovariance);
 		
 	//	pooledInverseCovariance =PseudoInverse.inverse(new Matrix(pooledInverseCovariance)).getArray();
 		

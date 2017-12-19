@@ -6,7 +6,7 @@ import java.util.List;
 
 import Jama.Matrix;
 import edu.uva.libopt.numeric.Utils;
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
 public class TruncatedRayleighFlow {
 	private int k;
@@ -63,7 +63,7 @@ public class TruncatedRayleighFlow {
 	}
 
 	public void iterateWithBatchUpdate(double[][] newData) {
-		MLEstimator MLE = new MLEstimator();
+		SampleCovarianceEstimator MLE = new SampleCovarianceEstimator();
 		Matrix _AMat = new Matrix(MLE.covariance(newData));
 		Matrix _AMat_ = this.AMat;
 		this.AMat = _AMat;

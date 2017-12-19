@@ -1,7 +1,7 @@
-package xiong.hdstats;
+package xiong.hdstats.gaussian;
 
 
-public class ShrinkageEstimator extends MLEstimator{
+public class ShrinkageEstimator extends SampleCovarianceEstimator{
 
 	private double _lambda;
 	

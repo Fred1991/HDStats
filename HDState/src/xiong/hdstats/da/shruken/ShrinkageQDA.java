@@ -20,10 +20,10 @@ import java.util.Arrays;
 
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
-import xiong.hdstats.ShrinkageEstimator;
 import xiong.hdstats.da.Classifier;
 import xiong.hdstats.da.ClassifierTrainer;
 import xiong.hdstats.da.LDA;
+import xiong.hdstats.gaussian.ShrinkageEstimator;
 
 /**
  * Quadratic discriminant analysis. QDA is closely related to linear discriminant

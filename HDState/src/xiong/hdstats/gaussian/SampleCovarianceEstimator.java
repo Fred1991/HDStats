@@ -1,6 +1,6 @@
-package xiong.hdstats;
+package xiong.hdstats.gaussian;
 
-public class MLEstimator extends Estimator{
+public class SampleCovarianceEstimator extends CovarianceEstimator{
 	final public static String R_src_Path="C:/Users/xiongha/Desktop/R_src/";
 	
 	@Override
@@ -32,10 +32,10 @@ public class MLEstimator extends Estimator{
 		return mean;
 	}
 
-	@Override
-	public void covarianceApprox(double[][] samples) {
-		// TODO Auto-generated method stub
-		//return samples;
-	}
+//	@Override
+//	public void covarianceApprox(double[][] samples) {
+//		// TODO Auto-generated method stub
+//		//return samples;
+//	}
 
 }

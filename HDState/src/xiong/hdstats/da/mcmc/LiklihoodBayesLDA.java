@@ -17,8 +17,8 @@ import gov.sandia.cognition.math.matrix.mtj.decomposition.CholeskyDecompositionM
 import gov.sandia.cognition.statistics.distribution.InverseWishartDistribution;
 import gov.sandia.cognition.statistics.distribution.MultivariateGaussian;
 import smile.stat.distribution.MultivariateGaussianDistribution;
-import xiong.hdstats.NearPD;
 import xiong.hdstats.da.PseudoInverseLDA;
+import xiong.hdstats.gaussian.NearPD;
 
 public class LiklihoodBayesLDA extends PseudoInverseLDA {
 

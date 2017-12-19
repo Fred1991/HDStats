@@ -33,9 +33,9 @@ package xiong.hdstats.da.shruken;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import xiong.hdstats.Estimator;
 import xiong.hdstats.da.Classifier;
 import xiong.hdstats.da.PseudoInverse;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 
@@ -151,7 +151,7 @@ public class ODaehrLDA implements Classifier<double[]> {
 			}
 		}
 
-		new DiagKeptSparseCovEstimator(Estimator.lambda, 5).covarianceApprox(pooledInverseCovariance);
+		new DiagKeptSparseCovEstimator(CovarianceEstimator.lambda, 5).covarianceApprox(pooledInverseCovariance);
 
 		try {
 			pooledInverseCovariance = new Matrix(pooledInverseCovariance).inverse().getArray();

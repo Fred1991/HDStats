@@ -33,11 +33,11 @@ package xiong.hdstats.da.shruken;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import xiong.hdstats.Estimator;
-import xiong.hdstats.ShrinkageEstimator;
 import xiong.hdstats.da.Classifier;
 import xiong.hdstats.da.PseudoInverse;
 import xiong.hdstats.gaussian.GLassoEstimator;
+import xiong.hdstats.gaussian.ShrinkageEstimator;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
@@ -180,7 +180,7 @@ public class mDaehrLDA implements Classifier<double[]> {
 				}
 			}
 		}
-		new DiagKeptSparseCovEstimator(Estimator.lambda, 5).covarianceApprox(_covar);
+		new DiagKeptSparseCovEstimator(CovarianceEstimator.lambda, 5).covarianceApprox(_covar);
 
 		try {
 			return new Matrix(_covar).inverse().getArray();
@@ -199,7 +199,7 @@ public class mDaehrLDA implements Classifier<double[]> {
 				}
 			}
 		}
-		return new GLassoEstimator(Estimator.lambda)._glassoPrecisionMatrix(_covar);
+		return new GLassoEstimator(CovarianceEstimator.lambda)._glassoPrecisionMatrix(_covar);
 	}
 
 	public double[][] getNonSparsePrecisionMatrx() {
@@ -211,7 +211,7 @@ public class mDaehrLDA implements Classifier<double[]> {
 				}
 			}
 		}
-		return new DBGLassoEstimator(Estimator.lambda)._deSparsifiedGlassoPrecisionMatrix(_covar);
+		return new DBGLassoEstimator(CovarianceEstimator.lambda)._deSparsifiedGlassoPrecisionMatrix(_covar);
 	}
 	
 	public double[][] getShrinkagedCovCovarianceMatrx() {

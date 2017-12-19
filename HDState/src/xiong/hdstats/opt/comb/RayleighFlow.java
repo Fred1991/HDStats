@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import Jama.Matrix;
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
 public class RayleighFlow {
 	private double eta;
@@ -57,7 +57,7 @@ public class RayleighFlow {
 	}
 
 	public void iterateWithBatchUpdate(double[][] newData) {
-		MLEstimator MLE = new MLEstimator();
+		SampleCovarianceEstimator MLE = new SampleCovarianceEstimator();
 		Matrix _AMat = new Matrix(MLE.covariance(newData));
 		Matrix _AMat_ = this.AMat;
 		this.AMat = _AMat;

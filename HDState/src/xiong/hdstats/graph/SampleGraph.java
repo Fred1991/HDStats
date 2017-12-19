@@ -1,8 +1,8 @@
 package xiong.hdstats.graph;
 
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
-public class SampleGraph extends MLEstimator{
+public class SampleGraph extends SampleCovarianceEstimator{
 
 	public double[][] gaussianPrecision;
 	

@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.ArrayList;
 import smile.math.Math;
 import smile.stat.distribution.MultivariateExponentialFamilyMixture;
-import smile.stat.distribution.GLassoMultivariateGaussianDistribution;
-import xiong.hdstats.Estimator;
+import smile.stat.distribution.SpikedMultivariateGaussianDistribution;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
 
 /**
@@ -106,7 +106,7 @@ public class GLassoMultivariateGaussianMixture extends MultivariateExponentialFa
         double[] centroid = data[Math.randomInt(n)];
         Component c = new Component();
         c.priori = 1.0 / k;
-        GLassoMultivariateGaussianDistribution gaussian = new GLassoMultivariateGaussianDistribution(centroid, sigma);
+        SpikedMultivariateGaussianDistribution gaussian = new SpikedMultivariateGaussianDistribution(centroid, sigma);
         gaussian.diagonal = diagonal;
         c.distribution = gaussian;
         components.add(c);
@@ -142,7 +142,7 @@ public class GLassoMultivariateGaussianMixture extends MultivariateExponentialFa
             centroid = data[index];
             c = new Component();
             c.priori = 1.0 / k;
-            gaussian = new GLassoMultivariateGaussianDistribution(centroid, sigma);
+            gaussian = new SpikedMultivariateGaussianDistribution(centroid, sigma);
             gaussian.diagonal = diagonal;
             c.distribution = gaussian;
             components.add(c);
@@ -174,7 +174,7 @@ public class GLassoMultivariateGaussianMixture extends MultivariateExponentialFa
         ArrayList<Component> mixture = new ArrayList<Component>();
         Component c = new Component();
         c.priori = 1.0;
-        c.distribution = new GLassoMultivariateGaussianDistribution(data, diagonal);
+        c.distribution = new SpikedMultivariateGaussianDistribution(data, diagonal);
         mixture.add(c);
 
         int freedom = 0;
@@ -213,7 +213,7 @@ public class GLassoMultivariateGaussianMixture extends MultivariateExponentialFa
 
         double maxSigma = 0.0;
         for (Component c : mixture) {
-            double sigma = ((GLassoMultivariateGaussianDistribution) c.distribution).scatter();
+            double sigma = ((SpikedMultivariateGaussianDistribution) c.distribution).scatter();
             if (sigma > maxSigma) {
                 maxSigma = sigma;
                 componentToSplit = c;
@@ -221,15 +221,15 @@ public class GLassoMultivariateGaussianMixture extends MultivariateExponentialFa
         }
 
         // Splits the component
-        double[][] delta = ((GLassoMultivariateGaussianDistribution) componentToSplit.distribution).cov();
-        double[] mu = ((GLassoMultivariateGaussianDistribution) componentToSplit.distribution).mean();
+        double[][] delta = ((SpikedMultivariateGaussianDistribution) componentToSplit.distribution).cov();
+        double[] mu = ((SpikedMultivariateGaussianDistribution) componentToSplit.distribution).mean();
 
         Component c = new Component();
         c.priori = componentToSplit.priori / 2;
         double[] mu1 = new double[mu.length];
         for (int i = 0; i < mu.length; i++)
             mu1[i] = mu[i] + Math.sqrt(delta[i][i])/2;
-        c.distribution = new GLassoMultivariateGaussianDistribution(mu1, delta);
+        c.distribution = new SpikedMultivariateGaussianDistribution(mu1, delta);
         mixture.add(c);
 
         c = new Component();
@@ -237,7 +237,7 @@ public class GLassoMultivariateGaussianMixture extends MultivariateExponentialFa
         double[] mu2 = new double[mu.length];
         for (int i = 0; i < mu.length; i++)
             mu2[i] = mu[i] - Math.sqrt(delta[i][i])/2;
-        c.distribution = new GLassoMultivariateGaussianDistribution(mu2, delta);
+        c.distribution = new SpikedMultivariateGaussianDistribution(mu2, delta);
         mixture.add(c);
 
         mixture.remove(componentToSplit);

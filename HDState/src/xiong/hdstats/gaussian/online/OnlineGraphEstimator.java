@@ -1,13 +1,13 @@
-package xiong.hdstats.gaussian;
+package xiong.hdstats.gaussian.online;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import Jama.Matrix;
-import xiong.hdstats.MLEstimator;
+import xiong.hdstats.gaussian.SampleCovarianceEstimator;
 
-public class OnlineGraphEstimator extends MLEstimator {
+public class OnlineGraphEstimator {
 	public double[][] graph;
 	public double[][] init_cov;
 
@@ -42,23 +42,9 @@ public class OnlineGraphEstimator extends MLEstimator {
 	
 
 	
-	@Override
-	public double[][] covariance(double[][] samples) {
-		// TODO Auto-generated method stub
-		double[][] covar=new double[samples[0].length][samples[0].length];
-		for(int i=0;i<samples.length;i++){
-			for(int j=0;j<samples[i].length;j++){
-				for(int k=0;k<samples[i].length;k++){
-					covar[j][k]+=(samples[i][j])*(samples[i][k])/samples.length;
-				}
-			}
-		}
-		System.out.println("************LD Covariance Estimated*************");
-		return covar;
-	}
 
 	public void init(double[][] samples){
-		this.init_cov=this.covariance(samples);
+		this.init_cov=new SampleCovarianceEstimator().covariance(samples);
 		this.graph=new Matrix(this.init_cov).inverse().getArray();
 		//HT(k,this.graph);
 	}

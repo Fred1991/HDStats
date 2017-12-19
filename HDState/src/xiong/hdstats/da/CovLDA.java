@@ -20,9 +20,9 @@ import java.util.Arrays;
 
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
-import xiong.hdstats.Estimator;
 import xiong.hdstats.da.shruken.QDA;
 import xiong.hdstats.da.shruken.RDA;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 
 /**

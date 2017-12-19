@@ -10,10 +10,9 @@ import java.io.PrintWriter;
 import java.util.UUID;
 
 import Jama.Matrix;
-import xiong.hdstats.MLEstimator;
 import xiong.hdstats.da.PseudoInverse;
 
-public class DBGLassoEstimator extends MLEstimator {
+public class DBGLassoEstimator extends SampleCovarianceEstimator {
 	private double _lambda = 0.01;
 
 	public DBGLassoEstimator() {
@@ -25,24 +24,33 @@ public class DBGLassoEstimator extends MLEstimator {
 
 	@Override
 	public double[][] covariance(double[][] samples) {
-		return _deSparsifiedGlassoGetCovarianceMatrix(super.covariance(samples));
+		return _deSparsifiedGlassoCovarianceMatrix(super.covariance(samples));
+		// covarianceApprox(covar_inner);
+		// Matrix m = new Matrix(precision_matrix);
+		// return m.inverse().getArray();
+		// return m.getArray();
+	}
+	
+	@Override
+	public double[][] inverseCovariance(double[][] samples) {
+		return _deSparsifiedGlassoPrecisionMatrix(super.covariance(samples));
 		// covarianceApprox(covar_inner);
 		// Matrix m = new Matrix(precision_matrix);
 		// return m.inverse().getArray();
 		// return m.getArray();
 	}
 
-	@Override
-	public void covarianceApprox(double[][] covar_inner) {
-		double[][] sparsifiedGlassoCov = _deSparsifiedGlassoGetCovarianceMatrix(covar_inner);
-		for (int i = 0; i < covar_inner.length; i++) {
-			for (int j = 0; j < covar_inner[i].length; j++) {
-				covar_inner[i][j] = sparsifiedGlassoCov[i][j];
-			}
-		}
-	}
+//	@Override
+//	public void covarianceApprox(double[][] covar_inner) {
+//		double[][] sparsifiedGlassoCov = _deSparsifiedGlassoCovarianceMatrix(covar_inner);
+//		for (int i = 0; i < covar_inner.length; i++) {
+//			for (int j = 0; j < covar_inner[i].length; j++) {
+//				covar_inner[i][j] = sparsifiedGlassoCov[i][j];
+//			}
+//		}
+//	}
 
-	public double[][] _deSparsifiedGlassoGetCovarianceMatrix(double[][] covx) {
+	public double[][] _deSparsifiedGlassoCovarianceMatrix(double[][] covx) {
 		String id = UUID.randomUUID().toString();
 		double[][] inverseCovarianceMatrix = new double[covx.length][covx.length];
 		/// System.out.println("data length:"+data[0].length);

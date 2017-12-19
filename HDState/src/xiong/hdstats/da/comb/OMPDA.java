@@ -1,9 +1,9 @@
 package xiong.hdstats.da.comb;
 
 import Jama.Matrix;
-import xiong.hdstats.Estimator;
 import xiong.hdstats.da.BetaLDA;
 import xiong.hdstats.da.PseudoInverseLDA;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.GLassoEstimator;
 import xiong.hdstats.opt.GradientDescent;
 import xiong.hdstats.opt.comb.OrthogonalMatchingPursuit;

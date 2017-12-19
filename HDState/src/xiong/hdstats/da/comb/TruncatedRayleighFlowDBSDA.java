@@ -1,9 +1,9 @@
 package xiong.hdstats.da.comb;
 
 import Jama.Matrix;
-import xiong.hdstats.Estimator;
 import xiong.hdstats.da.BetaLDA;
 import xiong.hdstats.da.PseudoInverseLDA;
+import xiong.hdstats.gaussian.CovarianceEstimator;
 import xiong.hdstats.gaussian.DBGLassoEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 import xiong.hdstats.opt.comb.TruncatedRayleighFlow;
@@ -16,7 +16,7 @@ public class TruncatedRayleighFlowDBSDA extends BetaLDA {
 		this.k = _k;
 		PseudoInverseLDA olda = new PseudoInverseLDA(d, g, p);
 		double[][] AMat = olda.pooledCovariance;
-		DBGLassoEstimator nse = new DBGLassoEstimator(Estimator.lambda);
+		DBGLassoEstimator nse = new DBGLassoEstimator(CovarianceEstimator.lambda);
 		double[][] graph = nse._deSparsifiedGlassoPrecisionMatrix(AMat);
 		this.init(d, graph, g);
 		// if(d.length<d[0].length*2)

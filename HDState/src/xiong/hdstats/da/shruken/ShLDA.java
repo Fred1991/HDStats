@@ -34,10 +34,10 @@ package xiong.hdstats.da.shruken;
 import java.util.ArrayList;
 
 import Jama.Matrix;
-import xiong.hdstats.Estimator;
-import xiong.hdstats.ShrinkageEstimator;
 import xiong.hdstats.da.Classifier;
 import xiong.hdstats.da.PseudoInverse;
+import xiong.hdstats.gaussian.CovarianceEstimator;
+import xiong.hdstats.gaussian.ShrinkageEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 
 public class ShLDA implements Classifier<double[]>{

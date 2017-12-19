@@ -20,11 +20,11 @@ import java.util.Arrays;
 
 import smile.math.Math;
 import smile.math.matrix.EigenValueDecomposition;
-import xiong.hdstats.Estimator;
-import xiong.hdstats.ShrinkageEstimator;
 import xiong.hdstats.da.Classifier;
 import xiong.hdstats.da.ClassifierTrainer;
 import xiong.hdstats.da.LDA;
+import xiong.hdstats.gaussian.CovarianceEstimator;
+import xiong.hdstats.gaussian.ShrinkageEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 
 /**
@@ -310,7 +310,7 @@ public class ShrinkageRDA implements Classifier<double[]> {
                 }
             }
 
-            new PDLassoEstimator(Estimator.lambda).covarianceApprox(cov[i]);
+            new PDLassoEstimator(CovarianceEstimator.lambda).covarianceApprox(cov[i]);
             
             EigenValueDecomposition eigen = EigenValueDecomposition.decompose(cov[i], true);
 

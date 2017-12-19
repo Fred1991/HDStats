@@ -3,7 +3,7 @@ package xiong.hdstats.da;
 import java.util.HashMap;
 
 import Jama.Matrix;
-import xiong.hdstats.gaussian.OnlineGraphEstimator;
+import xiong.hdstats.gaussian.online.OnlineGraphEstimator;
 
 public class OnlineLDA implements Classifier<double[]> {
 	public OnlineGraphEstimator oge = new OnlineGraphEstimator();
