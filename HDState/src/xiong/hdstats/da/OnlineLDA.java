@@ -4,9 +4,10 @@ import java.util.HashMap;
 
 import Jama.Matrix;
 import xiong.hdstats.gaussian.online.SampleInitialOnlineGraphEstimator;
+import xiong.hdstats.gaussian.online.SpikedInitialOnlineGraphEstimator;
 
 public class OnlineLDA implements Classifier<double[]> {
-	public SampleInitialOnlineGraphEstimator oge = new SampleInitialOnlineGraphEstimator();
+	public SpikedInitialOnlineGraphEstimator oge ;
 	public double[][][] means;
 	public int[] frequencies = new int[2];
 	public double[] c = new double[2];
@@ -14,7 +15,8 @@ public class OnlineLDA implements Classifier<double[]> {
 	public double delta = 0;
 	public int totalNum;
 
-	public void init(double[][] data, int[] label) {
+	public void init(double[][] data, int[] label, int s) {
+		this.oge = new SpikedInitialOnlineGraphEstimator(s);
 		this.oge.init(data);
 		int index = 0;
 		means = new double[2][1][data[0].length];
@@ -36,7 +38,7 @@ public class OnlineLDA implements Classifier<double[]> {
 		this.delta = Math.log((double) this.frequencies[0] / (double) this.frequencies[1]);
 		for (int l = 0; l < 2; l++) {
 			Matrix meanl = new Matrix(this.means[l]);
-			Matrix theta = new Matrix(this.oge.graph);
+			Matrix theta = new Matrix(this.oge.getGraph());
 			this.beta[l] = theta.times(meanl.transpose());
 			this.c[l] = meanl.times(theta).times(meanl.transpose()).get(0, 0);
 		}
@@ -55,7 +57,7 @@ public class OnlineLDA implements Classifier<double[]> {
 		this.delta = Math.log((double) this.frequencies[0] / (double) this.frequencies[1]);
 		for (int l = 0; l < 2; l++) {
 			Matrix meanl = new Matrix(this.means[l]);
-			Matrix theta = new Matrix(this.oge.graph);
+			Matrix theta = new Matrix(this.oge.getGraph());
 			this.beta[l] = theta.times(meanl.transpose());
 			this.c[l] = meanl.times(theta).times(meanl.transpose()).get(0, 0);
 		}

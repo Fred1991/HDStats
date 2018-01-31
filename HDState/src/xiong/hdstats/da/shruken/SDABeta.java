@@ -10,14 +10,11 @@ public class SDABeta extends BetaLDA {
 //	private TruncatedRayleighFlow TRF;
 
 	public SDABeta(double[][] d, int[] g, boolean p) {
-		PseudoInverseLDA olda=new PseudoInverseLDA(d,g,p);
-		double[][] AMat = olda.pooledCovariance;
+		InvalidLDA olda=new InvalidLDA(d,g,p);
+		double[][] AMat = olda.getSampleCovarianceMatrix();
 		GLassoEstimator nse =new GLassoEstimator(CovarianceEstimator.lambda);
 		double[][] graph = nse._glassoPrecisionMatrix(AMat);
 		this.init(d, graph, g);
-	//	TRF = new TruncatedRayleighFlow(this.k, 1.0e-4, AMat, BMat);
-	//	TRF.init(this.beta[2].transpose().getArrayCopy()[0]);
-	//	this.iterate(1000);
 	}
 	
 

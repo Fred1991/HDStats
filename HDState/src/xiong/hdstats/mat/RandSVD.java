@@ -27,24 +27,24 @@ public class RandSVD {
 		return mtx;
 	}
 
-	public static Matrix spikedCovarianceMatrix(Matrix data, int k, int p) {
-		Matrix[] USV = decompose(data, k, p, true);
+	public static Matrix spikedCovarianceMatrix(Matrix data, int k, int p, boolean upper) {
+		Matrix[] USV = decompose(data, k, p, upper);
 		Matrix S = USV[1];
 		Matrix V = USV[2];
 		return V.times(S.times(S.transpose())).times(V.transpose()).times(1.0 / data.getRowDimension());
 	}
 
-	public static Matrix spikedInverseCovarianceMatrix(Matrix data, int k, int p) {
-		Matrix[] USV = decompose(data, k, p, false);
+	public static Matrix spikedInverseCovarianceMatrix(Matrix data, int k, int p, boolean upper) {
+		Matrix[] USV = decompose(data, k, p, upper);
 		Matrix S = USV[1];
 		Matrix V = USV[2];
 		return V.times(S.times(S.transpose()).inverse()).times(V.transpose()).times(1.0 * data.getRowDimension());
 	}
 
-	public static double[][] spikedCovarianceMatrix(double[][] data, int k, int p) {
+	public static double[][] spikedCovarianceMatrix(double[][] data, int k, int p, boolean upper) {
 		Matrix spikedCov = null;
 		if (data.length >= data[0].length) {
-			spikedCov = spikedCovarianceMatrix(new Matrix(data), k, p);
+			spikedCov = spikedCovarianceMatrix(new Matrix(data), k, p, upper);
 		} else {
 			double[][] _data = new double[data[0].length][data[0].length];
 			for (int i = 0; i < _data.length; i++) {
@@ -52,16 +52,16 @@ public class RandSVD {
 					_data[i][j] = data[Math.abs(i % data.length)][j];
 				}
 			}
-			spikedCov = spikedCovarianceMatrix(new Matrix(_data), k, p);
+			spikedCov = spikedCovarianceMatrix(new Matrix(_data), k, p, upper);
 		}
 		return spikedCov.getArrayCopy();
 	}
 
 	
-	public static double[][] spikedInverseCovarianceMatrix(double[][] data, int k, int p) {
+	public static double[][] spikedInverseCovarianceMatrix(double[][] data, int k, int p, boolean upper) {
 		Matrix spikedICov = null;
 		if (data.length >= data[0].length) {
-			spikedICov = spikedInverseCovarianceMatrix(new Matrix(data), k, p);
+			spikedICov = spikedInverseCovarianceMatrix(new Matrix(data), k, p, upper);
 		} else {
 			double[][] _data = new double[data[0].length][data[0].length];
 			for (int i = 0; i < _data.length; i++) {
@@ -69,7 +69,7 @@ public class RandSVD {
 					_data[i][j] = data[Math.abs(i % data.length)][j];
 				}
 			}
-			spikedICov = spikedInverseCovarianceMatrix(new Matrix(_data), k, p);
+			spikedICov = spikedInverseCovarianceMatrix(new Matrix(_data), k, p, upper);
 		}
 		return spikedICov.getArrayCopy();
 	}
@@ -86,8 +86,8 @@ public class RandSVD {
 			}
 		}
 
-		double[][] ocov = TruncatedSVD.truncate(cov, s);
-		double[][] icov = TruncatedSVD.truncatedInverse(cov, s);
+		double[][] ocov = TruncatedSVD.eigenTruncate(cov, s);
+		double[][] icov = TruncatedSVD.eigenTruncatedInverse(cov, s);
 
 		double[] zero = new double[p];
 		SpikedMultivariateGaussianDistribution gen = new SpikedMultivariateGaussianDistribution(zero, ocov);
@@ -99,8 +99,8 @@ public class RandSVD {
 				data[i][j] = vecp[j];
 			}
 		}
-		double[][] estICov = RandSVD.spikedInverseCovarianceMatrix(data, s, s);
-		double[][] samICov = TruncatedSVD.truncate(new SampleCovarianceEstimator().inverseCovariance(data), s);
+		double[][] estICov = RandSVD.spikedInverseCovarianceMatrix(data, s, s, false);
+		double[][] samICov = TruncatedSVD.eigenTruncate(new SampleCovarianceEstimator().inverseCovariance(data), s);
 
 		System.out.println("true\t" + new Matrix(icov).normF());
 		System.out.println("estimated\t" + new Matrix(estICov).normF());

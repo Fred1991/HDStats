@@ -87,7 +87,7 @@ public class TruncatedSVD {
 		return spikedCov.getArrayCopy();
 	}
 
-	public static double[][] truncate(double[][] cov, int s) {
+	public static double[][] eigenTruncate(double[][] cov, int s) {
 		Matrix covMat = new Matrix(cov);
 		EigenvalueDecomposition evd = covMat.eig();
 		Matrix V = evd.getV();
@@ -105,7 +105,7 @@ public class TruncatedSVD {
 		return covMat.getArrayCopy();
 	}
 
-	public static double[][] truncatedInverse(double[][] cov, int s) {
+	public static double[][] eigenTruncatedInverse(double[][] cov, int s) {
 		Matrix covMat = new Matrix(cov);
 		EigenvalueDecomposition evd = covMat.eig();
 		Matrix V = evd.getV();
@@ -135,8 +135,8 @@ public class TruncatedSVD {
 			}
 		}
 
-		double[][] ocov = truncate(cov, s);
-		double[][] icov = truncatedInverse(cov, s);
+		double[][] ocov = eigenTruncate(cov, s);
+		double[][] icov = eigenTruncatedInverse(cov, s);
 
 		double[] zero = new double[p];
 		SpikedMultivariateGaussianDistribution gen = new SpikedMultivariateGaussianDistribution(zero, ocov);
@@ -149,7 +149,7 @@ public class TruncatedSVD {
 			}
 		}
 		double[][] estICov = TruncatedSVD.spikedInverseCovarianceMatrix(data, s);
-		double[][] samICov = truncate(new SampleCovarianceEstimator().inverseCovariance(data), s);
+		double[][] samICov = eigenTruncate(new SampleCovarianceEstimator().inverseCovariance(data), s);
 
 		System.out.println("true\t" + new Matrix(icov).normF());
 		System.out.println("estimated\t" + new Matrix(estICov).normF());

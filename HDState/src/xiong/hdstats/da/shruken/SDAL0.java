@@ -13,8 +13,8 @@ public class SDAL0 extends BetaLDA {
 
 	public SDAL0(double[][] d, int[] g, boolean p, int k) {
 		this.k = k;
-		PseudoInverseLDA olda=new PseudoInverseLDA(d,g,p);
-		double[][] AMat = olda.pooledCovariance;
+		InvalidLDA olda=new InvalidLDA(d,g,p);
+		double[][] AMat = olda.getSampleCovarianceMatrix();
 		GLassoEstimator nse =new GLassoEstimator();
 		double[][] graph = nse._glassoPrecisionMatrix(AMat);
 		this.init(d, graph, g);

@@ -1,9 +1,7 @@
 package edu.uva.libopt.numeric;
 
 import java.util.Random;
-
-import la.matrix.DenseMatrix;
-import la.matrix.Matrix;
+import Jama.Matrix;
 
 public class Utils {
 	public static final int L1 = 1;
@@ -67,17 +65,21 @@ public class Utils {
 
 	
 	public static double getErrorL2(double[][] m1, double[][] m2) {
-		double base=0;
-		double err = 0;
+		Matrix m1tx = new Matrix(m1);
+		Matrix m2tx = new Matrix(m2);
+		return m1tx.minus(m2tx).normF();
 
-		for (int i = 0; i < m1.length; i++) {
-			for (int j = 0; j < m1[i].length; j++) {
-				err += Math.abs(m1[i][j] - m2[i][j]) * Math.abs(m1[i][j] - m2[i][j]);
-				base+=(m2[i][j]*m2[i][j]);
-			}
-		}
-
-		return Math.sqrt(err);
+//		double base=0;
+//		double err = 0;
+//
+//		for (int i = 0; i < m1.length; i++) {
+//			for (int j = 0; j < m1[i].length; j++) {
+//				err += Math.abs(m1[i][j] - m2[i][j]) * Math.abs(m1[i][j] - m2[i][j]);
+//				base+=(m2[i][j]*m2[i][j]);
+//			}
+//		}
+//
+//		return Math.sqrt(err);
 		///Math.sqrt(base);
 
 	}
@@ -99,16 +101,19 @@ public class Utils {
 	}
 	
 	public static double getErrorInf(double[][] m1, double[][] m2) {
-		// double base=0;
-		double max =Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < m1.length; i++) {
-			for (int j = 0; j < m1[i].length; j++) {
-				if(max< Math.abs(m1[i][j] - m2[i][j]))
-					max=Math.abs(m1[i][j] - m2[i][j]);
-			}
-		}
+		// double base=0;		
+		Matrix m1tx = new Matrix(m1);
+		Matrix m2tx = new Matrix(m2);
+		return m1tx.minus(m2tx).normInf();
+//		double max =Double.NEGATIVE_INFINITY;
+//		for (int i = 0; i < m1.length; i++) {
+//			for (int j = 0; j < m1[i].length; j++) {
+//				if(max< Math.abs(m1[i][j] - m2[i][j]))
+//					max=Math.abs(m1[i][j] - m2[i][j]);
+//			}
+//		}
 
-		return max;
+//		return max;
 
 	}
 	

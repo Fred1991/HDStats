@@ -3,7 +3,7 @@ import ml.classification.LinearBinarySVM;
 import xiong.hdstats.da.Classifier;
 
 public class SVMClassifier implements Classifier<double[]>{
-	LinearBinarySVM classifier=new LinearBinarySVM(1.0,1e-4);
+	LinearBinarySVM classifier=new LinearBinarySVM(1.0,1e-1);
 	
 	public SVMClassifier(double[][] d, int[] g) {
 		classifier.feedData(d);

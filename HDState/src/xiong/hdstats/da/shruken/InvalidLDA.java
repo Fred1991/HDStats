@@ -43,13 +43,15 @@ import xiong.hdstats.graph.DiagKeptSparseCovEstimator;
 import xiong.hdstats.graph.PDLassoEstimator;
 import xiong.hdstats.graph.SparseCovEstimator;
 
-public class mDaehrLDA implements Classifier<double[]> {
+public class InvalidLDA implements Classifier<double[]> {
 	private double[][] groupMean;
 	public double[][] pooledInverseCovariance;
 	private double[] probability;
 	private ArrayList<Integer> groupList = new ArrayList<Integer>();
-	public double[][][] covariance;
+	public double[][][] pooledCovariance;
 	public static double slambda = 0.1;
+	public double[][] recenterData;
+	public int[] label;
 
 	/**
 	 * Calculates a linear discriminant analysis (LDA) with all necessary
@@ -65,7 +67,7 @@ public class mDaehrLDA implements Classifier<double[]> {
 	 *            should be equal
 	 */
 	@SuppressWarnings("unchecked")
-	public mDaehrLDA(double[][] d, int[] g, boolean p) {
+	public InvalidLDA(double[][] d, int[] g, boolean p) {
 		// check if data and group array have the same size
 		if (d.length != g.length)
 			return;
@@ -128,23 +130,34 @@ public class mDaehrLDA implements Classifier<double[]> {
 		}
 
 		// calculate covariance
-		covariance = new double[subset.length][globalMean.length][globalMean.length];
-		for (int i = 0; i < covariance.length; i++) {
-			for (int j = 0; j < covariance[i].length; j++) {
-				for (int k = 0; k < covariance[i][j].length; k++) {
+		pooledCovariance = new double[subset.length][globalMean.length][globalMean.length];
+		for (int i = 0; i < pooledCovariance.length; i++) {
+			for (int j = 0; j < pooledCovariance[i].length; j++) {
+				for (int k = 0; k < pooledCovariance[i][j].length; k++) {
 					for (int l = 0; l < subset[i].size(); l++)
-						covariance[i][j][k] += (subset[i].get(l)[j] * subset[i].get(l)[k]);
+						pooledCovariance[i][j][k] += (subset[i].get(l)[j] * subset[i].get(l)[k]);
 
-					covariance[i][j][k] = covariance[i][j][k] / subset[i].size();
+					pooledCovariance[i][j][k] = pooledCovariance[i][j][k] / subset[i].size();
 				}
 			}
 		}
 		// calculate pooled within group covariance matrix and invert it
+		this.recenterData = new double[data.length][data[0].length];
+		int iindex = 0;
+		for (int l = 0; l < subset.length; l++) {
+			for (double[] dataIn : subset[l]) {
+				int jindex = 0;
+				for (double dat : dataIn) {
+					this.recenterData[iindex][jindex++] = dat;
+				}
+				iindex++;
+			}
+		}
 	}
-	
+
 	public double[][] getSampleCovarianceMatrix() {
-		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
-		for (double[][] cov : this.covariance) {
+		double[][] _covar = new double[this.pooledCovariance[0].length][this.pooledCovariance[0].length];
+		for (double[][] cov : this.pooledCovariance) {
 			for (int i = 0; i < cov.length; i++) {
 				for (int j = 0; j < cov.length; j++) {
 					_covar[i][j] = cov[i][j] * 0.5;
@@ -155,8 +168,8 @@ public class mDaehrLDA implements Classifier<double[]> {
 	}
 
 	public double[][] getSamplePrecisionMatrix() {
-		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
-		for (double[][] cov : this.covariance) {
+		double[][] _covar = new double[this.pooledCovariance[0].length][this.pooledCovariance[0].length];
+		for (double[][] cov : this.pooledCovariance) {
 			for (int i = 0; i < cov.length; i++) {
 				for (int j = 0; j < cov.length; j++) {
 					_covar[i][j] = cov[i][j] * 0.5;
@@ -172,8 +185,8 @@ public class mDaehrLDA implements Classifier<double[]> {
 	}
 
 	public double[][] getSparseCovPrecisionMatrx() {
-		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
-		for (double[][] cov : this.covariance) {
+		double[][] _covar = new double[this.pooledCovariance[0].length][this.pooledCovariance[0].length];
+		for (double[][] cov : this.pooledCovariance) {
 			for (int i = 0; i < cov.length; i++) {
 				for (int j = 0; j < cov.length; j++) {
 					_covar[i][j] = cov[i][j] * 0.5;
@@ -191,8 +204,8 @@ public class mDaehrLDA implements Classifier<double[]> {
 
 	public double[][] getGLassoPrecisionMatrx() {
 
-		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
-		for (double[][] cov : this.covariance) {
+		double[][] _covar = new double[this.pooledCovariance[0].length][this.pooledCovariance[0].length];
+		for (double[][] cov : this.pooledCovariance) {
 			for (int i = 0; i < cov.length; i++) {
 				for (int j = 0; j < cov.length; j++) {
 					_covar[i][j] = cov[i][j] * 0.5;
@@ -203,8 +216,8 @@ public class mDaehrLDA implements Classifier<double[]> {
 	}
 
 	public double[][] getNonSparsePrecisionMatrx() {
-		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
-		for (double[][] cov : this.covariance) {
+		double[][] _covar = new double[this.pooledCovariance[0].length][this.pooledCovariance[0].length];
+		for (double[][] cov : this.pooledCovariance) {
 			for (int i = 0; i < cov.length; i++) {
 				for (int j = 0; j < cov.length; j++) {
 					_covar[i][j] = cov[i][j] * 0.5;
@@ -213,23 +226,23 @@ public class mDaehrLDA implements Classifier<double[]> {
 		}
 		return new DBGLassoEstimator(CovarianceEstimator.lambda)._deSparsifiedGlassoPrecisionMatrix(_covar);
 	}
-	
+
 	public double[][] getShrinkagedCovCovarianceMatrx() {
-		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
-		for (double[][] cov : this.covariance) {
+		double[][] _covar = new double[this.pooledCovariance[0].length][this.pooledCovariance[0].length];
+		for (double[][] cov : this.pooledCovariance) {
 			for (int i = 0; i < cov.length; i++) {
 				for (int j = 0; j < cov.length; j++) {
 					_covar[i][j] = cov[i][j] * 0.5;
 				}
 			}
 		}
-		 new ShrinkageEstimator(slambda).covarianceApprox(_covar);
-		 return _covar;
+		new ShrinkageEstimator(slambda).covarianceApprox(_covar);
+		return _covar;
 	}
 
 	public double[][] getShrinkagedCovPrecisionMatrx() {
-		double[][] _covar = new double[this.covariance[0].length][this.covariance[0].length];
-		for (double[][] cov : this.covariance) {
+		double[][] _covar = new double[this.pooledCovariance[0].length][this.pooledCovariance[0].length];
+		for (double[][] cov : this.pooledCovariance) {
 			for (int i = 0; i < cov.length; i++) {
 				for (int j = 0; j < cov.length; j++) {
 					_covar[i][j] = cov[i][j] * 0.5;
@@ -511,7 +524,7 @@ public class mDaehrLDA implements Classifier<double[]> {
 		double[][] data = { { 2.95, 6.63 }, { 2.53, 7.79 }, { 3.57, 5.65 }, { 3.16, 5.47 }, { 2.58, 4.46 },
 				{ 2.16, 6.22 }, { 3.27, 3.52 } };
 
-		mDaehrLDA test = new mDaehrLDA(data, group, true);
+		InvalidLDA test = new InvalidLDA(data, group, true);
 		double[] testData = { 2.81, 5.46 };
 
 		// test
