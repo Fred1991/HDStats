@@ -67,7 +67,7 @@ public class Utils {
 	public static double getErrorL2(double[][] m1, double[][] m2) {
 		Matrix m1tx = new Matrix(m1);
 		Matrix m2tx = new Matrix(m2);
-		return m1tx.minus(m2tx).normF();
+		return m1tx.minus(m2tx).norm2();
 
 //		double base=0;
 //		double err = 0;
@@ -159,6 +159,31 @@ public class Utils {
 	}
 
 	public static double getLxNorm(double[] X, int l) {
+		double maxX = Double.NEGATIVE_INFINITY;
+		double lxnorm = 0;
+		for (double x : X) {
+			if (Math.abs(x) > maxX)
+				maxX = Math.abs(x);
+			if (l == L1)
+				lxnorm += Math.abs(x);
+			else if (l == L2)
+				lxnorm += x * x;
+			else if (l == LNULL)
+				lxnorm += 0;
+			else if (l == L0) {
+				if (x >10e-10 ||x<-10e-10)
+					lxnorm++;
+			}
+		}
+		if (l == LINF)
+			return maxX;
+		else if (l == L2)
+			lxnorm = Math.sqrt(lxnorm);
+
+		return lxnorm;
+	}
+	
+	public static double getLxNormInt(int[] X, int l) {
 		double maxX = Double.NEGATIVE_INFINITY;
 		double lxnorm = 0;
 		for (double x : X) {
